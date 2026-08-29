@@ -2147,3 +2147,8 @@ $string['upgradenotice_2025041410'] = 'The setting "Show hint for guest access" 
 $string['upgradenotice_2025041413'] = 'The setting "courselistinghowfields" has been renamed to "courselistingshowfields" to fix a typo. Your existing configuration has been migrated to the new setting name.';
 $string['upgradenotice_2025041416'] = 'Smart menu dividers are now available as a dedicated menu item type. Existing dividers (created using heading type with hash signs) have been automatically converted to the new divider type.';
 $string['upgradenotice_2025100623'] = 'The navbar color options "Primary color navbar with dark font color" and "Primary color navbar with light font color" have been renamed to "Colored navbar with dark font color" and "Colored navbar with light font color". Your existing configuration has been migrated automatically. Additionally, your primary brand color has been transferred to the new "Navbar tint" setting to maintain the previous visual appearance.';
+
+$string['coursecardmore'] = 'More';
+$string['coursecardless'] = 'Less';
+$string['coursecardteachers'] = 'Teachers';
+$string['coursecardopen'] = 'Open course';

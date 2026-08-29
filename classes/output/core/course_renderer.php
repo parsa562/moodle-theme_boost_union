@@ -197,7 +197,7 @@ class course_renderer extends \core_course_renderer {
             // Get the card grid config.
             $maxcols = get_config('theme_boost_union', 'coursecardscolumncount');
             $maxcolslg = $maxcols;
-            $maxcolssm = ($maxcols > 1) ? $maxcols : 1;
+            $maxcolssm = ($maxcols > 1) ? min($maxcols, 2) : 1;
 
             // Iterate over the courses.
             foreach ($courses as $course) {
@@ -532,6 +532,15 @@ class course_renderer extends \core_course_renderer {
         if ($templatedata['showcoursecontacts'] || $templatedata['showcoursepopup']) {
             $templatedata['contacts'] = $courseutil->get_course_contacts();
             $templatedata['hascontacts'] = (count($templatedata['contacts']) > 0);
+
+            // Prepare compact course contacts for course cards.
+            if ($templatedata['hascontacts']) {
+                $contacts = array_values($templatedata['contacts']);
+                $templatedata['displaycontacts'] = array_slice($contacts, 0, 4);
+                $templatedata['remainingcontacts'] = array_slice($contacts, 4);
+                $templatedata['additionalcontactcount'] = count($templatedata['remainingcontacts']);
+                $templatedata['hasadditionalcontacts'] = ($templatedata['additionalcontactcount'] > 0);
+            }
         }
 
         // Amend course shortname, if enabled.
@@ -544,8 +553,9 @@ class course_renderer extends \core_course_renderer {
             $templatedata['coursecategory'] = $courseutil->get_category();
         }
 
-        // Amend course summary, if enabled.
-        if ($templatedata['showcoursepopup']) {
+        // Amend course summary for course cards and the details popup.
+        if ($courselistingpresentation == THEME_BOOST_UNION_SETTING_COURSELISTPRES_CARDS ||
+                $templatedata['showcoursepopup']) {
             $templatedata['summary'] = $courseutil->get_summary($chelper);
             $templatedata['hassummary'] = ($templatedata['summary'] != false);
         }
