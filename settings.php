@@ -182,6 +182,10 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // (with 3 or 4 digits) or a viewport width number (from 0 to 100).
         $widthregex = '/^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
 
+        // Prepare regular expression for an optional general width value.
+        // Accepts percent, viewport width, 3-4 digit pixel values, or an empty value.
+        $widthoremptyregex = '/^$|^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
+
         // Prepare regular expression for checking if the value is a percent number (from 0% to 100%) or a pixel number
         // (with 2 or 3 digits) or a viewport width number (from 0 to 100). Additionally the field can be left blank.
         $smallwidthoremptyregex = '/^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{2,3}px)|(^(?!.*\S))$/';
@@ -479,6 +483,33 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('coursecontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
         $default = '830px';
         $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: General page max width.
+        $name = 'theme_boost_union/generalpagemaxwidth';
+        $title = get_string('generalpagemaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('generalpagemaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthoremptyregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Homepage content max width.
+        $name = 'theme_boost_union/homepagecontentmaxwidth';
+        $title = get_string('homepagecontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('homepagecontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthoremptyregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Navbar content max width.
+        $name = 'theme_boost_union/navbarcontentmaxwidth';
+        $title = get_string('navbarcontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('navbarcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthoremptyregex, 6);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 

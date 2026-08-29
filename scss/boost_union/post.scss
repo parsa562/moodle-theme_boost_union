@@ -4090,13 +4090,15 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
     }
 }
 
-/* Inset course images to reduce visual weight. */
+/* Course card image inset and spacing. */
 .theme_boost_union-courselisting-card .course-card {
-    padding-top: .7rem;
+    padding-top: 1.5rem;
+    margin-inline: 1.3rem !important;
+    margin-bottom: 2rem !important;
 
     > a:first-child {
         display: block;
-        margin-inline: .7rem;
+        margin-inline: 1.5rem;
     }
 
     .card-img-top {
@@ -4105,24 +4107,12 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
     }
 }
 
-/* Increase image inset and spacing between course cards. */
-.theme_boost_union-courselisting-card .course-card {
-    padding-top: 1.1rem;
-
-    > a:first-child {
-        margin-inline: 1.1rem;
-    }
-
-    margin-inline: 1.3rem !important;
-    margin-bottom: 2rem !important;
-}
-
-/* Increase course image inset further. */
-.theme_boost_union-courselisting-card .course-card {
-    padding-top: 1.5rem;
-
-    > a:first-child {
-        margin-inline: 1.5rem;
+/* Mobile homepage course-card edge alignment. */
+@media (max-width: 767.98px) {
+    .pagelayout-frontpage
+    .theme_boost_union-courselisting.theme_boost_union-courselisting-card
+    .course-card {
+        margin-inline: .5rem !important;
     }
 }
 
@@ -4140,5 +4130,46 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
             object-fit: cover;
             object-position: center;
         }
+    }
+}
+
+/* Custom responsive content widths. */
+@include media-breakpoint-up(md) {
+    /* General limited-width pages. */
+    @if variable-exists(bu-general-page-maxwidth) {
+        .pagelayout-standard #page.drawers .main-inner,
+        body.limitedwidth:not(.path-course) #page.drawers .main-inner {
+            max-width: $bu-general-page-maxwidth;
+        }
+    }
+
+    /* Homepage-specific width. */
+    @if variable-exists(bu-homepage-content-maxwidth) {
+        body.pagelayout-frontpage #page.drawers .main-inner {
+            max-width: $bu-homepage-content-maxwidth;
+        }
+    }
+
+    /* Navbar content width. */
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        .navbar.fixed-top > .container-fluid {
+            width: calc(100% - 6rem);
+            max-width: $bu-navbar-content-maxwidth;
+            margin-inline: auto;
+        }
+    }
+}
+
+/* Homepage horizontal alignment. */
+@include media-breakpoint-up(md) {
+    .pagelayout-frontpage #page.drawers div[role="main"] {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .pagelayout-frontpage
+    .theme_boost_union-courselisting.theme_boost_union-courselisting-card
+    .course-card {
+        margin-inline: 0.75rem !important;
     }
 }

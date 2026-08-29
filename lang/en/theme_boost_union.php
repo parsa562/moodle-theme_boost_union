@@ -2155,3 +2155,12 @@ $string['coursecardopen'] = 'Open course';
 
 $string['slidemobilebackgroundimagesetting'] = 'Slide {$a->no} mobile background image';
 $string['slidemobilebackgroundimagesetting_desc'] = 'Optional image used for this slide on mobile devices. Recommended size: 900 × 1125 px (4:5). If no mobile image is uploaded, the regular slide background image will be used.';
+
+$string['generalpagemaxwidthsetting'] = 'General page max width';
+$string['generalpagemaxwidthsetting_desc'] = 'Optional maximum width for general Moodle page content. You can use values such as 1460px, 90vw, or 100%. If left empty, Moodle/Boost Union keeps its existing width behavior.';
+
+$string['homepagecontentmaxwidthsetting'] = 'Homepage content max width';
+$string['homepagecontentmaxwidthsetting_desc'] = 'Optional maximum width for homepage content, including the hero/slider, section headings, and course listing. If left empty, the general page max width will be used when configured; otherwise the existing Moodle/Boost Union behavior is kept.';
+
+$string['navbarcontentmaxwidthsetting'] = 'Navbar content max width';
+$string['navbarcontentmaxwidthsetting_desc'] = 'Optional maximum width for the content inside the main navbar. If left empty, the general page max width will be used when configured; otherwise the existing navbar behavior is kept.';

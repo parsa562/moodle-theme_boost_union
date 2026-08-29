@@ -453,6 +453,27 @@ function theme_boost_union_get_pre_scss($theme) {
     if (get_config('theme_boost_union', 'coursecontentmaxwidth')) {
         $scss .= '$course-content-maxwidth: ' . get_config('theme_boost_union', 'coursecontentmaxwidth') . ";\n";
     }
+    // Set custom page width variables.
+    $generalpagemaxwidth = get_config('theme_boost_union', 'generalpagemaxwidth');
+    $homepagecontentmaxwidth = get_config('theme_boost_union', 'homepagecontentmaxwidth');
+    $navbarcontentmaxwidth = get_config('theme_boost_union', 'navbarcontentmaxwidth');
+
+    if (!empty($generalpagemaxwidth)) {
+        $scss .= '$bu-general-page-maxwidth: ' . $generalpagemaxwidth . ";\n";
+    }
+
+    if (!empty($homepagecontentmaxwidth)) {
+        $scss .= '$bu-homepage-content-maxwidth: ' . $homepagecontentmaxwidth . ";\n";
+    } else if (!empty($generalpagemaxwidth)) {
+        $scss .= '$bu-homepage-content-maxwidth: ' . $generalpagemaxwidth . ";\n";
+    }
+
+    if (!empty($navbarcontentmaxwidth)) {
+        $scss .= '$bu-navbar-content-maxwidth: ' . $navbarcontentmaxwidth . ";\n";
+    } else if (!empty($generalpagemaxwidth)) {
+        $scss .= '$bu-navbar-content-maxwidth: ' . $generalpagemaxwidth . ";\n";
+    }
+
     // Set variables which are influenced by the h5pcontentmaxwidth setting.
     if (get_config('theme_boost_union', 'h5pcontentmaxwidth')) {
         $scss .= '$h5p-content-maxwidth: ' . get_config('theme_boost_union', 'h5pcontentmaxwidth') . ";\n";
