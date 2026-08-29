@@ -43,8 +43,9 @@ for ($i = 1; $i <= THEME_BOOST_UNION_SETTING_SLIDES_COUNT; $i++) {
         isset($config->{'slide' . $i . 'enabled'}) &&
             $config->{'slide' . $i . 'enabled'} == THEME_BOOST_UNION_SETTING_SELECT_YES
     ) {
-        // Get and set the slide's background image.
+        // Get and set the slide's background images.
         $bgimage = theme_boost_union_get_urlofslidebackgroundimage($i);
+        $mobilebgimage = theme_boost_union_get_urlofslidemobilebackgroundimage($i);
 
         // If the slide does not have a background image set, skip it.
         if ($bgimage == null) {
@@ -136,6 +137,7 @@ for ($i = 1; $i <= THEME_BOOST_UNION_SETTING_SLIDES_COUNT; $i++) {
         $slide->link = $link;
         $slide->linktargetnewtab = $linktargetnewtab;
         $slide->backgroundimageurl = $bgimage;
+        $slide->mobilebackgroundimageurl = $mobilebgimage;
         $slide->backgroundimagealt = $backgroundimagealt;
         $slide->caption = $caption;
         $slide->no = $i;

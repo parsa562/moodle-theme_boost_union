@@ -4125,3 +4125,20 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
         margin-inline: 1.5rem;
     }
 }
+
+/* Mobile slider image. */
+@media (max-width: 767.98px) {
+    #themeboostunionslider {
+        picture,
+        picture img {
+            display: block;
+            width: 100%;
+        }
+
+        picture img {
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+}

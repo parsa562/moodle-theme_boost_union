@@ -130,7 +130,14 @@
       {{#slides}}
         <div id="themeboostunionslide{{no}}" class="carousel-item {{#isfirstslide}}active{{/isfirstslide}}"{{#interval}} data-bs-interval="{{interval}}"{{/interval}}>
           {{#linkimage}}{{#link}}<a href="{{link}}" {{#linktitle}}title="{{linktitle}}"{{/linktitle}} {{#linktargetnewtab}}target="_blank" rel="noopener noreferrer"{{/linktargetnewtab}}>{{/link}}{{/linkimage}}
-            {{#backgroundimageurl}}<img class="d-block w-100" src="{{backgroundimageurl}}" alt="{{backgroundimagealt}}">{{/backgroundimageurl}}
+            {{#backgroundimageurl}}
+            <picture>
+              {{#mobilebackgroundimageurl}}
+                <source media="(max-width: 767.98px)" srcset="{{mobilebackgroundimageurl}}">
+              {{/mobilebackgroundimageurl}}
+              <img class="d-block w-100" src="{{backgroundimageurl}}" alt="{{backgroundimagealt}}">
+            </picture>
+            {{/backgroundimageurl}}
           {{#linkimage}}{{#link}}</a>{{/link}}{{/linkimage}}
           {{#captionorcontent}}
               <div class="carousel-caption {{contentstyleclass}}">

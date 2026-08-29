@@ -5390,6 +5390,27 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 THEME_BOOST_UNION_SETTING_SELECT_YES
             );
 
+            // Setting: Slide mobile background image.
+            $name = 'theme_boost_union/slide' . $i . 'mobilebackgroundimage';
+            $title = get_string('slidemobilebackgroundimagesetting', 'theme_boost_union', ['no' => $i], true);
+            $description = get_string('slidemobilebackgroundimagesetting_desc', 'theme_boost_union', ['no' => $i], true);
+            $setting = new admin_setting_configstoredfile(
+                $name,
+                $title,
+                $description,
+                'slide' . $i . 'mobilebackgroundimage',
+                0,
+                ['maxfiles' => 1, 'accepted_types' => 'web_image']
+            );
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $tab->add($setting);
+            $page->hide_if(
+                'theme_boost_union/slide' . $i . 'mobilebackgroundimage',
+                'theme_boost_union/slide' . $i . 'enabled',
+                'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES
+            );
+
             // Setting: Slide background image alt attribute.
             $name = 'theme_boost_union/slide' . $i . 'backgroundimagealt';
             $title = get_string('slidebackgroundimagealtsetting', 'theme_boost_union', ['no' => $i], true);

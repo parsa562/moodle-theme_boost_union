@@ -887,6 +887,50 @@ function theme_boost_union_get_urlofslidebackgroundimage($slideno) {
     return null;
 }
 
+
+/**
+ * Get the slider's mobile background image URL.
+ *
+ * @param int $slideno The slide number.
+ * @return string|null
+ */
+function theme_boost_union_get_urlofslidemobilebackgroundimage($slideno) {
+    if ($slideno < 0 || $slideno > THEME_BOOST_UNION_SETTING_SLIDES_COUNT) {
+        return null;
+    }
+
+    $bgconfig = get_config('theme_boost_union', 'slide' . $slideno . 'mobilebackgroundimage');
+
+    if (!empty($bgconfig)) {
+        $systemcontext = context_system::instance();
+        $fs = get_file_storage();
+
+        $files = $fs->get_area_files(
+            $systemcontext->id,
+            'theme_boost_union',
+            'slide' . $slideno . 'mobilebackgroundimage',
+            false,
+            'itemid',
+            false
+        );
+
+        $file = reset($files);
+
+        if ($file) {
+            return core\url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
+        }
+    }
+
+    return null;
+}
+
 /**
  * Add background images from setting 'loginbackgroundimage' to SCSS.
  *
