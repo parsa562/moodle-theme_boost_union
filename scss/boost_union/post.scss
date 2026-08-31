@@ -4138,6 +4138,8 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
     /* General limited-width pages. */
     @if variable-exists(bu-general-page-maxwidth) {
         .pagelayout-standard #page.drawers .main-inner,
+        .pagelayout-admin #page.drawers .main-inner,
+        body.cm-type-qbank #page.drawers .main-inner,
         body.limitedwidth:not(.path-course) #page.drawers .main-inner {
             max-width: $bu-general-page-maxwidth;
         }
@@ -4171,5 +4173,133 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
     .theme_boost_union-courselisting.theme_boost_union-courselisting-card
     .course-card {
         margin-inline: 0.75rem !important;
+    }
+}
+
+/* Question bank wide-table scrolling. */
+body.cm-type-qbank {
+    #question_table {
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.34)
+            rgba(79, 110, 140, 0.04);
+    }
+
+    #question_table::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    #question_table::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.04);
+    }
+
+    #question_table::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.34);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    #question_table::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.50);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 12px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(79, 110, 140, 0.10);
+        border-radius: 999px;
+        background: rgba(79, 110, 140, 0.06);
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.42)
+            rgba(79, 110, 140, 0.06);
+    }
+
+    .boost-union-qbank-top-scroll[hidden] {
+        display: none;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.06);
+        border-radius: 999px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.42);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.58);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll-spacer {
+        height: 1px;
+    }
+}
+
+/* Question bank sticky horizontal scrollbar zone. */
+body.cm-type-qbank {
+    .qbank-sticky-scroll-zone {
+        position: sticky;
+        top: var(--navbar-height, 54px);
+        z-index: 20;
+
+        padding-top: 14px;
+        padding-bottom: 14px;
+
+        background: rgb(255 255 255);
+    }
+
+    .qbank-sticky-scroll-zone
+    .boost-union-qbank-top-scroll {
+        position: static;
+        top: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    @media (max-width: 767.98px) {
+        .qbank-sticky-scroll-zone {
+            padding-top: 1px;
+            padding-bottom: 8px;
+            background: rgb(255 255 255);
+        }
+
+        .qbank-sticky-scroll-zone
+        .boost-union-qbank-top-scroll {
+            margin: 0;
+            background: rgb(255 255 255);
+            border: 0;
+            box-shadow: none;
+
+            scrollbar-color:
+                #005bb3c2
+                rgb(255 255 255);
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+            background: #005bb3c2;
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+            background: #005bb3e0;
+        }
     }
 }

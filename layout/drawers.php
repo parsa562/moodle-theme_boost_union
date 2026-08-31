@@ -174,6 +174,11 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton,
 ];
 
+// Add synchronized horizontal scrolling for wide Question bank tables.
+if ($PAGE->cm && $PAGE->cm->modname === 'qbank') {
+    $PAGE->requires->js_call_amd('theme_boost_union/questionbankscroll', 'init');
+}
+
 // Include the template content for the course related hints.
 require_once(__DIR__ . '/includes/courserelatedhints.php');
 
