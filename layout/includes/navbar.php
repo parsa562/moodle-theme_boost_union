@@ -63,6 +63,41 @@ switch ($navbarcolorsetting) {
         break;
 }
 
+
+// Simplify the language labels shown in the navbar.
+// Moodle language names contain a trailing language code wrapped with
+// invisible direction markers, for example:
+// "فارسی ‎(fa)‎" and "English ‎(en)‎".
+// Keep the real language codes and URLs unchanged, but remove the code
+// from the visible navbar and dropdown labels.
+if (!empty($templatecontext['langmenu'])) {
+    $cleanlanguagelabel = static function(string $label): string {
+        return preg_replace(
+            '/\s*[\x{200E}\x{200F}\x{061C}]*\([a-zA-Z0-9_-]+\)[\x{200E}\x{200F}\x{061C}]*\s*$/u',
+            '',
+            $label
+        );
+    };
+
+    if (!empty($templatecontext['langmenu']['title'])) {
+        $templatecontext['langmenu']['title'] =
+            $cleanlanguagelabel($templatecontext['langmenu']['title']);
+    }
+
+    if (!empty($templatecontext['langmenu']['items'])) {
+        foreach ($templatecontext['langmenu']['items'] as &$languageitem) {
+            if (!empty($languageitem['text'])) {
+                $languageitem['text'] = $cleanlanguagelabel($languageitem['text']);
+            }
+
+            if (!empty($languageitem['title'])) {
+                $languageitem['title'] = $cleanlanguagelabel($languageitem['title']);
+            }
+        }
+        unset($languageitem);
+    }
+}
+
 // If an alternative logo link URL is set.
 $alternativelogolinkurlsetting = get_config('theme_boost_union', 'alternativelogolinkurl');
 if (!empty($alternativelogolinkurlsetting)) {

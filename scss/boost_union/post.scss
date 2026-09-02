@@ -4303,3 +4303,289 @@ body.cm-type-qbank {
         }
     }
 }
+
+/* Guest navbar: make the login link a subtle outline action. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .login a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: .35rem .85rem;
+        border: 1px solid var(--bs-primary);
+        border-radius: .5rem;
+        color: var(--bs-primary);
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover,
+        &:focus {
+            background: rgba(var(--bs-primary-rgb), .06);
+            color: var(--bs-primary);
+            text-decoration: none;
+        }
+    }
+}
+
+/* Guest navbar: simplify the language selector button appearance. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu #lang-menu-toggle {
+        border: 0;
+        box-shadow: none;
+        border-radius: .4rem;
+
+        &:hover,
+        &:focus,
+        &.show {
+            background: rgba(0, 0, 0, .035);
+            box-shadow: none;
+            outline: 0;
+        }
+    }
+}
+
+/* Guest navbar: improve language dropdown spacing and text direction. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+        min-width: 9.5rem;
+        padding: .35rem;
+
+        .dropdown-item {
+            padding: .45rem .7rem;
+            text-align: start;
+        }
+    }
+}
+
+/* Guest navbar: improve spacing between the selected language and dropdown arrow. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu #lang-menu-toggle {
+        gap: .35rem;
+    }
+}
+
+/* Guest navbar: refine the separator beside the language selector.
+ * Keep it subtle, slightly shorter, and give the login side a little
+ * more breathing room for better visual balance.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    #usernavigation > .divider {
+        height: 45% !important;
+        opacity: .5;
+        margin-inline-start: .2rem !important;
+        margin-inline-end: .7rem !important;
+    }
+}
+
+/* Navbar: slightly refine spacing between the logo and primary navigation. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .navbar-brand {
+        margin-inline-end: 1.35rem !important;
+    }
+}
+
+/* Logged-in navbar: reduce the visual prominence of Edit mode. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .editmode-switch-form {
+        opacity: .72;
+
+        &:hover,
+        &:focus-within {
+            opacity: 1;
+        }
+    }
+}
+
+/* Language dropdown: refine the active-language indicator and item separation. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+        .dropdown-item {
+            position: relative;
+        }
+
+        .dropdown-item + .dropdown-item::after {
+            content: "";
+            position: absolute;
+            inset-inline: .65rem;
+            top: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, .07);
+        }
+
+        .dropdown-item[aria-current="true"]::before {
+            color: var(--bs-primary);
+            opacity: .78;
+        }
+    }
+}
+
+/* Language dropdown: refine active indicator, separators and hover state. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+        .dropdown-item {
+            position: relative;
+            padding-block: .55rem;
+        }
+
+        /* Subtle divider with breathing room from the item edges. */
+        .dropdown-item + .dropdown-item::after {
+            content: "";
+            position: absolute;
+            inset-inline: .8rem;
+            top: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, .055);
+        }
+
+        /* Put the active-language check toward the logical end of the row. */
+        .dropdown-item[aria-current="true"]::before {
+            position: absolute;
+            inset-inline-end: .65rem;
+            inset-inline-start: auto;
+            color: var(--bs-primary);
+            opacity: .78;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background: rgba(var(--bs-primary-rgb), .07);
+        }
+    }
+}
+
+/* Language dropdown: final spacing and hover refinements. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+
+        .dropdown-item {
+            padding-inline-start: .9rem !important;
+            padding-inline-end: 2.25rem !important;
+            padding-block: .55rem;
+            border-radius: 4px;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background: rgb(15 108 191 / 77%);
+        }
+
+        /* Short divider with vertical breathing room. */
+        .dropdown-item + .dropdown-item::after {
+            top: -.15rem;
+            inset-inline: .8rem;
+        }
+
+        /* Active language checkmark at the logical end of the row. */
+        .dropdown-item[aria-current="true"]::before {
+            inset-inline-end: .65rem;
+            inset-inline-start: auto;
+        }
+    }
+}
+
+/* Logged-in navbar: refine spacing between notification, message and user menu controls. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    #usernavigation {
+        > * {
+            margin-inline: .1rem;
+        }
+
+        .usermenu-container {
+            margin-inline-start: .2rem;
+        }
+    }
+}
+
+/* Navbar user menu: visually align the avatar dropdown and its language
+ * submenu with the standalone navbar language dropdown.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        padding: .35rem;
+        border-radius: .55rem;
+
+        .dropdown-item {
+            padding: .55rem .9rem !important;
+            border-radius: 4px;
+
+            &:hover,
+            &:focus {
+                background: rgb(15 108 191 / 77%);
+                color: #fff;
+            }
+        }
+
+        .dropdown-divider {
+            margin: .3rem .8rem;
+            opacity: .55;
+        }
+    }
+}
+
+/* Navbar user-menu language submenu: keep the active-language check
+ * on the logical end side and away from the text.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        .dropdown-item[aria-current="true"] {
+            position: relative;
+            padding-inline-end: 2.25rem !important;
+        }
+
+        .dropdown-item[aria-current="true"]::before {
+            position: absolute;
+            inset-inline-end: .65rem;
+            inset-inline-start: auto;
+        }
+    }
+}
+
+/* Navbar user menu: match the active-language indicator used by the
+ * standalone language dropdown.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        .dropdown-item[aria-current="true"]::before {
+            color: var(--bs-primary);
+            opacity: .78;
+        }
+    }
+}
+
+/* Navbar user menu: use the same direction-aware dropdown alignment as
+ * the standalone language selector instead of Moodle's forced end alignment.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu > .dropdown > .dropdown-menu {
+        inset-inline-start: 0 !important;
+        inset-inline-end: auto !important;
+    }
+}
+
+/* Navbar user-menu submenus: match the language-item spacing used by
+ * the standalone navbar language dropdown.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .carousel-item.submenu .dropdown-item {
+        padding-inline-start: .9rem !important;
+        padding-inline-end: 2.25rem !important;
+        padding-block: .55rem;
+    }
+}
+
+/* Logged-in navbar: keep the user/avatar trigger compact and lightweight. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu #user-menu-toggle {
+        padding: .25rem .4rem;
+        border: 0;
+        box-shadow: none;
+        background: transparent;
+        border-radius: .45rem;
+
+        &:hover,
+        &:focus,
+        &.show {
+            background: rgba(0, 0, 0, .035);
+            box-shadow: none;
+        }
+    }
+}

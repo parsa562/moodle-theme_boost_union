@@ -253,14 +253,49 @@ class primary extends \core\navigation\output\primary {
         // (This if-clause is already built in a way that we could add more Boost Union user menu modifications
         // in the future).
         $addpreferredlangsetting = get_config('theme_boost_union', 'addpreferredlang');
+
+        // Get the output of the parent function.
+        $parentoutput = parent::get_user_menu($output);
+
+        // Simplify the language labels in the logged-in user menu.
+        // Moodle language names may contain a trailing language code such as
+        // "فارسی ‎(fa)‎" or "English ‎(en)‎".
+        if (array_key_exists('submenus', $parentoutput)) {
+            $languagemenutitle = get_string('languageselector');
+
+            foreach ($parentoutput['submenus'] as $submenu) {
+                if ($submenu->title !== $languagemenutitle) {
+                    continue;
+                }
+
+                foreach ($submenu->items as &$languageitem) {
+                    if (!empty($languageitem['text'])) {
+                        $languageitem['text'] = preg_replace(
+                            '/\\s*[\\x{200E}\\x{200F}\\x{061C}]*\\([a-zA-Z0-9_-]+\\)[\\x{200E}\\x{200F}\\x{061C}]*\\s*$/u',
+                            '',
+                            $languageitem['text']
+                        );
+                    }
+
+                    if (!empty($languageitem['title'])) {
+                        $languageitem['title'] = preg_replace(
+                            '/\\s*[\\x{200E}\\x{200F}\\x{061C}]*\\([a-zA-Z0-9_-]+\\)[\\x{200E}\\x{200F}\\x{061C}]*\\s*$/u',
+                            '',
+                            $languageitem['title']
+                        );
+                    }
+                }
+                unset($languageitem);
+
+                break;
+            }
+        }
+
         if (!isset($addpreferredlangsetting) || $addpreferredlangsetting == THEME_BOOST_UNION_SETTING_SELECT_NO) {
-            // Directly return the output of the parent function.
-            return parent::get_user_menu($output);
+            return $parentoutput;
 
             // Otherwise, process the Boost Union user menu modifications.
         } else {
-            // Get the output of the parent function.
-            $parentoutput = parent::get_user_menu($output);
 
             // If addpreferredlangsetting is enabled and if there are submenus in the output.
             if (
