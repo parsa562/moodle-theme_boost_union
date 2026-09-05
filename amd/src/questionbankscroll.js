@@ -6,7 +6,7 @@
 // (at your option) any later version.
 
 /**
- * Adds a synchronized horizontal scrollbar above wide Question bank tables.
+ * Adds a synchronized horizontal scrollbar above supported wide tables.
  *
  * @module     theme_boost_union/questionbankscroll
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -16,16 +16,22 @@ define([], function() {
     "use strict";
 
     /**
-     * Initialise the Question bank top scrollbar.
+     * Initialise the top scrollbar for supported wide tables.
      */
     const init = function() {
-        const tableWrapper = document.querySelector('#question_table');
+        let tableWrapper = null;
+
+        if (document.body.classList.contains('cm-type-qbank')) {
+            tableWrapper = document.querySelector('#question_table');
+        } else if (document.body.classList.contains('path-grade-report-grader')) {
+            tableWrapper = document.querySelector('.gradeparent');
+        }
 
         if (!tableWrapper || document.querySelector('.boost-union-qbank-top-scroll')) {
             return;
         }
 
-        tableWrapper.classList.add('boost-union-qbank-table-scroll');
+        tableWrapper.classList.add('boost-union-wide-table-scroll');
 
         const topScroll = document.createElement('div');
         topScroll.className = 'boost-union-qbank-top-scroll';
@@ -79,6 +85,7 @@ define([], function() {
         if ('ResizeObserver' in window) {
             const observer = new ResizeObserver(updateWidth);
             observer.observe(tableWrapper);
+
             const table = tableWrapper.querySelector('table');
             if (table) {
                 observer.observe(table);

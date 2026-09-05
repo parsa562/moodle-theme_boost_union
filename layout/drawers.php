@@ -174,8 +174,11 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton,
 ];
 
-// Add synchronized horizontal scrolling for wide Question bank tables.
-if ($PAGE->cm && $PAGE->cm->modname === 'qbank') {
+// Add synchronized horizontal scrolling for supported wide tables.
+$isquestionbank = $PAGE->cm && $PAGE->cm->modname === 'qbank';
+$isgraderreport = strpos($PAGE->pagetype, 'grade-report-grader') === 0;
+
+if ($isquestionbank || $isgraderreport) {
     $PAGE->requires->js_call_amd('theme_boost_union/questionbankscroll', 'init');
 }
 

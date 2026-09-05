@@ -4145,6 +4145,14 @@ html[dir="rtl"] .theme_boost_union-courselisting-card .course-card .course-card-
         }
     }
 
+    /* Course-context pages. */
+    @if variable-exists(course-content-maxwidth) {
+        body[class*="course-"]:not(.pagelayout-frontpage) #page.drawers .main-inner {
+            max-width: $course-content-maxwidth;
+            margin-inline: auto;
+        }
+    }
+
     /* Homepage-specific width. */
     @if variable-exists(bu-homepage-content-maxwidth) {
         body.pagelayout-frontpage #page.drawers .main-inner {
@@ -4587,5 +4595,152 @@ body.cm-type-qbank {
             background: rgba(0, 0, 0, .035);
             box-shadow: none;
         }
+    }
+}
+
+/* Gradebook grader: use the same wide-table scrolling design as Question bank. */
+body.path-grade-report-grader {
+    .gradeparent {
+        max-width: 100%;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.34)
+            rgba(79, 110, 140, 0.04);
+    }
+
+    #user-grades {
+        max-width: none;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .gradeparent::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .gradeparent::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.04);
+    }
+
+    .gradeparent::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.34);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .gradeparent::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.50);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 12px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(79, 110, 140, 0.10);
+        border-radius: 999px;
+        background: rgba(79, 110, 140, 0.06);
+
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.42)
+            rgba(79, 110, 140, 0.06);
+    }
+
+    .boost-union-qbank-top-scroll[hidden] {
+        display: none;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.06);
+        border-radius: 999px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.42);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.58);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll-spacer {
+        height: 1px;
+    }
+
+    .qbank-sticky-scroll-zone {
+        position: sticky;
+        top: var(--navbar-height, 54px);
+        z-index: 20;
+
+        padding-top: 14px;
+        padding-bottom: 14px;
+
+        background: rgb(255 255 255);
+    }
+
+    .qbank-sticky-scroll-zone
+    .boost-union-qbank-top-scroll {
+        position: static;
+        top: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    @media (max-width: 767.98px) {
+        .qbank-sticky-scroll-zone {
+            padding-top: 1px;
+            padding-bottom: 8px;
+            background: rgb(255 255 255);
+        }
+
+        .qbank-sticky-scroll-zone
+        .boost-union-qbank-top-scroll {
+            margin: 0;
+            background: rgb(255 255 255);
+            border: 0;
+            box-shadow: none;
+
+            scrollbar-color:
+                #005bb3c2
+                rgb(255 255 255);
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+            background: #005bb3c2;
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+            background: #005bb3e0;
+        }
+    }
+}
+
+/* Keep tertiary navigation borders within the normal page content width. */
+.tertiary-navigation.full-width-bottom-border {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    box-sizing: border-box;
+
+    > .row {
+        padding-inline: 0;
     }
 }
