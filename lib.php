@@ -167,6 +167,7 @@ define('THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_FULLNAME', 'fullname');
 define('THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_SHORTNAME', 'shortname');
 define('THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_WELCOME', 'welcome');
 define('THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_WELCOMEBACK', 'welcomeback');
+define('THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_SALEK', 'salek');
 
 define('THEME_BOOST_UNION_SETTING_SHIBBOLETH_CONFIG', 'config');
 define('THEME_BOOST_UNION_SETTING_SHIBBOLETH_CODE', 'code');
@@ -694,6 +695,7 @@ function theme_boost_union_get_extra_scss($theme) {
 
         // Finally, we add all possible background image urls which will be picked based on the (random) loginpageimage class.
         $content .= theme_boost_union_get_loginbackgroundimage_scss();
+        $content .= theme_boost_union_get_loginbackgroundimagemobile_scss();
     }
 
     // Boost core has the behaviour that the normal background image is not shown on the login page, only the login background image
@@ -890,7 +892,8 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
         // This code is copied and modified from theme_boost_pluginfile() in theme/boost/lib.php.
     } else if (
         $context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'backgroundimage' ||
-        $filearea === 'loginbackgroundimage' || $filearea === 'additionalresources' ||
+        $filearea === 'loginbackgroundimage' ||
+        $filearea === 'loginbackgroundimagemobile' || $filearea === 'additionalresources' ||
                 $filearea === 'customfonts' || $filearea === 'courseheaderimageglobal' ||
                 $filearea === 'courseoverviewimagefallback' ||
                 $filearea === 'touchiconsios' || $filearea === 'uploadedsnippets' ||

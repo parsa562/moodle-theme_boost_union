@@ -4598,6 +4598,22 @@ body.cm-type-qbank {
     }
 }
 
+/* Gradebook grader: keep wide tables inside the page width. */
+.path-grade-report-grader {
+    .gradeparent {
+        max-width: 100%;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    #user-grades {
+        max-width: none;
+        width: max-content;
+        min-width: 100%;
+    }
+}
+
 /* Gradebook grader: use the same wide-table scrolling design as Question bank. */
 body.path-grade-report-grader {
     .gradeparent {
@@ -4742,5 +4758,1105 @@ body.path-grade-report-grader {
 
     > .row {
         padding-inline: 0;
+    }
+}
+
+
+/* ==========================================================================
+   Salek mobile login redesign
+   ========================================================================== */
+
+@include media-breakpoint-down(sm) {
+    body.pagelayout-login {
+        .login-wrapper {
+            min-height: 100dvh;
+            padding: 24px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
+            max-width: 325px !important; /* stylelint-disable-line declaration-no-important */
+            min-width: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 auto !important; /* stylelint-disable-line declaration-no-important */
+            padding: 34px 24px 28px !important; /* stylelint-disable-line declaration-no-important */
+
+            border-radius: 26px !important; /* stylelint-disable-line declaration-no-important */
+            border: 1px solid rgb(255 255 255 / 27%) !important; /* stylelint-disable-line declaration-no-important */
+
+            background: rgb(255 255 255 / 69%) !important; /* stylelint-disable-line declaration-no-important */
+
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+
+            box-shadow:
+                0 20px 45px -10px rgb(15 23 42 / 14%) !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .loginform,
+        #theme_boost_union-loginform,
+        .theme_boost_union-loginmethod,
+        .login-form {
+            width: 100%;
+        }
+
+        /* Logo. */
+        #loginlogo {
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
+            height: auto !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 auto 20px !important; /* stylelint-disable-line declaration-no-important */
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+        }
+
+        #logoimage {
+            width: 72px !important; /* stylelint-disable-line declaration-no-important */
+            height: 72px !important; /* stylelint-disable-line declaration-no-important */
+            object-fit: contain;
+        }
+
+        /* Username and password fields. */
+        .login-form-username,
+        .login-form-password {
+            width: 100%;
+            margin-bottom: 14px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        #username {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+
+            padding-inline: 14px;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            background: #fff;
+
+            font-size: 0.88rem;
+            box-shadow: none;
+        }
+
+        .login-form-password .input-group {
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+
+            overflow: hidden;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            background: #fff;
+        }
+
+        #password {
+            height: 40px;
+            min-height: 40px;
+
+            flex: 1 1 auto;
+
+            padding-inline: 10px;
+
+            border: 0;
+            background: transparent;
+
+            font-size: 0.88rem;
+            box-shadow: none;
+        }
+
+        .toggle-sensitive-btn {
+            width: 40px;
+            min-width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0;
+
+            border: 0;
+            background: transparent;
+
+            color: #94a3b8;
+        }
+
+        #username:focus,
+        .login-form-password .input-group:focus-within {
+            border-color: #1374cd;
+            box-shadow: 0 0 0 2.5px rgb(19 116 205 / 15%);
+        }
+
+        /* Primary login action. */
+        .login-form-submit {
+            width: 100%;
+            margin-top: 16px;
+            margin-bottom: 14px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        #loginbtn {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 0;
+            border-radius: 10px;
+
+            background-color: #1374cd;
+
+            color: #fff;
+            font-size: 0.92rem;
+            font-weight: 600;
+
+            box-shadow: 0 3px 12px rgb(19 116 205 / 25%);
+        }
+
+        /* Forgotten password. */
+        .login-form-forgotpassword {
+            margin: 6px 0 16px !important; /* stylelint-disable-line declaration-no-important */
+            text-align: center;
+        }
+
+        .login-form-forgotpassword a {
+            color: #1374cd;
+            font-size: 0.82rem;
+            text-decoration: none;
+        }
+
+        /* Section divider. */
+        .login-divider {
+            margin: 14px 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-color: rgb(203 203 203 / 30%);
+        }
+
+        /* Microsoft 365 / identity provider. */
+        .login-identityproviders {
+            width: 100%;
+        }
+
+        .login-identityproviders .login-heading {
+            margin-bottom: 10px;
+
+            text-align: center;
+            font-size: 0.84rem;
+            font-weight: 400;
+        }
+
+        .login-identityproviders .btn {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            padding: 0 14px;
+
+            border: 1px solid rgb(226 232 240 / 80%);
+            border-radius: 10px;
+
+            background: #ffffffa1;
+
+            color: #1e293b;
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            box-shadow: 0 1px 3px rgb(0 0 0 / 3%);
+        }
+
+        .login-identityproviders img {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Cookie notice. */
+        .loginform > .btn.btn-secondary {
+            width: fit-content;
+            height: 30px;
+            min-height: 30px;
+
+            margin: 20px auto 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 0;
+            border-radius: 999px;
+
+            background: rgb(226 232 240 / 80%);
+
+            color: #475569;
+            font-size: 0.74rem;
+
+            box-shadow: none;
+        }
+    }
+}
+
+/* ==========================================================================
+   Salek mobile login final refinements
+   Applies only below 768px.
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    body.pagelayout-login {
+
+        #page {
+            padding-top: 0 !important;
+        }
+
+        #page-content {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Center the mobile card regardless of desktop left/right positioning. */
+        .login-wrapper,
+        .login-wrapper.login-wrapper-left,
+        .login-wrapper.login-wrapper-right {
+            min-height: 100dvh !important;
+
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+
+            padding-block: clamp(14px, 2.5vh, 20px) !important;
+            padding-inline: 16px !important;
+        }
+
+        /* Mobile login card. */
+        .login-container {
+            width: 100% !important;
+            max-width: 325px !important;
+            min-width: 0 !important;
+
+            margin-inline: auto !important;
+            padding: 34px 24px 28px !important;
+
+            border: 1px solid rgb(255 255 255 / 27%) !important;
+            border-radius: 26px !important;
+
+            background: rgb(255 255 255 / 69%) !important;
+
+            backdrop-filter: blur(3px) !important;
+            -webkit-backdrop-filter: blur(3px) !important;
+
+            box-shadow: 0 20px 45px -10px rgb(15 23 42 / 14%) !important;
+
+            text-align: center !important;
+        }
+
+        .loginform,
+        #theme_boost_union-loginform,
+        .theme_boost_union-loginmethod,
+        .login-form {
+            width: 100% !important;
+        }
+
+        /* Logo. */
+        #loginlogo {
+            width: 100% !important;
+            height: auto !important;
+
+            margin: 0 auto 18px !important;
+
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+
+            text-align: center !important;
+        }
+
+        #logoimage {
+            width: 72px !important;
+            height: 72px !important;
+            max-width: 72px !important;
+            max-height: 72px !important;
+
+            object-fit: contain !important;
+        }
+
+        /* Branding. */
+        .login-heading {
+            margin-bottom: 8px !important;
+            text-align: center !important;
+        }
+
+        .login-tagline {
+            margin-bottom: 18px !important;
+            text-align: center !important;
+        }
+
+        /* Inputs. */
+        .login-form-username,
+        .login-form-password {
+            width: 100% !important;
+            margin-bottom: 14px !important;
+        }
+
+        #username {
+            width: 100% !important;
+            height: 40px !important;
+            min-height: 40px !important;
+
+            border-radius: 12px !important;
+
+            text-align: start !important;
+        }
+
+        .login-form-password .input-group {
+            width: 100% !important;
+            height: 40px !important;
+
+            border-radius: 12px !important;
+            overflow: hidden !important;
+        }
+
+        #password {
+            height: 40px !important;
+            min-height: 40px !important;
+
+            border-radius: 0 !important;
+
+            text-align: start !important;
+        }
+
+        .toggle-sensitive-btn {
+            height: 40px !important;
+            min-height: 40px !important;
+
+            border-radius: 0 !important;
+        }
+
+        /* Login button. */
+        .login-form-submit {
+            width: 100% !important;
+
+            margin-top: 16px !important;
+            margin-bottom: 14px !important;
+        }
+
+        #loginbtn {
+            width: 100% !important;
+            height: 40px !important;
+            min-height: 40px !important;
+
+            border-radius: 12px !important;
+        }
+
+        /* Forgotten password. */
+        .login-form-forgotpassword {
+            margin-top: 2px !important;
+            margin-bottom: 16px !important;
+
+            text-align: center !important;
+        }
+
+        /* Dividers. */
+        .login-divider {
+            margin-top: 16px !important;
+            margin-bottom: 16px !important;
+        }
+
+        /* Microsoft 365 / identity provider. */
+        .login-identityproviders {
+            width: 100% !important;
+            margin-bottom: 14px !important;
+
+            text-align: center !important;
+        }
+
+        .login-identityproviders .login-heading {
+            margin-bottom: 14px !important;
+            text-align: center !important;
+        }
+
+        .login-identityproviders .btn {
+            width: 100% !important;
+            height: 40px !important;
+            min-height: 40px !important;
+
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+
+            padding: 0 14px !important;
+
+            border: 1px solid rgb(226 232 240 / 80%) !important;
+            border-radius: 12px !important;
+
+            background: rgb(255 255 255 / 63%) !important;
+            background-color: rgb(255 255 255 / 63%) !important;
+
+            color: #1e293b !important;
+
+            box-shadow: 0 1px 3px rgb(0 0 0 / 3%) !important;
+        }
+
+        /* Cookie notice wrapper. */
+        .loginform > .d-flex:has(> .btn.btn-secondary) {
+            width: 100% !important;
+
+            display: flex !important;
+            justify-content: center !important;
+        }
+
+        /* Cookie notice button. */
+        .loginform > .d-flex > .btn.btn-secondary {
+            width: fit-content !important;
+
+            margin: 0 !important;
+
+            border-radius: 12px !important;
+        }
+    }
+}
+
+/* ==========================================================================
+   Salek desktop login redesign
+   Applies from 768px and above.
+   ========================================================================== */
+@include media-breakpoint-up(md) {
+    body.pagelayout-login {
+        #page-wrapper {
+            min-height: 100vh;
+        }
+
+        #page {
+            min-height: 100vh;
+            padding-top: 24px !important;
+            padding-bottom: 24px !important;
+            display: flex;
+            align-items: center;
+        }
+
+        #page-content,
+        #region-main-box,
+        #region-main {
+            width: 100%;
+        }
+
+        .login-wrapper {
+            min-height: calc(100vh - 48px);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-inline: clamp(24px, 5vw, 64px);
+        }
+
+        &.dir-ltr .login-wrapper {
+            justify-content: flex-start;
+        }
+
+        .login-container {
+            width: min(420px, 100%);
+            padding: clamp(30px, 3vw, 42px) clamp(26px, 2.8vw, 40px);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, 0.12);
+        }
+
+        .loginform {
+            text-align: center;
+        }
+
+        #loginlogo {
+            margin-bottom: 22px !important;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #loginlogo img {
+            max-width: 118px;
+            max-height: 118px;
+            width: auto;
+            height: auto;
+        }
+
+        .login-heading {
+            margin-bottom: 8px !important;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #0f172a;
+        }
+
+        .login-tagline {
+            margin-bottom: 24px !important;
+            text-align: center;
+            font-size: .95rem;
+            line-height: 1.7;
+            color: #475569 !important;
+        }
+
+        .login-form-username,
+        .login-form-password {
+            margin-bottom: 14px !important;
+        }
+
+        #username,
+        .login-form-password .input-group,
+        #loginbtn,
+        .login-identityproviders .btn,
+        .loginform > .d-flex > .btn.btn-secondary {
+            border-radius: 12px !important;
+        }
+
+        #username {
+            height: 48px;
+            min-height: 48px;
+            padding-inline: 16px;
+            border: 1px solid rgba(203, 213, 225, 0.95);
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: none;
+        }
+
+        .login-form-password .input-group {
+            height: 48px;
+            overflow: hidden;
+            border: 1px solid rgba(203, 213, 225, 0.95);
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .login-form-password #password {
+            height: 48px;
+            min-height: 48px;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            padding-inline: 16px;
+        }
+
+        .toggle-sensitive-btn {
+            width: 48px;
+            min-width: 48px;
+            height: 48px;
+            border: 0;
+            background: transparent;
+            color: #64748b;
+            box-shadow: none;
+        }
+
+        #username:focus,
+        .login-form-password .input-group:focus-within {
+            border-color: #1374cd;
+            box-shadow: 0 0 0 3px rgb(19 116 205 / 14%);
+        }
+
+        .login-form-submit {
+            width: 100%;
+            margin-top: 18px !important;
+            margin-bottom: 16px !important;
+        }
+
+        #loginbtn {
+            width: 100%;
+            height: 48px;
+            min-height: 48px;
+            border: 0;
+            background: #1374cd;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 8px 18px rgb(19 116 205 / 22%);
+        }
+
+        .login-form-forgotpassword {
+            margin: 2px 0 22px !important;
+            text-align: center;
+        }
+
+        .login-form-forgotpassword a {
+            color: #1374cd;
+            font-size: .88rem;
+            text-decoration: none;
+        }
+
+        .login-divider {
+            margin: 18px 0 !important;
+            border-color: rgba(148, 163, 184, 0.26);
+        }
+
+        .login-identityproviders {
+            width: 100%;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .login-identityproviders .login-heading {
+            margin-bottom: 14px !important;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .login-identityproviders .btn {
+            width: 100%;
+            min-height: 48px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid rgba(203, 213, 225, 0.95) !important;
+            background: rgba(255, 255, 255, 0.82) !important;
+            color: #1e293b !important;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 3%);
+        }
+
+        .login-identityproviders img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .loginform > .d-flex {
+            justify-content: center !important;
+        }
+
+        .loginform > .d-flex > .btn.btn-secondary {
+            margin: 0 !important;
+            min-height: 36px;
+            padding: 0 16px;
+            border: 0;
+            background: rgb(226 232 240 / 88%);
+            color: #475569;
+            font-size: .82rem;
+            box-shadow: none;
+        }
+    }
+}
+
+/* ==========================================================================
+   Salek desktop login polish v2
+   Closer to final mockup
+   ========================================================================== */
+@include media-breakpoint-up(md) {
+    body.pagelayout-login {
+        .login-wrapper {
+            justify-content: flex-end;
+            padding-inline: clamp(28px, 6vw, 84px);
+        }
+
+        &.dir-ltr .login-wrapper {
+            justify-content: flex-start;
+        }
+
+        .login-container {
+            width: min(430px, 100%);
+            padding: 42px 38px 34px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+        }
+
+        #loginlogo {
+            margin-bottom: 18px !important;
+        }
+
+        #loginlogo img {
+            max-width: 132px;
+            max-height: 132px;
+        }
+
+        .login-heading {
+            margin-bottom: 10px !important;
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #0f172a;
+        }
+
+        .login-tagline {
+            margin-bottom: 28px !important;
+            font-size: 1rem;
+            line-height: 1.85;
+            color: #64748b !important;
+        }
+
+        .login-form-username,
+        .login-form-password {
+            margin-bottom: 16px !important;
+        }
+
+        #username,
+        .login-form-password .input-group {
+            height: 52px;
+        }
+
+        #username {
+            padding-inline: 18px;
+            border: 1px solid rgba(203, 213, 225, 0.95);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .login-form-password #password {
+            height: 52px;
+            padding-inline: 18px;
+        }
+
+        .toggle-sensitive-btn {
+            width: 52px;
+            min-width: 52px;
+            height: 52px;
+        }
+
+        .login-form-submit {
+            margin-top: 22px !important;
+            margin-bottom: 18px !important;
+        }
+
+        #loginbtn {
+            height: 52px;
+            min-height: 52px;
+            font-size: 1.02rem;
+            font-weight: 700;
+            box-shadow: 0 10px 24px rgb(19 116 205 / 24%);
+        }
+
+        .login-form-forgotpassword {
+            margin: 4px 0 24px !important;
+        }
+
+        .login-divider {
+            margin: 20px 0 !important;
+        }
+
+        .login-identityproviders .login-heading {
+            margin-bottom: 16px !important;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .login-identityproviders .btn {
+            min-height: 50px;
+            font-size: 0.96rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.84) !important;
+        }
+
+        .loginform > .d-flex {
+            margin-top: 8px;
+            justify-content: center !important;
+        }
+
+        .loginform > .d-flex > .btn.btn-secondary {
+            min-height: 38px;
+            padding: 0 18px;
+            border-radius: 14px !important;
+            background: rgb(226 232 240 / 92%);
+            font-size: .84rem;
+        }
+    }
+}
+
+/* ==========================================================================
+   Salek desktop login - final approved design
+   Applies only from 768px and above.
+   ========================================================================== */
+@media (min-width: 768px) {
+
+    body.pagelayout-login #page {
+        min-height: 100vh !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    body.pagelayout-login .login-wrapper {
+        min-height: 100vh !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 54px !important;
+        padding-right: 54px !important;
+    }
+
+    /* RTL / Farsi: place the complete login card on the physical right. */
+    html[dir="rtl"] body.pagelayout-login .login-wrapper {
+        justify-content: flex-start !important;
+    }
+
+    /* Main glass card. */
+    body.pagelayout-login .login-container {
+        width: 430px !important;
+        max-width: 430px !important;
+        min-width: 0 !important;
+
+        margin-bottom: 0 !important;
+
+        padding: 42px 38px 34px !important;
+
+        background: rgb(232 232 232 / 59%) !important;
+
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+
+        border: 1px solid rgb(255 255 255 / 24%) !important;
+        border-radius: 38px !important;
+
+        box-shadow: 0 24px 60px rgb(15 23 42 / 14%) !important;
+
+        text-align: center !important;
+    }
+
+    /* Logo. */
+    body.pagelayout-login #loginlogo {
+        height: auto !important;
+        margin: 0 auto 18px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    body.pagelayout-login #logoimage {
+        width: 104px !important;
+        height: 104px !important;
+        max-width: 104px !important;
+        max-height: 104px !important;
+
+        object-fit: contain !important;
+    }
+
+    /* Branding. */
+    body.pagelayout-login .login-heading {
+        margin-bottom: 8px !important;
+
+        text-align: center !important;
+
+        font-size: 2rem !important;
+        line-height: 1.25 !important;
+        font-weight: 700 !important;
+    }
+
+    body.pagelayout-login .login-tagline {
+        margin-bottom: 26px !important;
+
+        text-align: center !important;
+
+        font-size: .95rem !important;
+        line-height: 1.7 !important;
+    }
+
+    /* Username and password fields. */
+    body.pagelayout-login .login-form-username,
+    body.pagelayout-login .login-form-password {
+        margin-bottom: 14px !important;
+    }
+
+    body.pagelayout-login #username,
+    body.pagelayout-login .login-form-password .input-group {
+        height: 50px !important;
+        min-height: 50px !important;
+
+        border: 1px solid rgb(203 213 225 / 90%) !important;
+        border-radius: 25px !important;
+
+        background: rgb(255 255 255 / 74%) !important;
+
+        box-shadow: none !important;
+    }
+
+    body.pagelayout-login #username {
+        padding-inline: 16px !important;
+    }
+
+    body.pagelayout-login #username,
+    body.pagelayout-login #password {
+        color: #334155 !important;
+    }
+
+    body.pagelayout-login #username::placeholder,
+    body.pagelayout-login #password::placeholder {
+        color: #64748b !important;
+        opacity: 1 !important;
+    }
+
+    body.pagelayout-login #password {
+        height: 50px !important;
+        min-height: 50px !important;
+
+        padding-inline: 16px !important;
+
+        border: 0 !important;
+        border-radius: 0 !important;
+
+        background: transparent !important;
+
+        box-shadow: none !important;
+    }
+
+    /* Password show / hide control. */
+    body.pagelayout-login .toggle-sensitive-btn {
+        width: 50px !important;
+        min-width: 50px !important;
+        height: 50px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border: 0 !important;
+        border-radius: 0 !important;
+
+        background: transparent !important;
+        color: #64748b !important;
+
+        box-shadow: none !important;
+
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    body.pagelayout-login .toggle-sensitive-btn .icon,
+    body.pagelayout-login .toggle-sensitive-btn i,
+    body.pagelayout-login .toggle-sensitive-btn svg {
+        color: #64748b !important;
+        fill: currentColor !important;
+        opacity: 1 !important;
+    }
+
+    /* Primary login action. */
+    body.pagelayout-login .login-form-submit {
+        margin-top: 18px !important;
+        margin-bottom: 16px !important;
+    }
+
+    body.pagelayout-login #loginbtn {
+        width: 100% !important;
+
+        height: 50px !important;
+        min-height: 50px !important;
+
+        border: 0 !important;
+        border-radius: 25px !important;
+
+        background: #1374cd !important;
+        color: #fff !important;
+
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+
+        box-shadow: 0 8px 18px rgb(19 116 205 / 22%) !important;
+    }
+
+    /* Forgotten password.
+       Divider owns the vertical spacing below this section. */
+    body.pagelayout-login .login-form-forgotpassword {
+        margin: 2px 0 0 !important;
+        text-align: center !important;
+    }
+
+    /* Consistent spacing for every login divider. */
+    body.pagelayout-login .login-divider {
+        margin: 20px 0 !important;
+        padding: 0 !important;
+
+        border-color: rgb(148 163 184 / 28%) !important;
+    }
+
+    /* Microsoft 365 / identity provider. */
+    body.pagelayout-login .login-identityproviders {
+        width: 100% !important;
+
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+
+        text-align: center !important;
+    }
+
+    body.pagelayout-login .login-identityproviders .login-heading {
+        margin-top: 0 !important;
+        margin-bottom: 14px !important;
+
+        text-align: center !important;
+
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+    }
+
+    body.pagelayout-login .login-identityproviders .btn {
+        width: 82% !important;
+        max-width: 310px !important;
+        min-height: 48px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+
+        border: 1px solid rgb(203 213 225 / 90%) !important;
+        border-radius: 25px !important;
+
+        background: rgb(255 255 255 / 84%) !important;
+        color: #1e293b !important;
+
+        box-shadow: 0 1px 3px rgb(0 0 0 / 3%) !important;
+    }
+
+    body.pagelayout-login .login-identityproviders img {
+        display: inline-block !important;
+
+        width: 20px !important;
+        height: 20px !important;
+
+        margin: 0 !important;
+    }
+
+    /* Cookie notice wrapper. */
+    body.pagelayout-login .loginform > .d-flex {
+        width: 100% !important;
+        margin-top: 0 !important;
+
+        justify-content: center !important;
+    }
+
+    /* Cookie notice button. */
+    body.pagelayout-login .loginform > .d-flex > .btn.btn-secondary {
+        margin: 0 !important;
+
+        min-height: 36px !important;
+        padding: 0 16px !important;
+
+        border: 0 !important;
+        border-radius: 25px !important;
+
+        background: rgb(226 232 240 / 90%) !important;
+        color: #475569 !important;
+
+        box-shadow: none !important;
     }
 }

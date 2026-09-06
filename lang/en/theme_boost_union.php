@@ -358,6 +358,8 @@ $string['loginbackgroundimagesheading'] = 'Login page background images';
 // ... ... Setting: Login page background image.
 $string['loginbackgroundimage'] = 'Login page background images';
 $string['loginbackgroundimage_desc'] = 'The images to display as a background of the login page. One of these images will be picked randomly and shown when the user visits the login page. Please make sure not to use non-ASCII-characters in the filename if you want to display text for login background images.';
+$string['loginbackgroundimagemobile'] = 'Login page mobile background image';
+$string['loginbackgroundimagemobile_desc'] = 'Optional portrait background image for mobile login pages. Recommended size: 1080 × 1920 px (9:16). WebP is recommended for better performance. If no mobile image is uploaded, the regular login background image will continue to be used.';
 // ... ... Setting: Login page background image position.
 $string['loginbackgroundimagepositionsetting'] = 'Login page background image position';
 $string['loginbackgroundimagepositionsetting_desc'] = 'With this setting, you control the positioning of the login page background image within the browser window. The first value is the horizontal position, the second value is the vertical position.';
@@ -392,6 +394,9 @@ $string['loginpagetaglinesetting_desc'] = 'With this setting, you can control wh
 $string['loginpagelabel_welcome'] = 'Welcome!';
 $string['loginpagelabel_welcomeback'] = 'Welcome back!';
 $string['loginpagelabel_welcometo'] = 'Welcome to {$a}';
+$string['loginpagelabel_salek'] = 'Salek branding';
+$string['loginbrandtitle_salek'] = 'Salek Academy';
+$string['loginbrandsubtitle_salek'] = 'A smarter space for teaching, learning, and assessment';
 // ... ... Setting: Login logo max width.
 $string['loginlogomaxwidthsetting'] = 'Login logo max width';
 $string['loginlogomaxwidthsetting_desc'] = 'With this setting, you can restrict the maximum width of the logo on the login page. You can enter pixel-based values like 120px, but you can also enter a percentage-based value like 10%. If you do not enter any value, the logo will be scaled proportionally.';

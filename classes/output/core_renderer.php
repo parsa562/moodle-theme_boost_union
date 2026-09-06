@@ -1447,6 +1447,9 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     ? get_string('loginpagelabel_welcomeback', 'theme_boost_union')
                     : get_string('loginpagelabel_welcome', 'theme_boost_union');
                 break;
+            case THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_SALEK:
+                $context->loginheadingtext = get_string('loginbrandtitle_salek', 'theme_boost_union');
+                break;
             case THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_LOGINTOFULLNAME:
             default:
                 $context->loginheadingtext = get_string('loginto', 'core', $context->sitename);
@@ -1481,6 +1484,9 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     $context->logintaglinetext = $showwelcomeback
                         ? get_string('loginpagelabel_welcomeback', 'theme_boost_union')
                         : get_string('loginpagelabel_welcome', 'theme_boost_union');
+                    break;
+                case THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_SALEK:
+                    $context->logintaglinetext = get_string('loginbrandsubtitle_salek', 'theme_boost_union');
                     break;
                 case THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_WELCOME:
                 default:

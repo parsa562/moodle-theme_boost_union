@@ -966,6 +966,33 @@ function theme_boost_union_get_loginbackgroundimage_scss() {
 }
 
 /**
+ * Add the mobile login background image to SCSS.
+ *
+ * @return string
+ */
+function theme_boost_union_get_loginbackgroundimagemobile_scss() {
+    $theme = \core\output\theme_config::load('boost_union');
+
+    $url = $theme->setting_file_url(
+        'loginbackgroundimagemobile',
+        'loginbackgroundimagemobile'
+    );
+
+    if (empty($url)) {
+        return '';
+    }
+
+    $scss = '@media (max-width: 767.98px) {';
+    $scss .= 'body.pagelayout-login {';
+    $scss .= 'background-image: url("' . $url . '") !important;';
+    $scss .= 'background-position: center center;';
+    $scss .= '}';
+    $scss .= '}';
+
+    return $scss;
+}
+
+/**
  * Get the text that should be displayed for the randomly displayed background image on the login page.
  *
  * This function fetches only the single selected file record from the database instead of all files,

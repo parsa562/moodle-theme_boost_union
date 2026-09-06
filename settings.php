@@ -1108,6 +1108,21 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
+        // Setting: Login page mobile background image.
+        $name = 'theme_boost_union/loginbackgroundimagemobile';
+        $title = get_string('loginbackgroundimagemobile', 'theme_boost_union', null, true);
+        $description = get_string('loginbackgroundimagemobile_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configstoredfile(
+            $name,
+            $title,
+            $description,
+            'loginbackgroundimagemobile',
+            0,
+            ['maxfiles' => 1, 'accepted_types' => 'web_image']
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
         // Setting: Login page background image position.
         $name = 'theme_boost_union/loginbackgroundimageposition';
         $title = get_string('loginbackgroundimagepositionsetting', 'theme_boost_union', null, true);
@@ -1209,6 +1224,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_WELCOMEBACK =>
                 get_string('loginpagelabel_welcome', 'theme_boost_union') .
                         ' / ' . get_string('loginpagelabel_welcomeback', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_LOGINPAGELABEL_SALEK =>
+                get_string('loginpagelabel_salek', 'theme_boost_union'),
         ];
         $setting = new admin_setting_configselect(
             $name,

@@ -15,3 +15,7 @@ $string['homepagecontentmaxwidthsetting_desc'] = 'حداکثر عرض اختیا
 
 $string['navbarcontentmaxwidthsetting'] = 'حداکثر عرض محتوای نوار ناوبری';
 $string['navbarcontentmaxwidthsetting_desc'] = 'حداکثر عرض اختیاری برای محتوای داخل نوار ناوبری اصلی. اگر خالی بماند و عرض عمومی تنظیم شده باشد، از مقدار عمومی استفاده می‌شود؛ در غیر این صورت رفتار فعلی نوار ناوبری حفظ می‌شود.';
+
+$string['loginpagelabel_salek'] = 'برندینگ سالک';
+$string['loginbrandtitle_salek'] = 'آکادمی سالک';
+$string['loginbrandsubtitle_salek'] = 'یادگیری هدفمند، رشد ماندگار';
