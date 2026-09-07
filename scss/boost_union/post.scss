@@ -5860,3 +5860,36 @@ body.path-grade-report-grader {
         box-shadow: none !important;
     }
 }
+
+/* Flip only the login-page background in LTR languages.
+   The active desktop/mobile background is inherited automatically;
+   login content, logo and controls are not flipped. */
+html[dir="ltr"] body.pagelayout-login::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background: inherit;
+
+    transform: scaleX(-1);
+    transform-origin: center;
+
+    pointer-events: none;
+    z-index: 0;
+}
+
+html[dir="ltr"] body.pagelayout-login #page-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Salek: softer global focus style for interactive elements. */
+a:focus,
+button:focus,
+[role="button"]:focus,
+[tabindex]:not([tabindex="-1"]):focus {
+    outline: none !important;
+    box-shadow: 0 3px 4px 1px rgb(184 184 184 / 31%) !important;
+    background-color: transparent !important;
+}
