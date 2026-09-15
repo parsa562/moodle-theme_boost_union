@@ -5911,11 +5911,15 @@ button:focus,
     background-color: transparent !important;
 }
 
-/* Salek: keep the login card on the left in LTR mode. */
-html[dir="ltr"] body.pagelayout-login .login-container,
-html[dir="ltr"] body.pagelayout-login .loginform {
-    margin-left: 0 !important;
-    margin-right: auto !important;
+/* Salek: keep the login card on the left in LTR mode from tablet upward.
+ * Below 768px, keep the normal centered mobile layout.
+ */
+@include media-breakpoint-up(md) {
+    html[dir="ltr"] body.pagelayout-login .login-container,
+    html[dir="ltr"] body.pagelayout-login .loginform {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
 }
 
 /* Salek: boxed desktop navbar styling. */
@@ -6363,5 +6367,79 @@ html[dir="rtl"] #theme_boost-drawers-blocks {
 #theme_boost-drawers-blocks.show,
 html[dir="rtl"] #theme_boost-drawers-blocks.show {
     visibility: visible !important; /* stylelint-disable-line declaration-no-important */
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-30px -30px -30px -30px);
+    box-shadow: 0px 0px 18px 1px rgb(15 23 42 / 13%) !important;
+}
+
+
+/* Salek: blocks drawer visual design.
+ * Scoped only to the blocks drawer.
+ * Does not affect other Moodle drawers or blocks.
+ */
+
+#theme_boost-drawers-blocks {
+    background-color: #fcfcfc !important;
+    border-left: 1px solid #e2e8f0 !important;
+}
+
+#theme_boost-drawers-blocks.show {
+    box-shadow: 0px 0px 18px 1px rgb(15 23 42 / 13%) !important;
+}
+
+#theme_boost-drawers-blocks .drawercontent {
+    padding: 16px !important;
+}
+
+#theme_boost-drawers-blocks .block.card {
+    background-color: #ffffff !important;
+    border: 1px solid #eef2f6 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 6%) !important;
+    margin-bottom: 12px !important;
+}
+
+#theme_boost-drawers-blocks .block.card .card-body {
+    padding: 12px 14px !important;
+}
+
+#theme_boost-drawers-blocks .card-title {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+}
+
+#theme_boost-drawers-blocks .add_block_button .block-add {
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+}
+
+
+/* Salek: style add block button inside blocks drawer only. */
+#theme_boost-drawers-blocks .add_block_button .block-add {
+    background-color: #1877f2 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgb(24 119 242 / 25%) !important;
+}
+
+
+/* Salek: buttons inside blocks drawer cards. */
+#theme_boost-drawers-blocks .card-body .btn {
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+}
+
+#theme_boost-drawers-blocks .card-body .btn + .btn {
+    margin-inline-start: 8px !important;
 }
