@@ -5907,8 +5907,9 @@ button:focus,
 [role="button"]:focus,
 [tabindex]:not([tabindex="-1"]):focus {
     outline: none !important;
-    box-shadow: 0 3px 4px 1px rgb(184 184 184 / 31%) !important;
+    box-shadow: none !important;
     background-color: transparent !important;
+    color: #232323 !important;
 }
 
 /* Salek: keep the login card on the left in LTR mode from tablet upward.
@@ -6910,4 +6911,330 @@ $salek-message-card-shadow: 0 1px 3px rgb(15 23 42 / 6%);
     border-radius: 10px !important;
     box-shadow: 0 0 0 3px rgba(19,109,221,.18) !important;
     outline: none !important;
+}
+
+
+/* ==========================================================================
+   Salek: course index side menu redesign.
+   Integrated from the browser-tested console styles.
+   Every rule stays scoped beneath #theme_boost-drawers-courseindex and does
+   not affect the blocks drawer, the message drawer, or course page content.
+   ========================================================================== */
+
+#theme_boost-drawers-courseindex .courseindex {
+
+    /* ------------------------------------------------------
+       1. Structural wrappers.
+       ------------------------------------------------------ */
+    .courseindex-section {
+        background: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section[role="treeitem"]:focus {
+        outline: none !important; /* stylelint-disable-line declaration-no-important */
+        background: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       2. Top-level chapters.
+       ------------------------------------------------------ */
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"] {
+        transition: background-color 0.2s;
+        background-color: rgba(219, 225, 244, 0.58) !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 10px 14px !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: 8px !important; /* stylelint-disable-line declaration-no-important */
+        border: none !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+        font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0.95rem !important; /* stylelint-disable-line declaration-no-important */
+        color: #333 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"]:hover {
+        background-color: #eef1f6 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]),
+    .courseindex-section:not(.delegated-section) > .courseindex-item.pageitem[data-for="section_item"] {
+        background-color: #e8f0fe !important; /* stylelint-disable-line declaration-no-important */
+        /* The accent line stays on the physical right edge in both directions. */
+        /* rtl:ignore */
+        box-shadow: inset -4px 0 0 0 #1a73e8 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Recolor only text and icons, not status badges or completion indicators. */
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) a,
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) [data-for="section_title"],
+    .courseindex-section:not(.delegated-section) > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) .icon,
+    .courseindex-section:not(.delegated-section) > .courseindex-item.pageitem[data-for="section_item"] a,
+    .courseindex-section:not(.delegated-section) > .courseindex-item.pageitem[data-for="section_item"] [data-for="section_title"],
+    .courseindex-section:not(.delegated-section) > .courseindex-item.pageitem[data-for="section_item"] .icon {
+        color: #1a73e8 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       3. Activities and lesson wrappers under chapters.
+       ------------------------------------------------------ */
+    .courseindex-item[data-for="cm"]:not(.delegated-section .courseindex-item) {
+        padding-inline: 0;
+        margin-block: 5px;
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+        border: none !important; /* stylelint-disable-line declaration-no-important */
+        padding-top: 2px !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 2px !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0.9rem !important; /* stylelint-disable-line declaration-no-important */
+        color: #555 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /*
+     * Ordinary activities placed directly under top-level chapters
+     * (including General). Excludes lesson wrappers, everything inside
+     * delegated subsections, and the current activity which keeps its
+     * pageitem styling.
+     */
+    .courseindex-item[data-for="cm"]:not(.delegated-section .courseindex-item):not(:has(> .courseindex-section.delegated-section)):not(.pageitem) { /* stylelint-disable-line max-line-length */
+        background-color: #f6f6f6 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+        padding-top: 6px !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 6px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:not(.delegated-section .courseindex-item):not(:has(> .courseindex-section.delegated-section)):not(.pageitem):hover { /* stylelint-disable-line max-line-length */
+        background-color: #ededed !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:not(.delegated-section .courseindex-item):not(:has(> .courseindex-section.delegated-section)):hover { /* stylelint-disable-line max-line-length */
+        background-color: #f4f5f7 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       4. Lesson headings.
+       ------------------------------------------------------ */
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] {
+        border: none !important; /* stylelint-disable-line declaration-no-important */
+        padding-top: 6px !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 6px !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0.9rem !important; /* stylelint-disable-line declaration-no-important */
+        color: #555 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:hover {
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) {
+        margin-bottom: 8px;
+        background-color: rgba(228, 228, 228, 0.53) !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px 8px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) a,
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) [data-for="section_title"], /* stylelint-disable-line max-line-length */
+    .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:has([aria-expanded="true"]) .icon {
+        color: #1a73e8 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       5. Closed lesson cards.
+       ------------------------------------------------------ */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="false"]) { /* stylelint-disable-line max-line-length */
+        background: #f6f6f6 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 9px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="false"]):hover { /* stylelint-disable-line max-line-length */
+        background: #ededed !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="false"]) > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"], /* stylelint-disable-line max-line-length */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="false"]) > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:hover { /* stylelint-disable-line max-line-length */
+        background: transparent !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       6. Expanded lesson cards.
+       ------------------------------------------------------ */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="true"]), /* stylelint-disable-line max-line-length */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="true"]):hover { /* stylelint-disable-line max-line-length */
+        background: #fff !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid #e8edf5 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 14px !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: 0 1px 2px rgb(15 23 42 / 4%) !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="true"]) > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"], /* stylelint-disable-line max-line-length */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="true"]) > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:hover { /* stylelint-disable-line max-line-length */
+        background: #f0f0f0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 13px 13px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"] [aria-expanded="true"]) > .courseindex-section.delegated-section > .courseindex-sectioncontent { /* stylelint-disable-line max-line-length */
+        background: transparent !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 0 4px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       7. Activities inside lessons.
+       ------------------------------------------------------ */
+    .courseindex-section.delegated-section .courseindex-item[data-for="cm"] {
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+        border: none !important; /* stylelint-disable-line declaration-no-important */
+        padding-top: 6px !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 6px !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0.9rem !important; /* stylelint-disable-line declaration-no-important */
+        color: #555 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section.delegated-section .courseindex-item[data-for="cm"]:hover {
+        background-color: #f4f5f7 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-section.delegated-section .courseindex-item[data-for="cm"], /* stylelint-disable-line max-line-length */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-section.delegated-section .courseindex-item[data-for="cm"] .courseindex-link { /* stylelint-disable-line max-line-length */
+        color: #777 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /*
+     * The current activity inside a lesson keeps Moodle's filled
+     * primary background instead of the flat transparent styling.
+     */
+    .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"],
+    .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"]:hover,
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"], /* stylelint-disable-line max-line-length */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"]:hover { /* stylelint-disable-line max-line-length */
+        background-color: #e7edf387 !important; /* stylelint-disable-line declaration-no-important */
+        color: var(--bs-white) !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"] a,
+    .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"] .courseindex-link,
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"] .courseindex-link { /* stylelint-disable-line max-line-length */
+        color: var(--bs-white) !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       8. Drop-zone padding.
+       Moodle core adds 1em bottom padding to .dropready content.
+       dropready only exists while dragging in editing mode; the
+       empty-lesson drop target still needs usable space then, so
+       these reductions only apply outside editing mode.
+       ------------------------------------------------------ */
+    &:not(.editing) .courseindex-section.dropready:not(.delegated-section) > .courseindex-item-content {
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    &:not(.editing) .courseindex-section.delegated-section.dropready > .courseindex-item-content {
+        padding-bottom: 0.25em !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* ------------------------------------------------------
+       9. Empty lessons: same heading shape when open or closed.
+       ------------------------------------------------------ */
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section):not(:has(> .courseindex-section.delegated-section .courseindex-item[data-for="cm"])) { /* stylelint-disable-line max-line-length */
+        &,
+        &:hover {
+            padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 9px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"],
+        > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:hover {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        /*
+         * Empty content: collapse the blank strip without display:none so
+         * the collapse behaviour and drop-zone structure stay intact.
+         * Guarded to non-editing mode: while editing, Moodle uses this area
+         * as a drag-and-drop target and needs it to keep some size.
+         */
+        &:not(.editing *) > .courseindex-section.delegated-section > .courseindex-item-content,
+        &:not(.editing *) > .courseindex-section.delegated-section > .courseindex-sectioncontent {
+            height: 0 !important; /* stylelint-disable-line declaration-no-important */
+            min-height: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        /* Empty, unselected lessons do not turn blue when expanded. */
+        &:not(.pageitem):not(:has(> .courseindex-section.delegated-section > .courseindex-item.pageitem[data-for="section_item"])) { /* stylelint-disable-line max-line-length */
+            &,
+            &:hover {
+                border: none !important; /* stylelint-disable-line declaration-no-important */
+                box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+                background: #f6f6f6 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &:hover {
+                background: #ededed !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"],
+            > .courseindex-section.delegated-section > .courseindex-item[data-for="section_item"]:hover {
+                background: transparent !important; /* stylelint-disable-line declaration-no-important */
+                color: #555 !important; /* stylelint-disable-line declaration-no-important */
+
+                a,
+                [data-for="section_title"],
+                .icon {
+                    color: #555 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+        }
+    }
+
+    /* ------------------------------------------------------
+       10. Keyboard focus.
+       The theme's global focus rule sets background to transparent,
+       and section 1 clears outline on tree items; restore a visible
+       focus indicator scoped to this component only.
+       ------------------------------------------------------ */
+    .courseindex-section[role="treeitem"]:focus-visible,
+    .courseindex-item:focus-visible,
+    .courseindex-item a:focus-visible,
+    .courseindex-item .courseindex-chevron:focus-visible {
+        background-color: #eef5ff !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: 0 0 0 2px rgb(26 115 232 / 35%) !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 8px;
+    }
+}
+
+/* Salek: course index directional accent and drawer padding. */
+#theme_boost-drawers-courseindex {
+    .drawercontent {
+        padding: 16px !important;
+    }
+
+    .courseindex .courseindex-section:not(.delegated-section)
+    > .courseindex-item[data-for="section_item"] {
+        &:has([aria-expanded="true"]),
+        &.pageitem {
+            &:dir(ltr) {
+                /* rtl:ignore */
+                box-shadow: inset 4px 0 0 0 #1a73e8 !important;
+            }
+
+            &:dir(rtl) {
+                /* rtl:ignore */
+                box-shadow: inset -4px 0 0 0 #1a73e8 !important;
+            }
+        }
+    }
 }
