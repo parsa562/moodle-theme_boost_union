@@ -1026,6 +1026,10 @@
     /* The headingabove layout and the stacked layout only. */
     &.headingabove,
     &.stacked {
+        > .bucourseheader-shadow {
+            box-shadow: 0 .125rem .5rem rgba(0, 0, 0, .06);
+        }
+
         /* The course header icons bar. */
         .courseheadericonsbar {
             /* Push the iconsbar over the course image. */
@@ -1051,6 +1055,63 @@
 
     /* The stacked layout only. */
     &.stacked {
+        #courseheaderimage {
+            > .bucoursetitle-slot > .bucoursetitle {
+                max-inline-size: 100%;
+
+                &.title-size-small .page-header-headings h1 {
+                    font-size: clamp(1.5rem, calc(1.2rem + 1vw), 2rem);
+                    white-space: normal;
+                    overflow-wrap: anywhere;
+                }
+
+                &.title-size-medium .page-header-headings h1 {
+                    font-size: clamp(1.75rem, calc(1.35rem + 1.6vw), 2.5rem);
+                    white-space: normal;
+                    overflow-wrap: anywhere;
+                }
+
+                &.title-size-large .page-header-headings h1 {
+                    font-size: clamp(2rem, calc(1.45rem + 2.4vw), 3rem);
+                    white-space: normal;
+                    overflow-wrap: anywhere;
+                }
+            }
+
+            &.title-h-center > .bucoursetitle-slot > .bucoursetitle {
+                text-align: center;
+            }
+
+            &.title-h-end > .bucoursetitle-slot > .bucoursetitle {
+                text-align: end;
+            }
+
+            &.title-h-center > .bucoursetitle-slot > .bucoursetitle > .d-flex {
+                justify-content: center;
+            }
+
+            &.title-h-end > .bucoursetitle-slot > .bucoursetitle > .d-flex {
+                justify-content: flex-end;
+            }
+
+            &.title-v-middle > .bucoursetitle-slot,
+            &.title-v-bottom > .bucoursetitle-slot {
+                display: flex;
+                flex-direction: column;
+                flex: 1 1 auto;
+                min-height: 0;
+                inline-size: 100%;
+            }
+
+            &.title-v-middle > .bucoursetitle-slot {
+                justify-content: center;
+            }
+
+            &.title-v-bottom > .bucoursetitle-slot {
+                justify-content: flex-end;
+            }
+        }
+
         /* The BU course title (with shortname and category), but only if we have a background image. */
         #courseheaderimage.withimage .bucoursetitle {
             /* Set the text style for correct readability on the background image. */
@@ -1091,6 +1152,117 @@
                     padding: 2px 5px;
                     border-radius: 5px;
                 }
+            }
+
+            &.textonimage-lightgradient {
+                color: white;
+            }
+
+            &.textonimage-darkgradient {
+                color: black;
+            }
+        }
+
+        #courseheaderimage.withimage .bucoursetitle.title-color-custom {
+            &,
+            .page-header-headings h1,
+            .shortname,
+            .categoryname {
+                color: var(--bu-title-color);
+            }
+        }
+
+        #courseheaderimage.withimage.title-background-explicit .bucoursetitle {
+            &.textonimage-lightbg,
+            &.textonimage-darkbg {
+                .page-header-headings h1,
+                .shortname,
+                .categoryname {
+                    background-color: transparent;
+                }
+            }
+        }
+
+        #courseheaderimage.withimage.title-background-solid,
+        #courseheaderimage.withimage.title-background-gradient {
+            position: relative;
+            isolation: isolate;
+
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                pointer-events: none;
+                z-index: -1;
+                /* rtl:ignore */
+                background: linear-gradient(
+                    var(--bu-background-angle),
+                    rgba(var(--bu-background-rgb), var(--bu-background-opacity)) 0%,
+                    rgba(var(--bu-background-rgb), var(--bu-background-opacity)) var(--bu-background-coverage),
+                    rgba(var(--bu-background-rgb), 0) var(--bu-background-fadeend)
+                );
+            }
+
+            &.title-background-centered::before {
+                /* rtl:ignore */
+                background: radial-gradient(
+                    ellipse farthest-corner at center,
+                    rgba(var(--bu-background-rgb), var(--bu-background-opacity)) 0%,
+                    rgba(var(--bu-background-rgb), var(--bu-background-opacity)) var(--bu-background-coverage),
+                    rgba(var(--bu-background-rgb), 0) var(--bu-background-fadeend)
+                );
+            }
+        }
+
+        #courseheaderimage.withimage:not(.title-background-explicit):has(> .bucoursetitle-slot > .textonimage-lightgradient),
+        #courseheaderimage.withimage:not(.title-background-explicit):has(> .bucoursetitle-slot > .textonimage-darkgradient) {
+            position: relative;
+            isolation: isolate;
+            --bu-gradient-x: 0%;
+            --bu-gradient-y: 0%;
+
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                pointer-events: none;
+                z-index: -1;
+                /* rtl:ignore */
+                background: radial-gradient(
+                    ellipse var(--bu-gradient-radiusx) var(--bu-gradient-radiusy)
+                    at var(--bu-gradient-x) var(--bu-gradient-y),
+                    rgba(var(--bu-gradient-rgb), var(--bu-gradient-opacity)) 0%,
+                    rgba(var(--bu-gradient-rgb), var(--bu-gradient-opacity25)) 25%,
+                    rgba(var(--bu-gradient-rgb), var(--bu-gradient-opacity55)) 55%,
+                    rgba(var(--bu-gradient-rgb), 0) 100%
+                );
+            }
+
+            &.title-h-end {
+                --bu-gradient-x: 100%;
+            }
+
+            html[dir="rtl"] & {
+                --bu-gradient-x: 100%;
+            }
+
+            html[dir="rtl"] &.title-h-end {
+                --bu-gradient-x: 0%;
+            }
+
+            &.title-h-center,
+            html[dir="rtl"] &.title-h-center {
+                --bu-gradient-x: 50%;
+            }
+
+            &.title-v-middle {
+                --bu-gradient-y: 50%;
+            }
+
+            &.title-v-bottom {
+                --bu-gradient-y: 100%;
             }
         }
     }
@@ -6230,7 +6402,7 @@ button:focus,
 
 /* Salek: align Dashboard content with the normal page width. */
 @include media-breakpoint-up(md) {
-    #page-my-index #page.drawers div[role="main"] {
+    body.pagelayout-mydashboard #page.drawers div[role="main"] {
         padding-left: 0;
         padding-right: 0;
     }

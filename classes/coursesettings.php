@@ -307,6 +307,39 @@ class coursesettings {
                 'importtransfercontrolcapa' => 'theme/boost_union:transfercourseheaderduringimport',
                 'restorecontrolledby' => 'theme_boost_union_restore_course_header_settings',
             ],
+            'courseheadertitlehorizontalposition' => [
+                'options' => self::get_options_with_global_default(
+                    'courseheadertitlehorizontalposition',
+                    self::get_courseheadertitlehorizontalposition_options()
+                ),
+                'helpbutton' => true,
+                'hide_if' => self::get_hide_if_with_global_default('courseheaderenabled'),
+                'importtransfercontrolledby' => 'courseheaderimporttransfer',
+                'importtransfercontrolcapa' => 'theme/boost_union:transfercourseheaderduringimport',
+                'restorecontrolledby' => 'theme_boost_union_restore_course_header_settings',
+            ],
+            'courseheadertitleverticalposition' => [
+                'options' => self::get_options_with_global_default(
+                    'courseheadertitleverticalposition',
+                    self::get_courseheadertitleverticalposition_options()
+                ),
+                'helpbutton' => true,
+                'hide_if' => self::get_hide_if_with_global_default('courseheaderenabled'),
+                'importtransfercontrolledby' => 'courseheaderimporttransfer',
+                'importtransfercontrolcapa' => 'theme/boost_union:transfercourseheaderduringimport',
+                'restorecontrolledby' => 'theme_boost_union_restore_course_header_settings',
+            ],
+            'courseheadertitlesize' => [
+                'options' => self::get_options_with_global_default(
+                    'courseheadertitlesize',
+                    self::get_courseheadertitlesize_options()
+                ),
+                'helpbutton' => true,
+                'hide_if' => self::get_hide_if_with_global_default('courseheaderenabled'),
+                'importtransfercontrolledby' => 'courseheaderimporttransfer',
+                'importtransfercontrolcapa' => 'theme/boost_union:transfercourseheaderduringimport',
+                'restorecontrolledby' => 'theme_boost_union_restore_course_header_settings',
+            ],
             'courseheaderimageposition' => [
                 'options' => self::get_options_with_global_default(
                     'courseheaderimageposition',
@@ -448,12 +481,70 @@ class coursesettings {
                     get_string('courseheadertextonimagestyle_lightshadow', 'theme_boost_union'),
             THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTBG =>
                     get_string('courseheadertextonimagestyle_lightbg', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTGRADIENT =>
+                get_string('courseheadertextonimagestyle_lightgradient', 'theme_boost_union'),
             THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARK =>
                     get_string('courseheadertextonimagestyle_dark', 'theme_boost_union'),
             THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKSHADOW =>
                     get_string('courseheadertextonimagestyle_darkshadow', 'theme_boost_union'),
             THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKBG =>
                     get_string('courseheadertextonimagestyle_darkbg', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKGRADIENT =>
+                get_string('courseheadertextonimagestyle_darkgradient', 'theme_boost_union'),
+        ];
+    }
+
+    /**
+     * Get the options array for course header title horizontal position setting.
+     *
+     * @return array The options array for course header title horizontal position.
+     */
+    public static function get_courseheadertitlehorizontalposition_options() {
+        return [
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_DEFAULT =>
+                get_string('courseheadertitlehorizontalposition_default', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_START =>
+                get_string('courseheadertitlehorizontalposition_start', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_CENTER =>
+                get_string('courseheadertitlehorizontalposition_center', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_END =>
+                get_string('courseheadertitlehorizontalposition_end', 'theme_boost_union'),
+        ];
+    }
+
+    /**
+     * Get the options array for course header title vertical position setting.
+     *
+     * @return array The options array for course header title vertical position.
+     */
+    public static function get_courseheadertitleverticalposition_options() {
+        return [
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_DEFAULT =>
+                get_string('courseheadertitleverticalposition_default', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_TOP =>
+                get_string('courseheadertitleverticalposition_top', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_MIDDLE =>
+                get_string('courseheadertitleverticalposition_middle', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_BOTTOM =>
+                get_string('courseheadertitleverticalposition_bottom', 'theme_boost_union'),
+        ];
+    }
+
+    /**
+     * Get the options array for course header title size setting.
+     *
+     * @return array The options array for course header title size.
+     */
+    public static function get_courseheadertitlesize_options() {
+        return [
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_DEFAULT =>
+                get_string('courseheadertitlesize_default', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_SMALL =>
+                get_string('courseheadertitlesize_small', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_MEDIUM =>
+                get_string('courseheadertitlesize_medium', 'theme_boost_union'),
+            THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_LARGE =>
+                get_string('courseheadertitlesize_large', 'theme_boost_union'),
         ];
     }
 
@@ -616,6 +707,32 @@ class coursesettings {
 
             // If the value is not in the available layouts, fall back to global setting.
             if (!array_key_exists($value, $availablelayouts)) {
+                return get_config('theme_boost_union', $name);
+            }
+        }
+
+        // Validate only the new title settings against their allowlists.
+        if (
+            $name === 'courseheadertitlehorizontalposition' ||
+            $name === 'courseheadertitleverticalposition' ||
+            $name === 'courseheadertitlesize'
+        ) {
+            switch ($name) {
+                case 'courseheadertitlehorizontalposition':
+                    $options = self::get_courseheadertitlehorizontalposition_options();
+                    break;
+                case 'courseheadertitleverticalposition':
+                    $options = self::get_courseheadertitleverticalposition_options();
+                    break;
+                case 'courseheadertitlesize':
+                    $options = self::get_courseheadertitlesize_options();
+                    break;
+                default:
+                    $options = [];
+                    break;
+            }
+
+            if (!array_key_exists($value, $options)) {
                 return get_config('theme_boost_union', $name);
             }
         }

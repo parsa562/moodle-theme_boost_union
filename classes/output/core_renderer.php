@@ -499,6 +499,11 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 } else {
                     // Set a marker that course header is enabled.
                     $header->courseheaderenabled = true;
+                    $courseheadershadow = get_config('theme_boost_union', 'courseheadershadow');
+                    if (!in_array($courseheadershadow, ['none', 'subtle'], true)) {
+                        $courseheadershadow = 'none';
+                    }
+                    $header->courseheadershadow = $courseheadershadow === 'subtle';
                     // Set the course header image url (might be empty if background type allows it).
                     $header->courseheaderimageurl = $courseheaderimageurl;
                     // Additionally, get the course header height.
@@ -557,26 +562,156 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     $header->courseheaderborderclasses = $borderclasses;
                     // Additionally, set text on image style classes based on setting.
                     $courseheadertextonimagestyle = coursesettings::get_config_with_course_override('courseheadertextonimagestyle');
-                    switch ($courseheadertextonimagestyle) {
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHT:
-                            $header->textonimagestyle = 'textonimage-light';
-                            break;
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTSHADOW:
-                            $header->textonimagestyle = 'textonimage-lightshadow';
-                            break;
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTBG:
-                            $header->textonimagestyle = 'textonimage-lightbg';
-                            break;
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARK:
-                            $header->textonimagestyle = 'textonimage-dark';
-                            break;
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKSHADOW:
-                            $header->textonimagestyle = 'textonimage-darkshadow';
-                            break;
-                        case THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKBG:
-                            $header->textonimagestyle = 'textonimage-darkbg';
-                            break;
+                    $textonimagestyleclasses = [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHT => 'textonimage-light',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTSHADOW => 'textonimage-lightshadow',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTBG => 'textonimage-lightbg',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTGRADIENT => 'textonimage-lightgradient',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARK => 'textonimage-dark',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKSHADOW => 'textonimage-darkshadow',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKBG => 'textonimage-darkbg',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKGRADIENT => 'textonimage-darkgradient',
+                    ];
+                    $header->textonimagestyle = $textonimagestyleclasses[$courseheadertextonimagestyle] ?? 'textonimage-light';
+
+                    $backgroundtype = get_config('theme_boost_union', 'courseheaderbackgroundtype');
+                    if (!in_array($backgroundtype, ['existing', 'none', 'solid', 'gradient'], true)) {
+                        $backgroundtype = 'existing';
                     }
+                    $stackedwithimage = !empty($courseheaderimageurl) &&
+                            coursesettings::get_config_with_course_override('courseheaderlayout') ===
+                            THEME_BOOST_UNION_SETTING_COURSEHEADERLAYOUT_STACKED;
+                    $header->courseheaderbackgroundexplicit = $stackedwithimage && $backgroundtype !== 'existing';
+                    $titlecolor = (string)get_config('theme_boost_union', 'courseheadertitlecolor');
+                    if ($stackedwithimage && preg_match('/^#[0-9a-fA-F]{6}$/D', $titlecolor)) {
+                        $header->courseheadertitlecolor = $titlecolor;
+                    }
+
+                    $header->courseheadergradient = !$header->courseheaderbackgroundexplicit &&
+                            !empty($courseheaderimageurl) && in_array($courseheadertextonimagestyle, [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTGRADIENT,
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_DARKGRADIENT,
+                    ], true);
+                    if ($header->courseheadergradient) {
+                        $gradientcolor = (string)get_config('theme_boost_union', 'courseheadergradientcolor');
+                        if (!preg_match('/^#[0-9a-fA-F]{6}$/D', $gradientcolor)) {
+                            $gradientcolor = $courseheadertextonimagestyle ===
+                                    THEME_BOOST_UNION_SETTING_COURSEHEADERTEXTONIMAGESTYLE_LIGHTGRADIENT ? '#000000' : '#ffffff';
+                        }
+                        $header->courseheadergradientrgb = implode(', ', [
+                            hexdec(substr($gradientcolor, 1, 2)),
+                            hexdec(substr($gradientcolor, 3, 2)),
+                            hexdec(substr($gradientcolor, 5, 2)),
+                        ]);
+                        $gradientopacity = (string)get_config('theme_boost_union', 'courseheadergradientopacity');
+                        if (!preg_match('/^(?:[0-9]|[1-9][0-9]|100)$/D', $gradientopacity)) {
+                            $gradientopacity = '70';
+                        }
+                        $gradientcoverage = (string)get_config('theme_boost_union', 'courseheadergradientcoverage');
+                        if (!preg_match('/^(?:[2-9][0-9]|1[01][0-9]|120)$/D', $gradientcoverage)) {
+                            $gradientcoverage = '65';
+                        }
+                        $header->courseheadergradientopacity = number_format((int)$gradientopacity / 100, 4, '.', '');
+                        $header->courseheadergradientopacity25 = number_format((int)$gradientopacity / 100 * 0.81, 4, '.', '');
+                        $header->courseheadergradientopacity55 = number_format((int)$gradientopacity / 100 * 0.4, 4, '.', '');
+                        $header->courseheadergradientradiusx = (int)$gradientcoverage;
+                        $header->courseheadergradientradiusy = number_format((int)$gradientcoverage * 1.3, 1, '.', '');
+                    }
+
+                    // Additionally, set title position and title size classes for stacked layout styling.
+                    $courseheadertitlehorizontalposition =
+                            coursesettings::get_config_with_course_override('courseheadertitlehorizontalposition');
+                    $titlehorizontalclasses = [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_START => 'title-h-start',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_CENTER => 'title-h-center',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_END => 'title-h-end',
+                    ];
+                    $header->courseheadertitlehorizontalclass =
+                            $titlehorizontalclasses[$courseheadertitlehorizontalposition] ?? '';
+
+                    // Keep me-auto as default and override only for explicit center/end alignments.
+                    $titlecontextclasses = [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_CENTER => 'mx-auto',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_END => 'ms-auto',
+                    ];
+                    $header->courseheadertitlecontextclass =
+                            $titlecontextclasses[$courseheadertitlehorizontalposition] ?? 'me-auto';
+
+                    $courseheadertitleverticalposition =
+                            coursesettings::get_config_with_course_override('courseheadertitleverticalposition');
+                    $titleverticalclasses = [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_TOP => 'title-v-top',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_MIDDLE => 'title-v-middle',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLEPOSITION_BOTTOM => 'title-v-bottom',
+                    ];
+                    $header->courseheadertitleverticalclass = $titleverticalclasses[$courseheadertitleverticalposition] ?? '';
+
+                    $backgroundclasses = ['solid' => 'title-background-solid', 'gradient' => 'title-background-gradient'];
+                    $header->courseheaderbackgroundclass = '';
+                    if ($header->courseheaderbackgroundexplicit && isset($backgroundclasses[$backgroundtype])) {
+                        $header->courseheaderbackgroundclass = $backgroundclasses[$backgroundtype];
+                        $backgroundcolors = [
+                            'white' => '#ffffff',
+                            'lightgray' => '#f1f3f5',
+                            'gray' => '#808080',
+                            'darkgray' => '#343a40',
+                            'black' => '#000000',
+                        ];
+                        $backgroundpreset = get_config('theme_boost_union', 'courseheaderbackgroundpreset');
+                        $backgroundcolor = $backgroundcolors[$backgroundpreset] ?? '';
+                        if ($backgroundpreset === 'custom') {
+                            $backgroundcolor = (string)get_config('theme_boost_union', 'courseheaderbackgroundcolor');
+                        }
+                        if (!preg_match('/^#[0-9a-fA-F]{6}$/D', $backgroundcolor)) {
+                            $backgroundcolor = strpos($header->textonimagestyle, 'textonimage-dark') === 0 ?
+                                    '#ffffff' : '#000000';
+                        }
+                        $header->courseheaderbackgroundrgb = implode(', ', [
+                            hexdec(substr($backgroundcolor, 1, 2)),
+                            hexdec(substr($backgroundcolor, 3, 2)),
+                            hexdec(substr($backgroundcolor, 5, 2)),
+                        ]);
+                        $backgroundnumbers = [
+                            'opacity' => [70, 0],
+                            'coverage' => [35, 0],
+                            'fadewidth' => [35, 1],
+                        ];
+                        foreach ($backgroundnumbers as $suffix => [$defaultvalue, $minimum]) {
+                            $value = (string)get_config('theme_boost_union', 'courseheaderbackground' . $suffix);
+                            $backgroundnumbers[$suffix] = preg_match('/^(?:0|[1-9][0-9]?|100)$/D', $value) &&
+                                    (int)$value >= $minimum ? (int)$value : $defaultvalue;
+                        }
+                        $header->courseheaderbackgroundopacity = number_format($backgroundnumbers['opacity'] / 100, 2, '.', '');
+                        $header->courseheaderbackgroundcoverage = $backgroundnumbers['coverage'];
+                        $header->courseheaderbackgroundfadeend = $backgroundtype === 'solid' ?
+                                $backgroundnumbers['coverage'] : min(100, $backgroundnumbers['coverage'] +
+                                $backgroundnumbers['fadewidth']);
+                        $horizontal = $header->courseheadertitlehorizontalclass === 'title-h-center' ? 'center' :
+                                ($header->courseheadertitlehorizontalclass === 'title-h-end' ? 'end' : 'start');
+                        if ($horizontal !== 'center') {
+                            $horizontal = ($horizontal === 'start') !== right_to_left() ? 'left' : 'right';
+                        }
+                        $vertical = $header->courseheadertitleverticalclass === 'title-v-middle' ? 'middle' :
+                                ($header->courseheadertitleverticalclass === 'title-v-bottom' ? 'bottom' : 'top');
+                        $backgroundangles = [
+                            'left' => ['top' => 135, 'middle' => 90, 'bottom' => 45],
+                            'right' => ['top' => 225, 'middle' => 270, 'bottom' => 315],
+                            'center' => ['top' => 180, 'middle' => 180, 'bottom' => 0],
+                        ];
+                        $header->courseheaderbackgroundangle = $backgroundangles[$horizontal][$vertical];
+                        if ($horizontal === 'center' && $vertical === 'middle') {
+                            $header->courseheaderbackgroundclass .= ' title-background-centered';
+                        }
+                    }
+
+                    $courseheadertitlesize = coursesettings::get_config_with_course_override('courseheadertitlesize');
+                    $titlesizeclasses = [
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_SMALL => 'title-size-small',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_MEDIUM => 'title-size-medium',
+                        THEME_BOOST_UNION_SETTING_COURSEHEADERTITLESIZE_LARGE => 'title-size-large',
+                    ];
+                    $header->courseheadertitlesizeclass = $titlesizeclasses[$courseheadertitlesize] ?? '';
+
                     // Additionally, determine the partial template for the course header layout.
                     $courseheaderlayout = coursesettings::get_config_with_course_override('courseheaderlayout');
                     switch ($courseheaderlayout) {

@@ -40,24 +40,39 @@
     {{#showiconsbar}}
         {{> theme_boost_union/full_header-chunk-iconsbar }}
     {{/showiconsbar}}
-    <div id="courseheaderimage" class="d-flex flex-column p-3 {{#showiconsbar}}pt-5{{/showiconsbar}} rounded{{#showcourseprogress}}{{#hasprogress}}{{#progressstyleasbar}}-top border-bottom-0{{/progressstyleasbar}}{{/hasprogress}}{{/showcourseprogress}} {{{courseheadercanvasclasses}}} {{{courseheaderborderclasses}}}"
+    {{#courseheadershadow}}<div class="bucourseheader-shadow rounded">{{/courseheadershadow}}
+    <div id="courseheaderimage" class="d-flex flex-column p-3 {{#showiconsbar}}pt-5{{/showiconsbar}} rounded{{#showcourseprogress}}{{#hasprogress}}{{#progressstyleasbar}}-top border-bottom-0{{/progressstyleasbar}}{{/hasprogress}}{{/showcourseprogress}} {{{courseheadercanvasclasses}}} {{{courseheaderborderclasses}}} {{{courseheadertitlehorizontalclass}}} {{{courseheadertitleverticalclass}}} {{#courseheaderbackgroundexplicit}}title-background-explicit{{/courseheaderbackgroundexplicit}} {{courseheaderbackgroundclass}}"
             style="{{#courseheaderimageurl}}background-image: url('{{{courseheaderimageurl}}}');{{/courseheaderimageurl}}
                 {{#courseheaderheight}}min-height: {{{.}}};{{/courseheaderheight}}
-                {{#courseheaderimageposition}}background-position: {{{.}}};{{/courseheaderimageposition}}">
-        <div class="bucoursetitle {{#courseheaderimageurl}}{{textonimagestyle}}{{/courseheaderimageurl}}">
-            {{#showshortname}}
-                {{> theme_boost_union/full_header-chunk-shortname }}
-            {{/showshortname}}
-            <div class="d-flex align-items-center">
-                {{#contextheader}}
-                    <div class="me-auto d-flex flex-column">
-                        {{{contextheader}}}
-                    </div>
-                {{/contextheader}}
+                {{#courseheaderimageposition}}background-position: {{{.}}};{{/courseheaderimageposition}}
+                {{#courseheadergradient}}--bu-gradient-rgb: {{courseheadergradientrgb}};
+                    --bu-gradient-opacity: {{courseheadergradientopacity}};
+                    --bu-gradient-opacity25: {{courseheadergradientopacity25}};
+                    --bu-gradient-opacity55: {{courseheadergradientopacity55}};
+                    --bu-gradient-radiusx: {{courseheadergradientradiusx}}%;
+                    --bu-gradient-radiusy: {{courseheadergradientradiusy}}%;{{/courseheadergradient}}
+                {{#courseheadertitlecolor}}--bu-title-color: {{courseheadertitlecolor}};{{/courseheadertitlecolor}}
+                {{#courseheaderbackgroundclass}}--bu-background-rgb: {{courseheaderbackgroundrgb}};
+                    --bu-background-opacity: {{courseheaderbackgroundopacity}};
+                    --bu-background-coverage: {{courseheaderbackgroundcoverage}}%;
+                    --bu-background-fadeend: {{courseheaderbackgroundfadeend}}%;
+                    --bu-background-angle: {{courseheaderbackgroundangle}}deg;{{/courseheaderbackgroundclass}}">
+        <div class="bucoursetitle-slot">
+            <div class="bucoursetitle {{#courseheaderimageurl}}{{textonimagestyle}}{{/courseheaderimageurl}} {{{courseheadertitlesizeclass}}} {{#courseheadertitlecolor}}title-color-custom{{/courseheadertitlecolor}}">
+                {{#showshortname}}
+                    {{> theme_boost_union/full_header-chunk-shortname }}
+                {{/showshortname}}
+                <div class="d-flex align-items-center">
+                    {{#contextheader}}
+                        <div class="{{{courseheadertitlecontextclass}}} bucontextheader-wrap d-flex flex-column">
+                            {{{contextheader}}}
+                        </div>
+                    {{/contextheader}}
+                </div>
+                {{#showcoursecategory}}
+                    {{> theme_boost_union/full_header-chunk-coursecategory }}
+                {{/showcoursecategory}}
             </div>
-            {{#showcoursecategory}}
-                {{> theme_boost_union/full_header-chunk-coursecategory }}
-            {{/showcoursecategory}}
         </div>
         <div class="mt-auto d-flex justify-content-between w-100">
             {{#showcoursefields}}
@@ -79,4 +94,5 @@
             {{/progressstyleasbar}}
         {{/hasprogress}}
     {{/showcourseprogress}}
+    {{#courseheadershadow}}</div>{{/courseheadershadow}}
 </div>
