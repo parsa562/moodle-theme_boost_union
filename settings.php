@@ -184,7 +184,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Prepare regular expression for an optional general width value.
         // Accepts percent, viewport width, 3-4 digit pixel values, or an empty value.
-        $widthoremptyregex = '/^$|^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
+        // The whole value is anchored so that trailing input cannot reach the generated SCSS.
+        $widthoremptyregex = '/^(?:(?:\d{1,2}|100)(?:%|vw)|\d{3,4}px)?$/D';
 
         // Prepare regular expression for checking if the value is a percent number (from 0% to 100%) or a pixel number
         // (with 2 or 3 digits) or a viewport width number (from 0 to 100). Additionally the field can be left blank.

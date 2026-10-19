@@ -4953,9 +4953,11 @@ body.path-grade-report-grader {
 
 /* ==========================================================================
    Salek mobile login redesign
+   Applies only below 768px (Bootstrap 5: media-breakpoint-down(md)),
+   matching the mobile refinements below and the desktop design from 768px.
    ========================================================================== */
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
     body.pagelayout-login {
         .login-wrapper {
             min-height: 100dvh;
@@ -5890,6 +5892,13 @@ body.path-grade-report-grader {
         opacity: 1 !important;
     }
 
+    /* Keep a visible focus state; the field rules above remove it with !important. */
+    body.pagelayout-login #username:focus,
+    body.pagelayout-login .login-form-password .input-group:focus-within {
+        border-color: #1374cd !important;
+        box-shadow: 0 0 0 3px rgb(19 116 205 / 14%) !important;
+    }
+
     body.pagelayout-login #password {
         height: 50px !important;
         min-height: 50px !important;
@@ -6073,15 +6082,28 @@ html[dir="ltr"] body.pagelayout-login #page-wrapper {
 }
 
 
-/* Salek: softer global focus style for interactive elements. */
-a:focus,
-button:focus,
-[role="button"]:focus,
-[tabindex]:not([tabindex="-1"]):focus {
-    outline: none !important;
-    box-shadow: none !important;
-    background-color: transparent !important;
-    color: #232323 !important;
+/* Salek: softer global focus style for interactive elements.
+   Only focus that the browser does not mark as :focus-visible (typically after
+   a mouse click or touch) loses its ring. Keyboard focus keeps Moodle's
+   accessible focus styles, and buttons keep their own colours while focused. */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+[tabindex]:not([tabindex="-1"]):focus:not(:focus-visible) {
+    outline: none !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* Moodle core highlights plain links on every :focus. Remove that highlight
+   for non-keyboard focus only, so a clicked link does not stay highlighted. */
+.aalink,
+#page-footer a:not([class]),
+.arrow_link,
+a:not([class]),
+.activityinstance > a {
+    &:focus:not(:focus-visible) {
+        background-color: transparent;
+    }
 }
 
 /* Salek: keep the login card on the left in LTR mode from tablet upward.
@@ -7178,8 +7200,10 @@ $salek-message-card-shadow: 0 1px 3px rgb(15 23 42 / 6%);
         background-color: #ededed !important; /* stylelint-disable-line declaration-no-important */
     }
 
+    /* Ordinary activities get their hover background from the rule above.
+       The current activity keeps Moodle's filled primary background on hover,
+       because its link text stays light. */
     .courseindex-item[data-for="cm"]:not(.delegated-section .courseindex-item):not(:has(> .courseindex-section.delegated-section)):hover { /* stylelint-disable-line max-line-length */
-        background-color: #f4f5f7 !important; /* stylelint-disable-line declaration-no-important */
         border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
     }
 
@@ -7281,21 +7305,21 @@ $salek-message-card-shadow: 0 1px 3px rgb(15 23 42 / 6%);
     }
 
     /*
-     * The current activity inside a lesson keeps Moodle's filled
-     * primary background instead of the flat transparent styling.
+     * The current activity inside a lesson uses a light tinted background
+     * with dark text, so it stays readable and distinct from its siblings.
      */
     .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"],
     .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"]:hover,
     .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"], /* stylelint-disable-line max-line-length */
     .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"]:hover { /* stylelint-disable-line max-line-length */
         background-color: #e7edf387 !important; /* stylelint-disable-line declaration-no-important */
-        color: var(--bs-white) !important; /* stylelint-disable-line declaration-no-important */
+        color: #1e293b !important; /* stylelint-disable-line declaration-no-important */
     }
 
     .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"] a,
     .courseindex-section.delegated-section .courseindex-item.pageitem[data-for="cm"] .courseindex-link,
     .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) .courseindex-item.pageitem[data-for="cm"] .courseindex-link { /* stylelint-disable-line max-line-length */
-        color: var(--bs-white) !important; /* stylelint-disable-line declaration-no-important */
+        color: #1e293b !important; /* stylelint-disable-line declaration-no-important */
     }
 
     /* ------------------------------------------------------
