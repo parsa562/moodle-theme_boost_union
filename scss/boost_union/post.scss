@@ -4787,6 +4787,82 @@ body.cm-type-qbank {
     }
 }
 
+/* Salek: calmer navbar user area (notifications, messages, avatar, edit mode).
+   Shape and layout rules apply to every navbar colour; colours that assume a
+   light background are limited to the light navbar (.bg-body) further below. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    /* Outline icons: Font Awesome's regular (400) style instead of solid. */
+    .popover-region-toggle .icon {
+        font-size: 18px;
+        font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */
+        transition: color .15s ease;
+    }
+
+    /* Messages: the rounded speech bubble instead of the square one. */
+    [data-region="popover-region-messages"] .popover-region-toggle .icon::before {
+        content: "#{$fa-var-comment}";
+    }
+
+    /* Unread count: a small dot near the icon's top end corner. The number
+       stays available to screen readers via the badge's visually hidden text
+       and in the toggle's title. */
+    .popover-region-toggle .count-container {
+        top: calc(50% - 12px);
+        inset-inline-end: 5px;
+        width: 9px;
+        min-width: 9px;
+        height: 9px;
+        padding: 0;
+        border-radius: 50%;
+        background-color: #ef4444;
+        font-size: 0;
+    }
+
+    /* Avatar: no dropdown caret. */
+    .usermenu #user-menu-toggle::after {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Edit mode: hide the label text visually but keep it as the switch's
+       accessible name (Moodle does the same below md). The switch shows it as
+       a tooltip via templates/core/editswitch.mustache. */
+    .editmode-switch-form .input-group > label {
+        @include visually-hidden();
+    }
+}
+
+.navbar.fixed-top.bg-body:not(.boost-union-menubar) {
+    .popover-region-toggle .icon {
+        color: #475569;
+    }
+
+    .popover-region-toggle:hover .icon,
+    .popover-region-toggle[aria-expanded="true"] .icon {
+        color: #0f172a;
+    }
+
+    /* Separate the dot from the icon with a ring in the navbar colour. */
+    .popover-region-toggle .count-container {
+        box-shadow: 0 0 0 1.5px var(--bs-body-bg);
+    }
+
+    .usermenu .userinitials {
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+        font-size: small;
+        font-weight: 600;
+    }
+}
+
+/* Salek: optical vertical centering of the primary navigation text in LTR.
+   The Latin glyphs of the site font sit visibly above the centre line, so
+   move them down by about 1.5px. Persian text is centred already. */
+@include media-breakpoint-up(md) {
+    html[dir="ltr"] .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .nav-link {
+        padding-top: calc(var(--bs-nav-link-padding-y, .5rem) + 3px) !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
 /* Gradebook grader: keep wide tables inside the page width. */
 .path-grade-report-grader {
     .gradeparent {
