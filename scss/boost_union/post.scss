@@ -4969,7 +4969,8 @@ body.cm-type-qbank {
    Calendar (see the :has() rule below). */
 .theme-boost-union-smartmenu #page-wrapper #page #page-footer .navbar.boost-union-bottom-menu {
     padding-bottom: env(safe-area-inset-bottom);
-    box-shadow: 0 -6px 20px rgb(15 23 42 / 7%);
+    background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: 0 -6px 24px rgb(15 23 42 / 12%);
 
     /* Boost Union fixes the height on .moremenu only; stretch the list and
        its items to that height so the links can centre their content. */
@@ -4993,6 +4994,9 @@ body.cm-type-qbank {
            the link's accessible name. */
         > li[data-key="siteadminnode"] > .nav-link {
             font-size: 0;
+            /* The hidden text is still an (empty) flex item between the icon
+               and the label; halve the gap so the spacing matches the others. */
+            gap: 2px;
 
             /* Boost Union positions ::after absolutely in this bar (for dropdown
                carets); keep the label in the normal column flow instead. */
@@ -5019,7 +5023,8 @@ body.cm-type-qbank {
             align-items: center;
             justify-content: center;
             gap: 4px;
-            padding: 0 2px;
+            /* Optical centring: the content looks too high when exactly centred. */
+            padding: 4px 2px 0;
             border: 0;
             color: #64748b;
             font-size: 11px;
@@ -5027,10 +5032,20 @@ body.cm-type-qbank {
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
+            transition: background-color .15s ease;
 
+            /* The current page fills its whole cell with a soft brand tint. */
             &.active {
+                background-color: rgba(var(--bs-primary-rgb), .14);
                 color: var(--bs-primary);
                 font-weight: 600;
+            }
+
+            /* Hover tint only for real pointers; on touch screens it would stick after a tap. */
+            @media (hover: hover) {
+                &:not(.active):hover {
+                    background-color: rgba(var(--bs-primary-rgb), .06);
+                }
             }
 
             .icon {
@@ -5081,6 +5096,7 @@ body.cm-type-qbank {
 /* Smart menu items get no active state from Boost Union; derive it from the page. */
 body.path-calendar .boost-union-bottom-menu .salek-nav-calendar.nav-link,
 body.path-calendar .boost-union-bottom-menu .salek-nav-calendar > .nav-link {
+    background-color: rgba(var(--bs-primary-rgb), .14) !important; /* stylelint-disable-line declaration-no-important */
     color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
     font-weight: 600;
 }
