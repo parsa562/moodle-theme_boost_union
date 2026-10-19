@@ -4750,11 +4750,20 @@ body.cm-type-qbank {
 
 /* Navbar user menu: use the same direction-aware dropdown alignment as
  * the standalone language selector instead of Moodle's forced end alignment.
+ * The menu then grows towards the viewport edge, which only has enough room
+ * on wide screens. Below 1680px, align it to the avatar's end edge instead
+ * (Moodle's default), so it opens towards the page and stays in view.
  */
 .navbar.fixed-top:not(.boost-union-menubar) {
     .usermenu > .dropdown > .dropdown-menu {
-        inset-inline-start: 0 !important;
-        inset-inline-end: auto !important;
+        inset-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        @media (max-width: 1679.98px) {
+            inset-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+            inset-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
+            max-width: calc(100vw - 1rem);
+        }
     }
 }
 
@@ -4825,8 +4834,9 @@ body.cm-type-qbank {
 
     /* Edit mode: hide the label text visually but keep it as the switch's
        accessible name (Moodle does the same below md). The switch shows it as
-       a tooltip via templates/core/editswitch.mustache. */
-    .editmode-switch-form .input-group > label {
+       a tooltip via templates/core/editswitch.mustache. Only the navbar switch
+       is affected; the copy in the user menu (phones) keeps its label. */
+    #usernavigation > .editmode-switch-form .input-group > label {
         @include visually-hidden();
     }
 }
@@ -4861,6 +4871,218 @@ body.cm-type-qbank {
     html[dir="ltr"] .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .nav-link {
         padding-top: calc(var(--bs-nav-link-padding-y, .5rem) + 3px) !important; /* stylelint-disable-line declaration-no-important */
     }
+}
+
+/* Salek: phone navbar (below md).
+   Centre every item vertically with flexbox instead of relying on percentage
+   heights, give the logo and the avatar the same inset from their screen edge,
+   and move the Edit mode switch into the user menu (templates/core/user_menu.mustache). */
+@include media-breakpoint-down(md) {
+    .navbar.fixed-top:not(.boost-union-menubar) {
+        > .container-fluid {
+            align-items: center;
+        }
+
+        /* Moodle only shows the logo on phones when the Boost Union bottom bar is active. */
+        .navbar-brand {
+            height: 50px;
+            margin-inline-start: .25rem !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navbar-brand .logo {
+            height: 50px;
+            max-height: none;
+        }
+
+        #usernavigation {
+            align-items: center;
+        }
+
+        #usernavigation > .divider,
+        #usernavigation > .editmode-switch-form {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        #usernavigation .usermenu-container {
+            margin-inline-end: .25rem;
+        }
+
+        .usermenu-container,
+        .usermenu,
+        .usermenu .dropdown {
+            align-items: center;
+        }
+
+        .usermenu #user-menu-toggle {
+            display: flex;
+            align-items: center;
+            height: auto;
+            padding: 0;
+            border-radius: 50%;
+        }
+    }
+}
+
+/* Salek: Edit mode switch inside the user menu (phones only, see above). */
+.navbar.fixed-top:not(.boost-union-menubar) .usermenu .salek-usermenu-editswitch {
+    padding: .55rem .9rem;
+    border-bottom: 1px solid var(--bs-dropdown-divider-bg);
+    margin-bottom: .3rem;
+
+    &:empty {
+        display: none;
+    }
+
+    > .divider {
+        display: none;
+    }
+
+    .input-group {
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Moodle core visually hides this label below md (primarynavigation.scss);
+       in the menu the switch needs its visible text. */
+    .editmode-switch-form label {
+        position: static !important; /* stylelint-disable-line declaration-no-important */
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        height: auto !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: visible !important; /* stylelint-disable-line declaration-no-important */
+        clip: auto !important; /* stylelint-disable-line declaration-no-important */
+        white-space: nowrap !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Salek: phone bottom navigation (Boost Union smart menu "Bottom bar").
+   Icon above a short one-line label, no underline, the current page in the
+   brand colour. Items never wrap, so Moodle's more menu keeps every item in
+   the bar.
+
+   Expected smart menu setup (Appearance > Boost Union > Smart menus):
+   a bottom bar Calendar item with CSS class "salek-nav-calendar", visible to
+   all users. Boost Union only renders this bar when the user can see at least
+   one bottom bar smart menu item, so this item keeps the bar available.
+   Users who get Moodle's own Site administration item see that instead of
+   Calendar (see the :has() rule below). */
+.theme-boost-union-smartmenu #page-wrapper #page #page-footer .navbar.boost-union-bottom-menu {
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -6px 20px rgb(15 23 42 / 7%);
+
+    /* Boost Union fixes the height on .moremenu only; stretch the list and
+       its items to that height so the links can centre their content. */
+    .bottom-navigation .more-nav {
+        height: 100%;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 2px;
+        padding-inline: 6px;
+
+        /* Every item, including smart menu items, gets an equal share.
+           Utility classes such as .d-none still win (they use !important). */
+        > li:not(.dropdownmoremenu) {
+            display: flex;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        /* "Site administration" is too long for the bar: show a short label
+           instead. font-size: 0 hides the original text visually, but it stays
+           the link's accessible name. */
+        > li[data-key="siteadminnode"] > .nav-link {
+            font-size: 0;
+
+            /* Boost Union positions ::after absolutely in this bar (for dropdown
+               carets); keep the label in the normal column flow instead. */
+            &::after {
+                content: "Admin";
+                position: static;
+                margin: 0;
+                font-size: 11px;
+                line-height: 1.2;
+            }
+
+            &:lang(fa)::after {
+                content: "مدیریت";
+            }
+        }
+
+        /* Smart menu links carry .d-inline-flex, so also set the width to make
+           them fill their slot like the core links. */
+        > li > .nav-link {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 2px;
+            border: 0;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.2;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+
+            &.active {
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+
+            .icon {
+                width: auto;
+                height: auto;
+                margin: 0;
+                font-size: 18px;
+            }
+        }
+
+        > li[data-key="home"] > .nav-link::before,
+        > li[data-key="myhome"] > .nav-link::before,
+        > li[data-key="mycourses"] > .nav-link::before,
+        > li[data-key="siteadminnode"] > .nav-link::before {
+            font-family: "Font Awesome 6 Free";
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        > li[data-key="home"] > .nav-link::before {
+            content: "#{$fa-var-house}";
+        }
+
+        > li[data-key="myhome"] > .nav-link::before {
+            content: "#{$fa-var-gauge-high}";
+        }
+
+        > li[data-key="mycourses"] > .nav-link::before {
+            content: "#{$fa-var-book-open}";
+        }
+
+        > li[data-key="siteadminnode"] > .nav-link::before {
+            content: "#{$fa-var-gear}";
+        }
+    }
+
+    /* Show Calendar only to users without Moodle's Site administration item.
+       That item follows Moodle's own permissions, which a smart menu
+       restriction cannot express (e.g. managers). Browsers without :has()
+       simply show both items. */
+    .more-nav:has(li[data-key="siteadminnode"]) .salek-nav-calendar,
+    .more-nav:has(li[data-key="siteadminnode"]) li:has(> .salek-nav-calendar) {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Smart menu items get no active state from Boost Union; derive it from the page. */
+body.path-calendar .boost-union-bottom-menu .salek-nav-calendar.nav-link,
+body.path-calendar .boost-union-bottom-menu .salek-nav-calendar > .nav-link {
+    color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+    font-weight: 600;
 }
 
 /* Gradebook grader: keep wide tables inside the page width. */

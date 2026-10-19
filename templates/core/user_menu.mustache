@@ -64,6 +64,7 @@
     * Support submenus with more than one level (for adding smart menus into the user menu).
     * Make submenu headers fully clickable as soon as at least one smart menu exists on the page.
     * Set the submenus' data-bs-theme attribute to light even if the navbar is dark
+    * Salek: show the Edit mode switch in the user menu on phones (below md).
 }}
 <div class="usermenu">
     {{#unauthenticateduser}}
@@ -96,6 +97,9 @@
                                 </div>
                                 <div class="dropdown-divider"></div>
                             {{/showfullnameinusermenu}}
+                            {{! Salek: on phones the Edit mode switch lives here instead of the navbar. Keep it on one line,
+                                so the wrapper is :empty (and hidden) for users who cannot edit. }}
+                            <div class="salek-usermenu-editswitch d-md-none">{{{output.edit_switch}}}</div>
                             {{> core/user_action_menu_items }}
                         </div>
                         {{#submenus}}
