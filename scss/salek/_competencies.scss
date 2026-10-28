@@ -1,0 +1,74 @@
+// Salek: the course competencies page (admin/tool/lp/coursecompetencies.php).
+
+/* Like the other pages: the title with the line across the sheet under it, the filter by
+   activity at the end of the title row (one line: the chosen filter and the field, no frame of
+   its own), "Add competencies to course" under the line, the note about ratings as a quiet line,
+   no empty table. */
+body#page-admin-tool-lp-coursecompetencies #region-main div[role="main"] {
+    > H2 {
+        @include salek-title-line;
+        margin-top: 0;
+    }
+
+    > [class~="float-end"]:has(> .user-competency-course-navigation) {
+        position: relative;
+        z-index: 1;
+        margin: -4px 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        .user-competency-course-navigation > span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-autocomplete-selection {
+            flex: none;
+            width: auto !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        // (The field keeps its width while open: Moodle widens it in use.)
+        .form-autocomplete-input {
+            flex: none;
+            width: auto;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            .form-control {
+                width: 340px !important; /* stylelint-disable-line declaration-no-important */
+                min-width: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    [data-region="configurecoursecompetencies"] > .alert:not([class~="alert-info"]) {
+        margin: 16px 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: $salek-text-muted;
+        font-size: .875rem;
+    }
+
+    table.managecompetencies:not(:has(tr)) {
+        display: none;
+    }
+
+    @include media-breakpoint-down(md) {
+        > [class~="float-end"]:has(> .user-competency-course-navigation) {
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+
+            .user-competency-course-navigation > span {
+                flex-wrap: wrap;
+            }
+
+            .form-autocomplete-input,
+            .form-autocomplete-input .form-control {
+                width: 100% !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}

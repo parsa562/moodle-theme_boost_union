@@ -981,6 +981,8 @@ $string['configtitlefeel'] = 'Feel';
 
 // Settings: Navigation tab.
 $string['navigationtab'] = 'Navigation';
+$string['hierarchicalbreadcrumbs'] = 'Hierarchical breadcrumb trails';
+$string['hierarchicalbreadcrumbs_desc'] = 'Keep the course and other linked parent pages in breadcrumbs, even when they also appear in the main navigation. Unlinked grouping labels and global landing pages are omitted. The current page is shown without a link, and trails with fewer than two items are hidden. Course category visibility and activity section navigation still follow their existing settings. This option changes navigation only, not breadcrumb spacing. Disabled by default to preserve the standard Boost Union behaviour.';
 // ... Section: Primary navigation.
 $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
@@ -2230,3 +2232,26 @@ $string['homepagecontentmaxwidthsetting_desc'] = 'Optional maximum width for hom
 
 $string['navbarcontentmaxwidthsetting'] = 'Navbar content max width';
 $string['navbarcontentmaxwidthsetting_desc'] = 'Optional maximum width for the content inside the main navbar. If left empty, the general page max width will be used when configured; otherwise the existing navbar behavior is kept.';
+
+// Salek: join words between the conditions of a filter panel (templates/core/datafilter/filter_row).
+$string['salekfilterjoinand'] = 'and';
+$string['salekfilterjoinandnot'] = 'and not';
+$string['salekfilterjoinor'] = 'or';
+
+// Salek: course page counts in section and lesson title rows (amd/src/coursepage).
+$string['saleklessoncount'] = '{$a} lesson';
+$string['saleklessonscount'] = '{$a} lessons';
+$string['salekactivitycount'] = '{$a} activity';
+$string['salekactivitiescount'] = '{$a} activities';
+
+// Salek: the bar above the front page's course list (amd/src/frontpagecourses).
+$string['salekcoursescards'] = 'Cards';
+$string['salekcoursescount'] = '{$a} courses';
+$string['salekcoursesdefaultorder'] = 'Default';
+$string['salekcourseslist'] = 'List';
+$string['salekcoursesnameaz'] = 'Name A–Z';
+$string['salekcoursesnewest'] = 'Newest';
+$string['salekcoursesoldest'] = 'Oldest';
+$string['salekcoursesnone'] = 'No courses match your search.';
+$string['salekcoursessearch'] = 'Search by course name or code';
+$string['salekcoursessort'] = 'Sort';

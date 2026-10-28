@@ -1,0 +1,240 @@
+// Salek: Grader report.
+
+/* 21. Grader report, in the design of the participants page: the report selector, the user
+       search and the name filter on a hero card, then the grade table as a card with the
+       tinted header, clear row lines, coloured avatars and quiet cell menus. */
+body#page-grade-report-grader-index #page.drawers #region-main {
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent;
+    box-shadow: none;
+
+    div[role="main"] {
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Hero.
+    .tertiary-navigation {
+        @include salek-hero-card;
+        margin: 9px 0 24px; // With the tab bar's 15px bottom padding: 24px.
+        padding: 22px 32px;
+
+        &::after {
+            display: none; // Moodle's full-width bottom line.
+        }
+
+        > .d-flex {
+            align-items: center;
+            gap: 12px 16px;
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navitem-divider {
+            display: none;
+        }
+
+        .tertiary-navigation-selector .dropdown-toggle {
+            @include salek-page-selector;
+        }
+
+        // User search and the name filter: white fields like the filters elsewhere.
+        .form-control,
+        [class~="btn"].dropdown-toggle:not([role="combobox"]) {
+            border-color: $salek-control-border;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: none;
+        }
+    }
+
+    // The table's horizontal scrollbar (theme JS questionbankscroll): below the card, sticky at
+    // the bottom of the window.
+    @include salek-bottom-scrollbar(0);
+
+    .qbank-sticky-scroll-zone-bottom {
+        border-top: 0;
+        background: rgb(243 245 248 / 92%); // The page colour: the bar sits below the card.
+    }
+
+    // Grade table card.
+    .gradeparent {
+        @include salek-card;
+    }
+
+    // The table scrolls inside .gradeparent (theme rule above, for wide tables), so Moodle's
+    // window-sticky header and "Overall average" rows would stick inside it instead: the average
+    // row climbed over the last student. Both keep their place in the table.
+    .gradeparent tr.heading,
+    .gradeparent tr.lastrow:not(.userrow) {
+        position: static;
+    }
+
+    #user-grades {
+        --bs-table-striped-bg: transparent;
+        margin: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // Moodle: 6em at the end, an empty strip in the card.
+        color: $salek-text-strong;
+        font-size: .875rem;
+
+        // First row: the grade category ("course name") over its columns, as a quiet group title.
+        tr:first-child > * {
+            height: 40px;
+            padding-block: 8px;
+            background-color: $salek-band-bg;
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        // The grade categories (a row for each level, under the course): quiet group titles on
+        // the band, each a lightly tinted box over its columns; the empty cells over the columns
+        // of no category (Moodle's fillers) on the band. With the column lines (below), the
+        // columns of each category read as one group.
+        :is(th.category, td.fillerfirst, td.fillerlast, td.filler) {
+            height: 40px;
+            padding-block: 8px;
+            border-bottom: 1px solid $salek-table-row-line;
+            background-color: $salek-band-bg;
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        th.category:not(.catlevel1) {
+            background-color: #eaf1fb;
+            color: $salek-text-strong;
+            font-size: .8125rem;
+            font-weight: 600;
+        }
+
+        // Course total: the result column, slightly set apart.
+        .courseitem,
+        td.course {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
+        tr.userrow:hover > td.course {
+            background-color: #f1f5fe;
+        }
+
+        // Row lines only, like the other tables; one column line after the names, which stay
+        // in place when the grades scroll sideways.
+        // Row lines, and light column lines so each grade can be followed down its column and
+        // each category's columns are seen together (not after the last column: the card's edge).
+        .cell {
+            padding: 12px 14px;
+            border-color: $salek-table-row-line;
+            border-inline-width: 0;
+            border-inline-end: 1px solid $salek-table-row-line;
+            vertical-align: middle;
+
+            &.lastcol {
+                border-inline-end: 0;
+            }
+        }
+
+        tr.heading > th.c0,
+        tr.userrow > th.header.user {
+            border-inline-end: 1px solid $salek-table-head-line;
+        }
+
+        // Column headings: the tinted header.
+        tr.heading > * {
+            background-color: $salek-table-head-bg;
+            color: #1e293b;
+            font-size: .8125rem;
+            font-weight: 600;
+        }
+
+        tr.heading > * {
+            border-bottom: 1px solid $salek-table-head-line;
+        }
+
+        tr.heading a {
+            color: #1e293b;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        // Students: white rows, a faint hover, names with coloured initials.
+        tr.userrow > * {
+            background-color: #fff;
+        }
+
+        tr.userrow:hover > * {
+            background-color: #f1f5fe;
+        }
+
+        .username {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: $salek-text-strong;
+            font-weight: 500;
+        }
+
+        .userinitials,
+        .userpicture {
+            width: 34px;
+            height: 34px;
+            margin: 0;
+            border-radius: 50%;
+        }
+
+        .userinitials {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        @each $i, $bg, $fg in (1, #fff4da, #8a5a00), (2, #e3edfb, #1859c9), (3, #f1ecfe, #6236c9),
+                (4, #e4f6f1, #0b7261), (5, #fdedf3, #ae2161), (6, #eef2f7, #475569) {
+            tr.userrow:nth-of-type(6n + #{$i}) .userinitials {
+                background-color: $bg;
+                color: $fg;
+            }
+        }
+
+        .useremail {
+            color: $salek-text;
+        }
+
+        .gradevalue {
+            font-weight: 600;
+        }
+
+        // Overall average: the light band of the card footers.
+        tr.avg > * {
+            background-color: $salek-band-bg;
+            color: $salek-text;
+            font-weight: 600;
+        }
+
+        // A cell with an open menu above the sticky name column (whose cells otherwise covered
+        // the menu of the name header) and above the sticky scrollbar below the card.
+        .cell:has(.dropdown-menu.show) {
+            z-index: 30 !important; /* stylelint-disable-line declaration-no-important */ // Above the sticky scrollbar (20).
+        }
+
+        // Cell menus (⋯): present but quiet until the cell is pointed at or focused.
+        .cellmenubtn {
+            opacity: .35;
+            color: #64748b;
+        }
+
+        .cell:is(:hover, :focus-within) .cellmenubtn {
+            opacity: 1;
+        }
+    }
+
+    // "Show 20" bar at the bottom.
+    #sticky-footer {
+        border-top-color: $salek-card-border !important; /* stylelint-disable-line declaration-no-important */
+    }
+}

@@ -1,0 +1,101 @@
+// Salek: Settings pages (course and activity settings).
+
+/* 28. Settings pages: course settings and the settings of each activity (the first pages of
+       their Settings tabs; body class salek-settings-page, layout/drawers.php), like the first
+       pages of the other course tabs: the title on the dotted card with "Expand all" at its
+       end, the form on a white card below (the form design of section 27). */
+body.salek-settings-page #page.drawers #region-main {
+    --salek-qb-pad: 32px;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent;
+    box-shadow: none;
+
+    @include media-breakpoint-down(md) {
+        --salek-qb-pad: 16px;
+    }
+
+    div[role="main"] {
+        position: relative;
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Hero: the title, 96px high, room at its end for "Expand all".
+    div[role="main"] > h2 {
+        @include salek-hero-card;
+        display: flex;
+        align-items: center;
+        min-height: 96px;
+        margin: 9px 0 0; // With the tab bar's 15px bottom padding: 24px.
+        padding: 20px $salek-card-pad;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+
+        @include media-breakpoint-up(md) {
+            padding-inline-end: 220px;
+        }
+    }
+
+    // The form on its own card, 24px below; its bands reach the card's edges and follow its
+    // rounded corners (not clipped: "Expand all" is placed outside the card, on the hero).
+    div[role="main"] > form.mform {
+        @include salek-card;
+        --salek-sheet-pad: var(--salek-qb-pad); // The hero's side padding: the title and the fields in line.
+        margin: $salek-page-header-gap 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 var(--salek-sheet-pad) !important; /* stylelint-disable-line declaration-no-important */
+
+        // The first section starts at the card's top edge (the card draws the line); on phones
+        // "Expand all" comes first.
+        @include media-breakpoint-up(md) {
+            > fieldset:first-of-type > [class~="d-flex"] {
+                border-top: 0;
+                border-start-start-radius: $salek-card-radius-lg - 1px;
+                border-start-end-radius: $salek-card-radius-lg - 1px;
+            }
+        }
+
+        // The last band follows the card's rounded corners: the buttons' band, or on phones the
+        // "Required" note under it.
+        @include media-breakpoint-up(md) {
+            > .fitem[data-groupname="buttonar"] {
+                border-end-start-radius: $salek-card-radius-lg - 1px !important; /* stylelint-disable-line declaration-no-important */
+                border-end-end-radius: $salek-card-radius-lg - 1px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // "Required" on the band: in line with the labels (the card has side padding).
+            > .fdescription.required {
+                inset-inline-start: var(--salek-sheet-pad);
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            > .fitem[data-groupname="buttonar"] {
+                border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > .fdescription.required {
+                border-end-start-radius: $salek-card-radius-lg - 1px !important; /* stylelint-disable-line declaration-no-important */
+                border-end-end-radius: $salek-card-radius-lg - 1px !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // "Expand all" at the end of the hero, measured from the top of the form card (the form
+        // is the button's frame of reference): the hero's middle is 24px + 96px / 2 above the
+        // card, the button 36px high. On phones it stays in the card, where the title may take
+        // two lines.
+        > .collapsible-actions {
+            @include media-breakpoint-up(md) {
+                position: absolute;
+                top: -($salek-page-header-gap + 48px + 18px);
+                inset-inline-end: calc(var(--salek-qb-pad) - 1px); // From the padding edge, inside the 1px border.
+                margin: 0;
+            }
+
+            @include media-breakpoint-down(md) {
+                margin: 16px 0;
+            }
+        }
+    }
+}

@@ -1,0 +1,232 @@
+// Salek: the text editor (TinyMCE) in the theme's design.
+
+$salek-editor-icons: (
+    undo: "%3Cpath d='M9 14 4 9l5-5'/%3E%3Cpath d='M4 9h10.5a5.5 5.5 0 0 1 0 11H11'/%3E",
+    redo: "%3Cpath d='m15 14 5-5-5-5'/%3E%3Cpath d='M20 9H9.5a5.5 5.5 0 0 0 0 11H13'/%3E",
+    bold: "%3Cpath d='M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8'/%3E",
+    italic: "%3Cpath d='M19 4h-9M14 20H5M15 4 9 20'/%3E",
+    tiny_media_image: "%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21'/%3E",
+    tiny_media_video: "%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='m10 8.5 5 3.5-5 3.5z'/%3E",
+    tiny_recordrtc_audio: "%3Crect width='6' height='12' x='9' y='2' rx='3'/%3E%3Cpath d='M19 10v1a7 7 0 0 1-14 0v-1M12 18v4'/%3E",
+    tiny_recordrtc_video_context_menu: "%3Cpath d='m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 10.5'/%3E%3Crect width='14' height='12' x='2' y='6' rx='2'/%3E",
+    tiny_link_link: "%3Cpath d='M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7'/%3E",
+    tiny_link_unlink: "%3Cpath d='m18.8 12.3 1.7-1.7a5 5 0 0 0-7-7l-1.7 1.7M5.2 11.7l-1.7 1.7a5 5 0 0 0 7 7l1.7-1.7M8 2v3M2 8h3M16 19v3M19 16h3'/%3E",
+    fullscreen: "%3Cpath d='M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3'/%3E",
+    alignleft: "%3Cpath d='M21 6H3M15 12H3M17 18H3'/%3E",
+    aligncenter: "%3Cpath d='M21 6H3M17 12H7M19 18H5'/%3E",
+    alignright: "%3Cpath d='M21 6H3M21 12H9M21 18H7'/%3E",
+    outdent: "%3Cpath d='M21 6H11M21 12H11M21 18H11M7 8l-4 4 4 4'/%3E",
+    indent: "%3Cpath d='M21 6H11M21 12H11M21 18H11M3 8l4 4-4 4'/%3E",
+    bullist: "%3Cpath d='M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'/%3E",
+    numlist: "%3Cpath d='M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1'/%3E",
+    moodle_myequation: "%3Cpath d='M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2'/%3E",
+    ltr: "%3Cpath d='M10 3v11M10 9H7a3 3 0 0 1 0-6h9M14 3v11M18 14l4 4-4 4M2 18h20'/%3E",
+    rtl: "%3Cpath d='M14 3v11M14 9h-3a3 3 0 0 1 0-6h9M18 3v11M6 14l-4 4 4 4M22 18H2'/%3E",
+    tiny_equation: "%3Cpath d='M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2'/%3E",
+);
+
+/* A soft grey frame holding the editor: its menus as quiet text, each group of tools as a white
+   pill, the writing area as a white rounded sheet and the status line on the grey. TinyMCE adds
+   its own stylesheet after the theme's, hence "body" in front of its rules. */
+body .tox.tox-tinymce {
+    border: 0;
+    border-radius: 18px;
+    background-color: $salek-field-bg;
+
+    // Inner layers: no background, line or shadow of their own; the frame shows through.
+    .tox-editor-container,
+    .tox-editor-header,
+    .tox-menubar,
+    .tox-toolbar-overlord,
+    .tox-toolbar,
+    .tox-toolbar__primary,
+    .tox-toolbar__overflow,
+    .tox-statusbar {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .tox-editor-header {
+        padding: 8px 10px 0;
+    }
+
+    // Edit, View, Insert…: plain text that lights up white.
+    .tox-menubar {
+        gap: 2px;
+        margin-bottom: 6px;
+    }
+
+    .tox-mbtn {
+        height: 30px;
+        padding: 0 10px;
+        border-radius: 9px;
+        background: transparent;
+        color: $salek-text;
+        font-weight: 500;
+
+        &:hover:not(:disabled),
+        &.tox-mbtn--active {
+            background-color: #fff;
+            box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+        }
+    }
+
+    // The tools: a white pill per group, apart from each other.
+    .tox-toolbar__primary {
+        gap: 8px;
+        padding-bottom: 8px;
+    }
+
+    .tox-toolbar__group {
+        gap: 2px;
+        margin: 0;
+        padding: 3px;
+        border: 0;
+        border-radius: 12px;
+        background-color: #fff;
+        box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+    }
+
+    .tox-tbtn {
+        width: 32px;
+        height: 32px;
+        margin: 0;
+        border-radius: 9px;
+        color: #5b6577;
+
+        svg {
+            fill: currentColor;
+        }
+
+        &:hover:not(.tox-tbtn--disabled) {
+            background-color: $salek-soft;
+            color: $salek-text-strong;
+        }
+
+        // A tool that is on (right-to-left text, bold…): tinted in the brand colour.
+        &.tox-tbtn--enabled,
+        &.tox-tbtn--enabled:hover {
+            background-color: rgba(var(--bs-primary-rgb), .1);
+            color: var(--bs-primary);
+        }
+
+        &.tox-tbtn--disabled svg {
+            fill: #b6c0ce;
+        }
+    }
+
+    // The tools drawn as thin outline icons (by their names, the same in every language), in
+    // place of TinyMCE's filled ones; tools not listed keep theirs. Those that point along the
+    // writing direction turn round in Persian.
+    @each $name, $inner in $salek-editor-icons {
+        .tox-tbtn[data-mce-name="#{$name}"] .tox-icon {
+            width: 18px;
+            height: 18px;
+            background-color: currentColor;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E#{$inner}%3C/svg%3E") center / contain no-repeat;
+
+            svg {
+                display: none;
+            }
+        }
+    }
+
+    @each $name in undo, redo, outdent, indent, bullist, numlist {
+        &:is([dir="rtl"] *) .tox-tbtn[data-mce-name="#{$name}"] .tox-icon {
+            /*rtl:ignore*/
+            transform: scaleX(-1);
+        }
+    }
+
+    // H5P: written out, as in the design.
+    .tox-tbtn[data-mce-name="tiny_h5p"] {
+        width: auto;
+        padding: 0 8px;
+
+        .tox-icon {
+            width: auto;
+
+            svg {
+                display: none;
+            }
+
+            &::before {
+                font-size: .6875rem;
+                font-weight: 700;
+                letter-spacing: .02em;
+            }
+        }
+    }
+
+    .tox-tbtn[data-mce-name="tiny_h5p"] .tox-icon::before {
+        content: "H5P";
+    }
+
+    // The two equation editors: the same sign; the Persian one in colour.
+    .tox-tbtn[data-mce-name="moodle_myequation"] {
+        color: #6236c9;
+    }
+
+    // The two equation editors (Persian and standard) side by side in one white box.
+    .tox-toolbar__group:has(.tox-tbtn[data-mce-name="moodle_myequation"]):has(+ .tox-toolbar__group .tox-tbtn[data-mce-name="tiny_equation"]) {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+        clip-path: inset(-8px 0 -8px -8px);
+    }
+
+    .tox-toolbar__group:has(.tox-tbtn[data-mce-name="moodle_myequation"]) + .tox-toolbar__group:has(.tox-tbtn[data-mce-name="tiny_equation"]) {
+        margin-inline-start: -8px;
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+        clip-path: inset(-8px -8px -8px 0);
+    }
+
+    // The writing area: a white sheet inside the frame.
+    .tox-sidebar-wrap {
+        margin: 0 10px;
+    }
+
+    .tox-edit-area {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+
+        // TinyMCE's ring while writing: the brand colour, on the sheet's corners.
+        &::before {
+            border-color: var(--bs-primary);
+            border-radius: 12px;
+        }
+    }
+
+    .tox-statusbar {
+        height: auto;
+        padding: 6px 14px 8px;
+        color: $salek-text-muted;
+        font-size: .75rem;
+
+        a,
+        .tox-statusbar__path-item,
+        .tox-statusbar__wordcount {
+            color: $salek-text-muted;
+        }
+    }
+}
+
+/* Before the editor is ready, Moodle shows a plain text box with the text's code in it, then
+   swaps it for the editor (a flash of code on every form). The box is as high as the editor:
+   it takes the editor's grey frame and hides the code until the swap; if the editor does not
+   come up, the text shows after 3 seconds. */
+body.jsenabled .felement[data-fieldtype="editor"] textarea {
+    border: 0;
+    border-radius: 18px !important; /* stylelint-disable-line declaration-no-important */ // (The fields' 14px is heavier.)
+    background-color: $salek-field-bg;
+    animation: salek-editor-wait 3s step-end;
+}
+
+@keyframes salek-editor-wait {
+    from {
+        color: transparent;
+    }
+}

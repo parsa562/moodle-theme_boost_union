@@ -1,0 +1,146 @@
+// Salek: Activities overview page.
+
+/* 20. Activities overview (course/overview.php), in the design of the course page: a hero for
+       the heading, one card per activity type with the course page's round toggle and title
+       band when open, the type icon in a tinted circle, and the tables of section 18. */
+body#page-course-overview #page.drawers #region-main {
+    --salek-qb-pad: 16px;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent;
+    box-shadow: none;
+
+    div[role="main"] {
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Hero: the heading and its explanation on one dotted card.
+    div[role="main"] > h2 {
+        margin: 9px 0 0; // With the tab bar's 15px bottom padding: 24px.
+        padding: 26px $salek-card-pad 8px;
+        padding-inline: 32px;
+        @include salek-hero-top;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+
+    div[role="main"] > h2 + p {
+        margin: 0 0 24px;
+        padding: 0 32px 26px;
+        @include salek-hero-bottom;
+        color: #5b6577;
+        font-size: .875rem;
+    }
+
+    // One card per activity type, like the course page sections.
+    .collapsable-section {
+        --bs-border-color: transparent;
+        overflow: clip;
+        margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: $salek-card-radius !important; /* stylelint-disable-line declaration-no-important */
+        background-color: #fff;
+        box-shadow: $salek-card-shadow;
+
+        > .d-flex {
+            padding: 11px 16px;
+            border: 1px solid #fff;
+            border-radius: $salek-card-radius $salek-card-radius 0 0;
+        }
+
+        // Open: the title row in the course page's level 1 colour.
+        &:has(> .d-flex [aria-expanded="true"]) > .d-flex {
+            background-color: $salek-level1-title-bg;
+        }
+
+        h3 {
+            gap: 12px;
+            color: $salek-text-strong;
+            font-size: 1.0625rem;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Round toggle, as on the course page (the same mixin).
+    .icons-collapse-expand {
+        @include salek-round-toggle;
+    }
+
+    // Type icon in a tinted circle, as on the course page.
+    .activity-icon.activityiconcontainer {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #eef2f7;
+
+        .activityicon {
+            width: 20px;
+            height: 20px;
+        }
+
+        &.assessment { background-color: #fdedf3; }
+        &.content { background-color: #e4f6f1; }
+        &.collaboration { background-color: #f1ecfe; }
+        &.communication { background-color: #eaf1fd; }
+        &.interactivecontent { background-color: #fff4da; }
+    }
+
+    // Tables: in a light frame, styled like the other list tables.
+    .course-overview {
+        overflow: clip;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-color: #dfe5ee !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 16px !important; /* stylelint-disable-line declaration-no-important */ // (As the site's other tables.)
+    }
+
+    .course-overview-table {
+        @include salek-data-table;
+
+        // Name with its section below.
+        td[data-mdl-overview-item="name"] {
+            .fw-bold {
+                font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .activityname {
+                color: $salek-text-strong;
+
+                &:hover {
+                    color: var(--bs-primary);
+                }
+            }
+
+            .fw-bold + div {
+                color: $salek-text-muted;
+                font-size: .75rem;
+            }
+        }
+
+        td[data-mdl-overview-item="duedate"] {
+            color: $salek-text;
+        }
+
+        // Counts and actions as small outlined pills.
+        [class~="btn-outline-secondary"] {
+            height: 30px;
+            padding: 0 12px;
+            border: 1px solid $salek-control-border;
+            border-radius: 999px;
+            background-color: #fff;
+            color: $salek-text;
+            font-size: .75rem;
+            font-weight: 500;
+            line-height: 28px;
+
+            &:hover {
+                border-color: var(--bs-primary);
+                color: var(--bs-primary);
+            }
+        }
+    }
+}

@@ -1,0 +1,257 @@
+// Salek: Pages of the participants menu (enrolment, groups, permissions).
+
+/* 26. The pages of the participants menu and the pages they open, in the design of the
+       enrolment methods page (section 25): enrolment (/enrol/: methods, method settings,
+       manual enrolment, other users, role renaming, a user's enrolment, the enrol page of a
+       course), groups and groupings (/group/), permissions, checking permissions and assigning
+       roles (/admin/roles/: also used for the whole site and categories, in the same design).
+       The page header, confirmations and the lists to move people between are site-wide (page
+       header and components parts); here: section titles, row actions as small outline buttons,
+       tables that scroll on phones, the groups and permissions pages. */
+// The pages carry the body class salek-participants-page (layout/drawers.php).
+body.salek-participants-page #region-main div[role="main"] {
+    // Tables: header cells on one line (on phones the table scrolls in its frame).
+    [class~="table-responsive"] > table > thead th {
+        white-space: nowrap;
+    }
+
+    [class~="table-responsive"] {
+        margin-bottom: 0;
+    }
+
+    // Course enrol page: the course (name, summary, teachers), the message and the button
+    // 12px apart, the button at the start like every other button.
+    > [class~="box"][class~="generalbox"].info {
+        margin: 0 0 $salek-page-header-gap;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        .coursename {
+            margin: 0 0 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        :is(.summary, .teachers) {
+            margin: 0 0 12px;
+            padding: 0;
+
+            :is(p, li):last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .content > [class~="d-flex"] > .flex-grow-1 > :last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    > #notice[class~="box"][class~="generalbox"]:not(.modal) {
+        margin: 0 0 12px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text;
+    }
+
+    .continuebutton {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+}
+
+// Section 26, continued: parts that only the group and permission pages have.
+body.salek-participants-page #region-main div[role="main"] {
+    // Section titles: later headings under a page selector (the one right under it is its
+    // subtitle, page-header part), the headings of the groups page, the user selectors and the
+    // overview, all one size.
+    > #action_bar ~ * ~ h2,
+    h3:not(.main, .mform *, .modal-in-page *, .coursename) {
+        margin: 24px 0 12px;
+        color: $salek-text-strong;
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.4;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+
+    // Lists: cells aligned at the start like the methods list; the role list as wide as the page.
+    table.generaltable:not(.rolecap, .roleassigntable, .groupmanagementtable) {
+        width: 100%;
+
+        > :is(thead, tbody) > tr > :is(th, td) {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Row actions (groupings: edit, delete, show groups).
+    table.generaltable td.lastcol > a:has(> .icon) {
+        @include salek-row-action;
+    }
+
+    // "Back" above the title (assigning roles): the page header follows 16px below it.
+    > .tertiary-navigation:not(#action_bar) {
+        margin: 0 0 16px;
+        padding: 0;
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // A group's name and description above its member lists: one soft panel.
+    .groupinfobox {
+        margin: 0 0 $salek-page-header-gap;
+        padding: 20px 24px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid $salek-line;
+        border-radius: 12px;
+        background-color: $salek-subtle;
+        box-shadow: none;
+
+        h3 {
+            margin: 0 0 4px;
+        }
+
+        .group-description p:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // Groups page: the groups and the members of the chosen group as two lists, each with its
+    // buttons in rows under it instead of one button per line; in line with the title (the
+    // container's padding put them 12px in).
+    div.groupmanagementtable {
+        padding-inline: 0;
+    }
+
+    .groupmanagementtable > [class~="row"] > [class*="col-"] {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 8px;
+
+        > [class~="mb-3"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > [class~="mb-3"]:has(select),
+        > h3 {
+            flex-basis: 100%;
+        }
+
+        > h3 {
+            margin: 16px 0 4px;
+        }
+
+        // Moodle's "Show members" button is only for browsers without JavaScript.
+        > [class~="mb-3"]:not(:has(> :not([style*="display: none"], [class~="d-none"]))),
+        > [class~="mb-3"]:has(> #updatemembers) {
+            display: none;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        select {
+            height: 320px;
+            padding: 8px;
+            border: 1px solid $salek-card-border;
+            border-radius: 12px;
+            background-color: #fff;
+        }
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+        }
+
+        @include media-breakpoint-down(md) {
+            & + [class*="col-"] {
+                margin-top: $salek-page-header-gap;
+            }
+
+            select {
+                height: 220px;
+            }
+        }
+    }
+
+    // Choosing a person (checking permissions): no frame of its own (the sheet is the frame); the
+    // search, the people and the button: the components part.
+    #chooseuser {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > form > h3 {
+            margin: 0 0 12px;
+        }
+
+        .userselector {
+            gap: 16px;
+        }
+
+        // Without the script (or before it runs): Moodle's list as a card.
+        .userselector select:not(.salek-userpicker-source) {
+            width: 100%;
+            height: 320px;
+            padding: 8px;
+            border: 1px solid $salek-card-border;
+            border-radius: 12px;
+            background-color: #fff;
+        }
+    }
+
+    // "Assign another role", "Override permissions": label and list with the page's spacing.
+    > .backlink {
+        margin-top: $salek-page-header-gap;
+    }
+
+    // Permissions tables: wider than a phone, so they scroll sideways in their own box (the page
+    // scrolled sideways); the filter above them no wider than the page.
+    table.rolecap {
+        @include media-breakpoint-down(md) {
+            display: block;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    }
+
+    .capabilitysearchui {
+        max-width: 100%;
+    }
+
+    // Groups overview: an empty description box under a grouping name took 32px.
+    > [class~="box"][class~="generalbox"]:empty {
+        display: none;
+    }
+
+    // "Download as": 24px after the tables, its button as high as its list.
+    > .dataformatselector {
+        margin-top: $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+
+        [class~="btn"] {
+            display: inline-flex;
+            align-items: center;
+            min-height: $salek-control-height;
+        }
+    }
+}
+
+// Preserve the primary appearance of Moodle's secondary "Create grouping" action.
+// Positioning and spacing belong to the shared detached-header layout.
+body#page-group-groupings #region-main div[role="main"]:has(> #action_bar):has(> .buttons) {
+    > .buttons {
+        [class~="btn"] {
+            @include salek-page-action;
+            --bs-btn-color: #fff;
+            --bs-btn-bg: var(--bs-primary);
+            --bs-btn-border-color: var(--bs-primary);
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: var(--bs-primary);
+            --bs-btn-hover-border-color: var(--bs-primary);
+        }
+    }
+
+}

@@ -1,0 +1,59 @@
+// Salek: Activity pages: the activity icon and the breadcrumb above the tabs.
+
+/* 17. Activity pages: the activity icon and the breadcrumb on one line above the tab bar.
+       The heading next to the icon is hidden (admin SCSS), so the icon stood alone on a
+       second line. Only when the header has no action buttons, which would otherwise come
+       between the icon and the breadcrumb. */
+
+#page-header:has(.page-context-header .activityiconcontainer):not(:has(.header-actions-container > *)) {
+    > .w-100 {
+        padding-inline-start: 8px;
+
+        // Icon first, then the breadcrumb.
+        > .d-flex.align-items-center {
+            order: -1;
+            flex: none;
+            transform: translateY(8px);
+        }
+
+        > .d-flex.flex-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    .page-context-header {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0;
+    }
+
+    // Flex: as high as the icon (its line box made it 41px, so the icon sat above the
+    // breadcrumb's middle).
+    .page-header-image {
+        display: flex;
+        margin: 0;
+    }
+
+    // The icon in a rounded square of its activity colour, about the height of the breadcrumb
+    // text beside it.
+    // !important: Moodle sizes the image of a .icon-size-6 container with !important (40px).
+    .activityiconcontainer {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+
+        .activityicon {
+            width: 18px !important; /* stylelint-disable-line declaration-no-important */
+            height: 18px !important; /* stylelint-disable-line declaration-no-important */
+            max-width: 18px !important; /* stylelint-disable-line declaration-no-important */
+            max-height: 18px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // (Its look: the page-header part.)
+    .breadcrumb {
+        align-items: center;
+        margin: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}

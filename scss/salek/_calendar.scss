@@ -1,0 +1,663 @@
+// Salek: the month calendar (the calendar page and the Dashboard's calendar block).
+
+/* One white card: the month's name large at the start with the previous and next months as
+   round arrows at the end, the course filter and "New event" above; the month as a grid of
+   light lines, the weekend in a soft grey with red numbers, today tinted with its number in a
+   blue circle and the word "Today" under it. (Replaces the gradient band and dotted lines of
+   the site's "Raw initial SCSS" setting, some of which are !important, so these are too.) The
+   small calendar of the side blocks keeps Moodle's compact look. */
+
+@mixin salek-month-calendar {
+    body#page-calendar-view .maincalendar,
+    #block-region-content .block_calendar_month .maincalendar {
+        @content;
+    }
+}
+
+// The Dashboard's calendar block: a white card like the other blocks (its colour variable is
+// transparent).
+#block-region-content .block_calendar_month {
+    background-color: #fff;
+}
+
+// The calendar page has no white sheet: the calendar is a card of its own.
+body#page-calendar-view .maincalendar {
+    @include salek-card;
+    padding: $salek-space-inset;
+
+    @include media-breakpoint-down(md) {
+        padding: $salek-space-inset-sm;
+    }
+}
+
+@include salek-month-calendar {
+    // View, course filter and "New event": on wide screens in the month's row, before the
+    // arrows (the month's container is their frame); on phones a row of their own above it.
+    [id^="calendar-month-"] {
+        position: relative;
+    }
+
+    // (Moodle calls the weekday cells "header" too: only the toolbar above the month.)
+    [id^="calendar-month-"] > .header {
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > * {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        @include media-breakpoint-up(md) {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            inset-inline-end: 96px; // The two arrows and their gaps.
+            margin: 0;
+        }
+    }
+
+    // The month's name and the arrows.
+    .calendarwrapper .controls {
+        width: 100%;
+        margin: 0 0 16px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 0;
+        background: none;
+    }
+
+    .calendar-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        > .hide {
+            display: none;
+        }
+
+        .current {
+            order: -1;
+            flex: 1 1 auto;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            float: none;
+            width: auto;
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: start;
+        }
+
+        // Previous and next month: round arrow buttons (the month names stay for screen readers).
+        .previous,
+        .next {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            float: none;
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 50%;
+            background-color: $salek-field-bg;
+            color: $salek-text;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-field-bg-hover;
+                color: $salek-text-strong;
+            }
+
+            .arrow_text {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+
+            .arrow {
+                @include salek-mask-icon($salek-icon-chevron, 16px);
+                font-size: 0;
+            }
+        }
+
+        // The arrows point along the reading direction (previous: back).
+        .previous .arrow {
+            /*rtl:ignore*/
+            transform: scaleX(-1);
+        }
+
+        &:is([dir="rtl"] *) {
+            .previous .arrow {
+                /*rtl:ignore*/
+                transform: none;
+            }
+
+            .next .arrow {
+                /*rtl:ignore*/
+                transform: scaleX(-1);
+            }
+        }
+    }
+
+    // The month grid.
+    table.calendarmonth {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+
+        thead,
+        tbody {
+            background: none;
+            clip-path: none;
+        }
+
+        th {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 8px 12px 10px !important; /* stylelint-disable-line declaration-no-important */
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 600;
+            text-align: start;
+        }
+
+        td {
+            padding: 8px !important; /* stylelint-disable-line declaration-no-important */
+
+            // Square days: the same padding all round and the day's inner box as high as it is wide
+            // (Moodle gave it a fixed height, which made the days tall). (A ratio, not container
+            // units: Moodle's right-to-left step drops "cqw" values.)
+            > div {
+                height: auto !important; /* stylelint-disable-line declaration-no-important */
+                min-height: 0;
+            }
+
+            > div.d-md-block {
+                aspect-ratio: 1;
+            }
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 0;
+            vertical-align: top;
+
+            + td {
+                border-inline-start: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .day-number-circle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                margin: 0;
+                border-radius: 50%;
+                line-height: 1;
+            }
+
+            .day-number {
+                padding: 0;
+                color: $salek-text-strong;
+                font-size: .9375rem;
+                font-weight: 500;
+            }
+        }
+
+        // The weekend (the site's calendar setting decides which days): soft grey, red numbers.
+        td.weekend {
+            background-color: #f7f8fb;
+
+            .day-number {
+                color: #b42318;
+            }
+        }
+
+        .clickable:hover {
+            background-color: $salek-band-bg !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Today: tinted, its number in a blue circle, the word "Today" (Moodle's own, in the
+        // cell's title) at the bottom.
+        td.today {
+            position: relative;
+            background-color: rgba(var(--bs-primary-rgb), .06) !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: inset 0 0 4px 0 rgb(15 108 191 / 16%);
+
+            .day-number-circle {
+                background-color: var(--bs-primary);
+                box-shadow: 0 4px 10px -4px var(--bs-primary);
+            }
+
+            .day-number {
+                color: #fff;
+            }
+        }
+
+        // Events in a day: small soft pills.
+        ul li > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            max-width: 100%;
+            margin-top: 4px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background-color: $salek-field-bg;
+            color: $salek-text;
+            font-size: .75rem;
+        }
+    }
+}
+
+// "Today" at the bottom of today's cell (Moodle's word, from the cell's title; wide screens).
+@include salek-month-calendar {
+    @include media-breakpoint-up(md) {
+        table.calendarmonth td.today::after {
+            content: attr(title);
+            position: absolute;
+            inset-block-end: 8px;
+            inset-inline-start: 12px;
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 700;
+        }
+    }
+}
+
+// Phones: a compact month (Moodle shows only the numbers there), the numbers centred.
+@include salek-month-calendar {
+    @include media-breakpoint-down(md) {
+        table.calendarmonth {
+            th {
+                padding: 6px 0 8px !important; /* stylelint-disable-line declaration-no-important */
+                text-align: center;
+            }
+
+            td {
+                height: 52px;
+                padding: 4px 0 !important; /* stylelint-disable-line declaration-no-important */
+                text-align: center !important; /* stylelint-disable-line declaration-no-important */
+                vertical-align: middle;
+
+                &::after {
+                    display: none !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+
+            td.today .day-number-circle {
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+/* Step 2 (theme JS calendarpanel): a side panel for today on the dotted card colour (the
+   label, the weekday, today's number large, the month, today's events and "New event" at the
+   bottom), the view and course filter in the month's row, "Today" between the arrows, the
+   weekend's day names in red and a legend under the month. On narrow screens the panel is
+   on top. */
+@include salek-month-calendar {
+    [id^="calendar-month-"]:has(> .salek-calpanel) {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        align-items: stretch;
+
+        > .salek-calmain {
+            min-width: 0;
+            padding: $salek-space-inset;
+        }
+
+        @include media-breakpoint-down(lg) {
+            grid-template-columns: minmax(0, 1fr);
+
+            > .salek-calmain {
+                padding: $salek-space-inset-sm;
+            }
+        }
+    }
+
+    &:has(.salek-calpanel) {
+        overflow: hidden;
+    }
+
+    // A clearer blue than the page's grey, with a fine blue edge all round (it stood out too
+    // little, most of all on phones); its outer corners follow the card's.
+    .salek-calpanel {
+        display: flex;
+        flex-direction: column;
+        padding: $salek-space-inset;
+        border: 1px solid #c5d4ec;
+        border-start-start-radius: $salek-card-radius;
+        border-end-start-radius: $salek-card-radius;
+        background: radial-gradient(#c3d1ea8f 1px, transparent 1px) 0 0 / 16px 16px, #e9f0fb;
+
+        // On top of the month on narrow screens: its top corners round.
+        @include media-breakpoint-down(lg) {
+            border-start-end-radius: $salek-card-radius;
+            border-end-start-radius: 0;
+        }
+    }
+
+    // The calendar block's links ("Full calendar", "Import or export calendars").
+    .salek-calpanel-actions .footer {
+        margin-top: 14px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        text-align: center;
+
+        a {
+            color: $salek-text-muted;
+        }
+    }
+
+    .salek-calpanel-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .salek-calpanel-label {
+        color: $salek-text-muted;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+    .salek-calpanel-pill {
+        padding: 2px 10px;
+        border: 1px solid #f7de9c;
+        border-radius: 999px;
+        background-color: #fff4da;
+        color: #8a5a00;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .salek-calpanel-weekday {
+        color: $salek-text;
+        font-size: 1rem;
+    }
+
+    .salek-calpanel-day {
+        color: $salek-text-strong;
+        font-size: 4.5rem;
+        font-weight: 300;
+        line-height: 1.1;
+    }
+
+    .salek-calpanel-month {
+        color: $salek-text-strong;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .salek-calpanel-rule {
+        height: 1px;
+        margin: 18px 0 16px;
+        border: 0;
+        background: linear-gradient(90deg, rgba(var(--bs-primary-rgb), .45), rgb(237 203 110 / 90%), transparent);
+        opacity: 1;
+    }
+
+    .salek-calpanel-title {
+        margin-bottom: 8px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    .salek-calpanel-empty {
+        padding: 12px 16px;
+        border: 1px dashed #c9d4e5;
+        border-radius: 14px;
+        background-color: rgb(255 255 255 / 60%);
+        color: $salek-text;
+        font-size: .875rem;
+    }
+
+    .salek-calpanel-events {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+            color: $salek-text-strong;
+            font-size: .875rem;
+            text-decoration: none;
+        }
+    }
+
+    .salek-calpanel-actions {
+        margin-top: auto;
+        padding-top: 24px;
+
+        [class~="btn-primary"] {
+            @include salek-page-action;
+            justify-content: center;
+            width: 100%;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The month beside the panel: one grid for its title, the view and course filter, the arrows,
+    // the month table and the legend. Moodle's wrappers around the title and the arrows give their
+    // parts to it (display: contents), so the filter, which stays outside the part Moodle redraws
+    // when another month or course is chosen, sits in the month's row.
+    .salek-calmain {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        column-gap: 8px;
+
+        > .calendarwrapper,
+        > .calendarwrapper > .controls,
+        .calendar-controls {
+            display: contents;
+        }
+
+        .calendar-controls > .hide {
+            display: none;
+        }
+
+        .calendar-controls .current {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        // (Moodle's padding on the toolbar, and the taller menus of the calendar page, set it a few
+        // pixels off the arrows: one height for all.)
+        > .header {
+            position: static;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            grid-row: 1;
+            grid-column: 2;
+            gap: 8px;
+            height: $salek-control-height;
+            margin: 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > * {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > [data-region="view-selector"] {
+                display: flex;
+                align-items: center;
+                height: $salek-control-height;
+
+                > .dropdown-toggle {
+                    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+
+            select,
+            .dropdown-toggle {
+                height: $salek-control-height;
+                min-height: $salek-control-height;
+                padding-block: 0;
+            }
+        }
+
+        .salek-cal-nav {
+            grid-row: 1;
+            grid-column: 3;
+        }
+
+        table.calendarmonth,
+        .salek-cal-legend,
+        .overlay-icon-container {
+            grid-column: 1 / -1;
+        }
+
+        table.calendarmonth {
+            margin-top: 16px;
+        }
+
+        // Phones: the month's name on its own line, the filter and the arrows under it.
+        @include media-breakpoint-down(md) {
+            grid-template-columns: auto minmax(0, 1fr);
+            row-gap: 12px;
+
+            .calendar-controls .current {
+                grid-column: 1 / -1;
+            }
+
+            > .header {
+                grid-row: 2;
+                grid-column: 1;
+            }
+
+            .salek-cal-nav {
+                grid-row: 2;
+                grid-column: 2;
+                justify-self: end;
+            }
+        }
+    }
+
+    // The arrows and "Today" in one soft frame, as high as the fields; each lights up white.
+    .calendar-controls .salek-cal-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        height: $salek-control-height;
+        padding: 3px;
+        border-radius: $salek-field-radius;
+        background-color: $salek-field-bg;
+
+        .previous,
+        .next,
+        .salek-cal-today {
+            height: 38px;
+            border-radius: 11px;
+            background-color: transparent;
+
+            &:hover {
+                background-color: #fff;
+                box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+            }
+        }
+
+        .previous,
+        .next {
+            width: 38px;
+        }
+    }
+
+    .calendar-controls .salek-cal-today {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 14px;
+        color: $salek-text-strong;
+        font-size: .875rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    table.calendarmonth th.salek-weekend {
+        color: #b42318;
+    }
+
+    // The legend under the month.
+    .salek-cal-legend {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 20px;
+        margin-top: 14px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+
+        > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            &::before {
+                content: "";
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: var(--bs-primary);
+            }
+        }
+
+        .salek-cal-legend-weekend {
+            color: #b42318;
+
+            &::before {
+                border: 1px solid $salek-line;
+                border-radius: 3px;
+                background-color: #f7f8fb;
+            }
+        }
+    }
+}
+
+// The calendar page: the card's padding goes to the two parts; the Dashboard: the block's
+// padding and title too (the panel carries the word "Calendar").
+body#page-calendar-view .maincalendar:has(.salek-calpanel) {
+    padding: 0;
+}
+
+// (Card classes written as [class~=]: the compiler copies .card-body and .card-title rules into
+// broken selectors, which made browsers drop the rule.)
+#page #block-region-content > section.block.block_calendar_month:has(.salek-calpanel) {
+    overflow: hidden; // The panel's colour follows the card's corners.
+
+    > [class~="card-body"] {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [class~="card-title"] {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [class~="card-text"] {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+

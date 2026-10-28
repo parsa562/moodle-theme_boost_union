@@ -1,0 +1,193 @@
+// Salek: Quiz "Add from the question bank" dialogue.
+
+/* 22. Quiz "Add from the question bank" dialogue: the filters card and the question table of
+       the question bank page (sections 16 and 15), sized for a dialogue. The quiz's own CSS
+       uses #page-mod-quiz-edit, so this does too. */
+#page-mod-quiz-edit .modal-dialog .questionbankwindow {
+    --salek-qb-pad: 20px;
+
+    @include salek-filter-card;
+
+    .filter-group[data-filterverb] {
+        margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .question-bank-table {
+        @include salek-data-table;
+        table-layout: auto; // The quiz sets fixed, with column widths wider than the dialogue.
+
+        > thead th {
+            width: auto !important; /* stylelint-disable-line declaration-no-important */ // Moodle's 800px for the name made the table wider than the dialogue.
+            height: 44px;
+            text-align: start;
+            vertical-align: middle !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .align-top.
+        }
+
+        > tbody > tr > * {
+            padding-block: 8px;
+        }
+
+        // The narrow first columns (add, select, type): room for their buttons and icons; the
+        // widths Moodle sets (30px for the checkbox) are less than their content.
+        > * > tr > :is(.addtoquizaction, .checkbox, .qtype) {
+            padding-inline: 6px;
+        }
+
+        > * > tr > :first-child {
+            padding-inline-start: 14px;
+        }
+
+        // Preview: an outlined icon button at the end of the row.
+        td.previewquestionaction a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #cfd6e0;
+            border-radius: 8px;
+            color: #475569;
+
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-eye, 15px);
+            }
+
+            &:hover {
+                border-color: #b6c0ce;
+                background-color: $salek-soft;
+            }
+        }
+
+        > thead > tr > th.addtoquizaction {
+            box-sizing: content-box;
+            width: 30px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > thead > tr > th.checkbox {
+            box-sizing: content-box;
+            width: 18px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > thead > tr > th.qtype {
+            box-sizing: content-box;
+            width: 32px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Question type: the icon in a tinted square, as on the question bank page.
+        td.qtype .icon {
+            box-sizing: content-box;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            padding: 8px;
+            border-radius: 9px;
+            background-color: #eef2f7;
+        }
+
+        // "Add to quiz": a round button in the brand tint.
+        td.addtoquizaction a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(var(--bs-primary-rgb), .1);
+            color: var(--bs-primary);
+
+            .icon {
+                margin: 0;
+            }
+
+            &:hover {
+                background-color: var(--bs-primary);
+                color: #fff;
+            }
+        }
+
+        // Name and text may wrap, so the table fits the dialogue and the preview column shows.
+        td.questionnametext,
+        td.questionnametext * {
+            white-space: normal !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .questionname {
+            color: $salek-text-strong;
+            font-weight: 500;
+        }
+
+        .questiontext {
+            color: $salek-text-muted;
+        }
+
+        th.checkbox .header-text {
+            display: flex;
+            align-items: center;
+        }
+
+        // Status (ready / draft) as the pill of the question bank page; version as a chip;
+        // "modified by" with its date small below the name.
+        td.questionstatus select.form-select {
+            min-height: 0;
+            width: auto;
+            height: 28px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-block: 0;
+            border: 0;
+            border-radius: 999px;
+            background-color: #e8f7ee;
+            box-shadow: none;
+            color: #0f6b37;
+            font-size: .75rem;
+            font-weight: 500;
+
+            &:has(option[value="draft"]:checked) {
+                background-color: #f1f4f8;
+                color: #475569;
+            }
+        }
+
+        .qbank-version {
+            padding: 2px 8px;
+            border-radius: 6px;
+            background-color: #f1f4f8;
+            color: #475569;
+            font-size: .75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        td.modifiername {
+            font-size: .8125rem;
+            white-space: nowrap;
+
+            .qbank-creator-name {
+                display: block;
+                font-weight: 500;
+            }
+
+            br {
+                display: none;
+            }
+
+            .date {
+                color: $salek-text-muted;
+                font-size: .75rem;
+            }
+        }
+
+        td.questionusage a {
+            font-weight: 600;
+        }
+    }
+
+    .question_table {
+        overflow: auto;
+        border: 1px solid #dfe5ee;
+        border-radius: 12px;
+    }
+}

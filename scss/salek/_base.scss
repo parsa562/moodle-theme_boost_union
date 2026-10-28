@@ -1,0 +1,96 @@
+// Salek: Shared design tokens and surfaces; the round open/close toggle.
+
+/* ==========================================================================
+   Salek: shared surfaces, controls and course page.
+   Builds on the spacing system above: shared radii and shadows for page-level
+   white boxes, a smaller radius inside them, light hairlines instead of grey
+   lines, white fields with a hairline border, soft secondary buttons.
+   ========================================================================== */
+
+/* 1. Page-level white boxes: shared surfaces, with a separate radius for the tab bar.
+      The admin SCSS sets .5rem !important on #region-main and the tab bar. */
+body:not(.pagelayout-frontpage) #page.drawers #region-main {
+    border-radius: $salek-radius !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: $salek-card-shadow;
+}
+
+@include salek-canvas-pages {
+    #page.drawers #region-main {
+        box-shadow: none; // Transparent on canvas pages; the cards carry the shadow.
+    }
+}
+
+#page.drawers .secondary-navigation .navigation {
+    border-radius: $salek-secondary-navbar-radius !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: $salek-card-shadow;
+
+    // The tab list paints its own background over the navigation surface.
+    > .nav-tabs {
+        border-radius: inherit !important; /* stylelint-disable-line declaration-no-important */
+
+        // (Only the first tab meets the bar's corners; the bar runs on past the last one.)
+        > .nav-item:first-child > .nav-link {
+            border-start-start-radius: $salek-secondary-navbar-radius !important; /* stylelint-disable-line declaration-no-important */
+            border-end-start-radius: $salek-secondary-navbar-radius !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+#bucourseheader [class~="rounded"] { // Attribute form: .rounded is @extended by Boost Union (see 4).
+    border-radius: $salek-radius !important; /* stylelint-disable-line declaration-no-important */
+}
+
+#bucourseheader.headingabove > .bucourseheader-shadow,
+#bucourseheader.stacked > .bucourseheader-shadow {
+    box-shadow: $salek-card-shadow;
+}
+
+/* Scrollbars: one thin design everywhere, a soft blue-grey bar without a track. (!important:
+   Moodle gives the page, the drawers and the report builder their own dark bars, each on its
+   own selector.) The page keeps the bar's place free, so the content does not move sideways
+   when a page grows long enough to scroll. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(79, 110, 140, .3) transparent !important; /* stylelint-disable-line declaration-no-important */
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+// (With that place kept, Bootstrap's room for the bar while a dialog is open would be added twice:
+// it pads the page by the bar's width, and the content shrank.)
+body.modal-open {
+    /*rtl:ignore*/
+    padding-right: 0 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* The navbar's menu and the tab bar (Moodle's "more menu"): shown at once. Moodle keeps them
+   invisible until its script has put the items that do not fit under "More", so every page
+   first showed an empty bar. The script finds those items by the menu wrapping onto a second
+   line, so the menu may still wrap: the bar (one line high) hides that line until then. */
+.moremenu:not(.observed) {
+    opacity: 1;
+    overflow: hidden;
+
+    > .nav {
+        // (Each item at its full width; those that do not fit go to the hidden line, not squeezed.)
+        > .nav-item {
+            flex: none;
+        }
+
+        .nav-link {
+            white-space: nowrap;
+        }
+
+        // The items Moodle always puts under "More" (the tab bar's less used pages): already
+        // away, and "More" already there, as the script will leave them.
+        > .nav-item[data-forceintomoremenu="true"] {
+            display: none;
+        }
+    }
+
+    &:has([data-forceintomoremenu="true"]) .dropdownmoremenu {
+        display: block !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-none.)
+    }
+}

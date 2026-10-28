@@ -518,6 +518,7 @@ class course_renderer extends \core_course_renderer {
         $templatedata['visible'] = $course->visible;
         $templatedata['fullname'] = $chelper->get_course_formatted_name($course);
         $templatedata['viewurl'] = new \core\url('/course/view.php', ['id' => $course->id]);
+        $templatedata['startdate'] = $course->startdate; // (For sorting the front page's cards by date.)
 
         // Amend course image, if enabled.
         if ($templatedata['showcourseimage']) {
@@ -533,13 +534,16 @@ class course_renderer extends \core_course_renderer {
             $templatedata['contacts'] = $courseutil->get_course_contacts();
             $templatedata['hascontacts'] = (count($templatedata['contacts']) > 0);
 
-            // Prepare compact course contacts for course cards.
+            // Prepare compact course contacts for course cards: the first teacher with their name,
+            // the others behind a "+N" button (their names also as its tooltip).
             if ($templatedata['hascontacts']) {
                 $contacts = array_values($templatedata['contacts']);
-                $templatedata['displaycontacts'] = array_slice($contacts, 0, 4);
-                $templatedata['remainingcontacts'] = array_slice($contacts, 4);
+                $templatedata['displaycontacts'] = array_slice($contacts, 0, 1);
+                $templatedata['remainingcontacts'] = array_slice($contacts, 1);
                 $templatedata['additionalcontactcount'] = count($templatedata['remainingcontacts']);
                 $templatedata['hasadditionalcontacts'] = ($templatedata['additionalcontactcount'] > 0);
+                $templatedata['remainingcontactnames'] = implode(get_string('listsep', 'langconfig') . ' ',
+                    array_column($templatedata['remainingcontacts'], 'contactname'));
             }
         }
 

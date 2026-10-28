@@ -1,0 +1,344 @@
+// Salek: Participants page; data table and page selector mixins.
+
+/* 18. Participants page, in the design of the question bank (section 16): a hero (the page
+       selector and "Enrol users"), the filters card, and the list as a card — the count as
+       its header, the initial letters, the table, and "With selected users" as its footer. */
+
+body#page-course-view-participants #page.drawers #region-main {
+    --salek-qb-pad: 32px;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent;
+    box-shadow: none;
+    color: $salek-text-strong;
+
+    @include media-breakpoint-down(md) {
+        --salek-qb-pad: 16px;
+    }
+
+    div[role="main"] {
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Hero: the page selector as the heading, "Enrol users" at the end.
+    #action_bar {
+        @include salek-hero-card;
+        margin-top: 9px; // With the tab bar's 15px bottom padding: 24px.
+        padding: 26px $salek-card-pad;
+
+        > .d-flex {
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // The page selector: the title with a round arrow button, so it reads as a choice.
+        .tertiary-navigation-selector .dropdown-toggle {
+            @include salek-page-selector;
+        }
+
+        [class~="btn-primary"],
+        [class~="btn-secondary"] {
+            @include salek-page-action;
+        }
+    }
+
+    // Filters card below the hero.
+    #action_bar + form {
+        margin-top: 24px;
+    }
+
+    // The list card.
+    .userlist {
+        margin-top: 24px;
+
+        > form > div {
+            @include salek-card;
+            overflow: clip;
+        }
+
+        > form > div > br {
+            display: none;
+        }
+    }
+
+    // Card header: the number of participants.
+    [data-region="participant-count"] {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        padding: 14px $salek-card-pad;
+        border-bottom: 1px solid $salek-card-border;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    // First and last name letters: small round buttons on a light band.
+    .initialbar {
+        align-items: center;
+        gap: 4px 10px;
+        margin: 0;
+        padding: 10px $salek-card-pad;
+        background-color: $salek-band-bg;
+
+        + .initialbar {
+            padding-top: 0;
+        }
+
+        &.lastinitial {
+            border-bottom: 1px solid $salek-table-head-line;
+        }
+    }
+
+    .initialbarlabel {
+        min-width: 80px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+    }
+
+    .initialbargroups .pagination {
+        gap: 2px;
+        margin: 0;
+    }
+
+    .initialbargroups .page-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 6px;
+        border: 0;
+        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
+        background: transparent;
+        color: $salek-text;
+        font-size: .8125rem;
+
+        &:hover {
+            background-color: #e2e8f0;
+        }
+    }
+
+    .initialbargroups .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+
+    .table-responsive {
+        margin: 0;
+    }
+
+    #participants {
+        @include salek-data-table;
+
+        // Name with the initials avatar or the picture.
+        .userinitials,
+        .userpicture {
+            width: 34px;
+            height: 34px;
+            margin-inline-end: 10px;
+            border-radius: 50%;
+        }
+
+        .userinitials {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e3edfb;
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        th.cell a {
+            color: $salek-text-strong;
+            font-weight: 500;
+        }
+
+        // Avatars in a few soft colours, taking turns down the list.
+        @each $i, $bg, $fg in (1, #fff4da, #8a5a00), (2, #e3edfb, #1859c9), (3, #f1ecfe, #6236c9),
+                (4, #e4f6f1, #0b7261), (5, #fdedf3, #ae2161), (6, #eef2f7, #475569) {
+            > tbody > tr:nth-child(6n + #{$i}) .userinitials {
+                background-color: $bg;
+                color: $fg;
+            }
+        }
+
+        // Roles: one coloured label per role (spans from the Salek change in
+        // core_user\output\user_roles_editable): teachers amber, students blue, managers purple,
+        // other roles grey.
+        .inplaceeditable[data-itemtype="user_roles"] > .quickeditlink {
+            position: relative;
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .salek-role {
+            padding: 2px 10px;
+            border: 1px solid #dfe5ee;
+            border-radius: 8px;
+            background-color: #f1f4f8;
+            color: #475569;
+            font-size: .75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .salek-role-editingteacher,
+        .salek-role-teacher {
+            border-color: #f7de9c;
+            background-color: #fff4da;
+            color: #8a5a00;
+        }
+
+        .salek-role-student {
+            border-color: #c9dbf7;
+            background-color: #eaf1fd;
+            color: #1859c9;
+        }
+
+        .salek-role-manager {
+            border-color: #ddd0fb;
+            background-color: #f1ecfe;
+            color: #6236c9;
+        }
+
+        // The edit pencil sits just after the labels (shown with the row).
+        .inplaceeditable[data-itemtype="user_roles"] .quickediticon {
+            position: absolute;
+            inset-inline-start: calc(100% + 4px);
+            color: #94a3b8;
+
+            .icon {
+                width: auto;
+                height: auto;
+                font-size: .6875rem;
+            }
+        }
+
+        // Last access: a small clock before the time.
+        td.c5::before {
+            @include salek-mask-icon($salek-icon-clock, 14px);
+            margin-inline-end: 6px;
+            color: #64748b;
+            vertical-align: -2px;
+        }
+
+        td.cell:not(:first-child) {
+            color: $salek-text;
+        }
+
+        // Enrolment status: a pill with a dot, then small outlined icon buttons.
+        [data-status] {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                height: 28px;
+                margin-inline-end: 6px;
+                padding: 0 10px;
+                border-radius: 999px;
+                background-color: #e8f7ee !important; /* stylelint-disable-line declaration-no-important */
+                color: #0f6b37 !important; /* stylelint-disable-line declaration-no-important */
+                font-size: .75rem;
+                font-weight: 500;
+
+                &::before {
+                    content: "";
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 50%;
+                    background-color: #1da453;
+                }
+
+                &:not(.bg-success) {
+                    background-color: #f1f4f8 !important; /* stylelint-disable-line declaration-no-important */
+                    color: #475569 !important; /* stylelint-disable-line declaration-no-important */
+
+                    &::before {
+                        background-color: #94a3b8;
+                    }
+                }
+            }
+
+            > a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                height: 30px;
+                border: 1px solid #cfd6e0;
+                border-radius: 8px;
+                background-color: #fff;
+                color: #475569;
+
+                .icon {
+                    display: none;
+                }
+
+                &::before {
+                    @include salek-mask-icon($salek-icon-edit, 14px);
+                }
+
+                &[data-action="showdetails"]::before {
+                    mask-image: $salek-icon-info;
+                }
+
+                &[data-action="unenrol"]::before {
+                    mask-image: $salek-icon-trash;
+                }
+
+                // Unenrol: red, as it removes the person from the course.
+                &[data-action="unenrol"] {
+                    border-color: #f3c4c4;
+                    color: #dc2626;
+
+                    &:hover {
+                        border-color: #e9a3a3;
+                        background-color: #fef2f2;
+                        color: #b91c1c;
+                    }
+                }
+
+                &:hover {
+                    border-color: #b6c0ce;
+                    background-color: $salek-soft;
+                    color: $salek-text-strong;
+                }
+            }
+        }
+    }
+
+    // Card footer: "With selected users" and the page links.
+    .userlist .buttons,
+    .userlist [data-region="core_table/dynamic"] > nav {
+        margin: 0;
+        padding: 14px $salek-card-pad;
+        border-top: 1px solid $salek-card-border;
+        background-color: $salek-band-bg;
+    }
+
+    .userlist .buttons .form-select {
+        border-color: $salek-control-border;
+        background-color: #fff;
+        box-shadow: none;
+    }
+
+    // The second "Enrol users" below the list.
+    .userlist + .d-flex {
+        margin-top: 16px;
+    }
+}

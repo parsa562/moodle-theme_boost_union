@@ -1,0 +1,671 @@
+// Salek: Front page and course category course cards, content widths, the front page layout.
+
+$salek-home-gold: #edcb6e;
+$salek-icon-arrow-forward: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E");
+$salek-icon-grid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='6.5' height='6.5' rx='1.5'/%3E%3Crect x='13.5' y='4' width='6.5' height='6.5' rx='1.5'/%3E%3Crect x='4' y='13.5' width='6.5' height='6.5' rx='1.5'/%3E%3Crect x='13.5' y='13.5' width='6.5' height='6.5' rx='1.5'/%3E%3C/svg%3E");
+$salek-icon-rows: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01'/%3E%3C/svg%3E");
+
+/* The course cards (front page and course categories): a white rounded card, the course image
+   inset, the short name in small capitals, the name, two lines of summary ("More" shows it all),
+   and a footer: the first teacher with their name ("+N" opens the others) and a
+   round arrow to the course. Three cards a row on wide screens, two on tablets, one on phones.
+   Also the cards of "My courses" (section in _my-courses.scss). */
+@mixin salek-course-cards {
+    .card-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+        margin: 0;
+
+        @include media-breakpoint-up(sm) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @include media-breakpoint-up(lg) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        > .col {
+            width: auto;
+            max-width: none;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-2.)
+            padding: 0;
+        }
+
+        // A card left out by the search or the category (front page bar).
+        > .col[hidden] {
+            display: none !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex.)
+        }
+    }
+
+    .course-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mx-2 and .mb-3.)
+        padding: 12px;
+        overflow: visible !important; /* stylelint-disable-line declaration-no-important */ // (The teachers' list opens over the card's edge.)
+        border: 0;
+        border-radius: $salek-card-radius;
+        background-color: #fff;
+        box-shadow: $salek-card-shadow;
+        transition: box-shadow .2s ease, transform .2s ease;
+
+        &:hover {
+            box-shadow: 0 14px 30px -14px rgb(15 23 42 / 22%);
+            transform: translateY(-2px);
+        }
+
+        > a:first-child {
+            display: block;
+            margin: 0;
+        }
+
+        .card-img-top {
+            position: relative;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            background-position: center;
+            background-size: cover;
+        }
+
+        .card-body {
+            flex: 1 1 auto;
+            padding: 16px 4px 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .px-3.)
+        }
+
+        .course-card-shortname {
+            color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-muted.)
+            font-size: .6875rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+
+            .small {
+                font-size: inherit;
+            }
+        }
+
+        .coursename {
+            display: block;
+            margin: 6px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-strong;
+            font-size: 1.0625rem;
+            font-weight: 700;
+            line-height: 1.45;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        // Two lines of summary; "More" (when there is more) shows it all in the card.
+        .course-card-summary {
+            margin-top: 8px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            line-height: 1.65;
+
+            &::after {
+                display: none; // (No fade over the last line.)
+            }
+        }
+
+        .course-card-summary:not(.is-open) .course-card-summary-content {
+            display: -webkit-box;
+            max-height: 3.3em !important; /* stylelint-disable-line declaration-no-important */ // (Over the site's older card rules.)
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+
+            * {
+                display: inline;
+                margin: 0;
+            }
+
+            br {
+                display: none;
+            }
+        }
+
+        // Open: all of it, a long one scrolling inside the card (the row of cards stays even).
+        .course-card-summary.is-open .course-card-summary-content {
+            max-height: 14em !important; /* stylelint-disable-line declaration-no-important */
+            overflow-y: auto;
+
+            p:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // "More" / "Less": a small link under the text, only when the text is longer.
+        .course-card-summary-toggle {
+            display: none;
+            margin: 4px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0;
+            border: 0;
+            background: none;
+            color: var(--bs-primary);
+            font-size: .8125rem;
+            font-weight: 600;
+
+            .summary-less {
+                display: none;
+            }
+        }
+
+        .course-card-summary.has-overflow .course-card-summary-toggle {
+            display: inline-block;
+        }
+
+        .course-card-summary.is-open .course-card-summary-toggle {
+            .summary-more {
+                display: none;
+            }
+
+            .summary-less {
+                display: inline;
+            }
+        }
+
+        // Footer: the teacher at the start, the arrow at the end.
+        .course-card-teacher-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 0;
+            margin-top: auto;
+            padding: 16px 4px 4px !important; /* stylelint-disable-line declaration-no-important */
+            background: none;
+        }
+
+        .course-card-contacts {
+            position: relative;
+            display: flex;
+            flex: 1 1 auto;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .course-card-contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            color: $salek-text;
+            font-size: .8125rem;
+            text-decoration: none;
+        }
+
+        a.course-card-contact:hover {
+            color: var(--bs-primary);
+        }
+
+        .course-card-contact-avatar {
+            flex: none;
+            width: 30px;
+            height: 30px;
+            margin: 0;
+            background-color: #e3edfb;
+        }
+
+        .course-card-contact-name {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        // "+N": the other teachers, in a small list that opens above the teacher, as wide as needed
+        // (the card's width at most): each one a row with their picture and name.
+        .course-card-contact-extra {
+            flex: none;
+        }
+
+        // (The number reads "+2" in Persian too; none of the site's older card rules' ring or arrow.)
+        .course-card-contact-more {
+            min-width: 0;
+            height: auto;
+            padding: 2px 8px;
+            border: 0;
+            border-radius: 999px;
+            outline: 0;
+            background-color: #e4edf8;
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            /*rtl:ignore*/
+            direction: ltr;
+            unicode-bidi: isolate;
+
+            &::before,
+            &::after {
+                content: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--bs-primary);
+                outline-offset: 2px;
+            }
+        }
+
+        .course-card-contact-extra.is-open .course-card-contact-more {
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+
+        .course-card-contact-extra-list {
+            position: absolute;
+            z-index: 5;
+            bottom: calc(100% + 10px);
+            inset-inline-start: -8px;
+            display: none;
+            flex-direction: column;
+            align-items: stretch !important; /* stylelint-disable-line declaration-no-important */ // (The rows full width, from the same start.)
+            gap: 2px;
+            width: max-content;
+            min-width: 200px;
+            max-width: calc(100% + 16px);
+            padding: 6px;
+            border-radius: 14px;
+            background-color: #fff;
+            box-shadow: 0 12px 32px -8px rgb(15 23 42 / 22%), 0 0 0 1px rgb(15 23 42 / 4%);
+
+            // (Each row from the same start: the site's older rules overlap the avatars.)
+            .course-card-contact {
+                display: flex;
+                justify-content: flex-start;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 6px 8px;
+                border-radius: 10px;
+
+                &:hover {
+                    background-color: $salek-soft;
+                }
+            }
+
+            .course-card-contact-avatar {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        .course-card-contact-extra.is-open > .course-card-contact-extra-list {
+            display: flex;
+        }
+
+        // The round arrow to the course (pointing along the reading direction).
+        .course-card-go {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            margin-inline-start: auto;
+            border: 1px solid $salek-line;
+            border-radius: 50%;
+            color: $salek-text-strong;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+
+            &::before {
+                content: "";
+                width: 16px;
+                height: 16px;
+                background-color: currentColor;
+                mask: $salek-icon-arrow-forward center / contain no-repeat;
+            }
+
+            [dir="rtl"] &::before {
+                /*rtl:ignore*/
+                transform: scaleX(-1);
+            }
+        }
+
+        &:hover .course-card-go {
+            border-color: var(--bs-primary);
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+    }
+}
+
+// (With "#page": the site's "Raw SCSS" setting has older card rules, some with !important.)
+body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card {
+    margin-inline: 0 !important; /* stylelint-disable-line declaration-no-important */ // (The cards as wide as the bar above them.)
+    @include salek-course-cards;
+}
+
+/* The front page's course list: the title with a short brand-coloured line under it; the bar to
+   search, filter, sort and view the cards (theme JS frontpagecourses). */
+.pagelayout-frontpage #frontpage-available-course-list {
+    position: relative;
+    margin-top: 16px;
+    padding-top: 32px;
+
+    > h2 {
+        position: relative;
+        margin: 0 0 24px;
+        padding-bottom: 14px;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 700;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            inset-inline-start: 0;
+            width: 44px;
+            height: 3px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--bs-primary), $salek-home-gold);
+        }
+    }
+
+    // Until the bar is in place, its room is kept (the cards do not move down when it comes).
+    @at-root body.jsenabled #frontpage-available-course-list:not(.salek-courses-ready) > h2 {
+        margin-bottom: calc(24px + 60px + 24px);
+
+        @include media-breakpoint-down(md) {
+            margin-bottom: calc(24px + 112px + 24px);
+        }
+    }
+}
+
+.salek-courses-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 8px;
+    border-radius: $salek-card-radius;
+    background-color: #fff;
+    box-shadow: $salek-card-shadow;
+
+    .salek-courses-search {
+        flex: 1 1 260px;
+        margin: 0;
+
+        .form-control {
+            height: 44px;
+            padding-inline-start: 40px;
+            border: 0;
+            border-radius: 14px;
+            background: $salek-icon-search no-repeat left 14px center / 16px, $salek-field-bg;
+            font-size: .875rem;
+
+            &:focus {
+                background-color: #fff;
+            }
+        }
+    }
+
+    &:is([dir="rtl"] *) .salek-courses-search .form-control {
+        /*rtl:ignore*/
+        background-position: right 14px center;
+    }
+
+    // "Category" and "Sort": a grey field with a quiet label in front of the choice.
+    .salek-courses-choice {
+        --salek-field: transparent;
+        --salek-field-hover: transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        height: 44px;
+        margin: 0;
+        padding-inline-start: 12px;
+        border-radius: 14px;
+        background-color: $salek-field-bg;
+
+        .form-select {
+            min-height: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over the fields' 44px.)
+            height: 44px;
+            padding-inline-start: 6px;
+            font-size: .8125rem;
+            font-weight: 600;
+        }
+    }
+
+    .salek-courses-choice-label {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        white-space: nowrap;
+    }
+
+    .salek-courses-bar-end {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-inline-start: auto;
+        padding-inline-start: 4px;
+    }
+
+    .salek-courses-count {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        white-space: nowrap;
+    }
+
+    // Cards / list: one joined control, the chosen one white.
+    .salek-courses-views {
+        display: inline-flex;
+        padding: 3px;
+        border-radius: 12px;
+        background-color: $salek-field-bg;
+    }
+
+    .salek-courses-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 0;
+        border-radius: 10px;
+        background-color: transparent;
+        color: $salek-text-muted;
+
+        &::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: currentColor;
+        }
+
+        &[aria-pressed="true"] {
+            background-color: #fff;
+            box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+            color: var(--bs-primary);
+        }
+    }
+
+    .salek-courses-view-cards::before {
+        mask: $salek-icon-grid center / contain no-repeat;
+    }
+
+    .salek-courses-view-list::before {
+        mask: $salek-icon-rows center / contain no-repeat;
+    }
+
+    // Phones: the search on its own row; the sort, the count and the views on the next.
+    @include media-breakpoint-down(md) {
+        .salek-courses-search {
+            flex-basis: 100%;
+        }
+
+        .salek-courses-choice {
+            flex: 1 1 auto;
+            min-width: 0;
+
+            .form-select {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+
+        .salek-courses-bar-end {
+            flex: none;
+        }
+    }
+}
+
+// In use: the whole grey field turns white with the site's blue ring (the search field, and the
+// sort's field with its label), not only the dropdown inside it.
+body #page .salek-courses-bar {
+    .salek-courses-search .form-control:focus,
+    .salek-courses-choice:focus-within {
+        background-color: #fff;
+        box-shadow: 0 0 0 1px var(--bs-primary), 0 0 0 4px rgba(var(--bs-primary-rgb), .15) !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .salek-courses-choice .form-select:is(:focus, :focus:hover) {
+        border-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+.salek-courses-none {
+    padding: 40px 16px;
+    color: $salek-text-muted;
+    text-align: center;
+}
+
+// The list view: each course on one row (image, text, teacher and arrow); cards again on phones.
+body #page .salek-courses-as-list .theme_boost_union-courselisting.theme_boost_union-courselisting-card {
+    .card-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    @include media-breakpoint-up(md) {
+        .course-card {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr) auto;
+            align-items: center;
+            column-gap: 20px;
+
+            &:hover {
+                transform: none;
+            }
+
+            .card-body {
+                padding: 4px 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .course-card-teacher-footer {
+                gap: 16px;
+                padding: 0 8px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .course-card-contacts {
+                max-width: 220px;
+            }
+
+            > :not(a:first-child, .card-body, .course-card-teacher-footer) {
+                grid-column: 2;
+            }
+        }
+    }
+}
+
+/* The front page banner: the rounded corners of the site's cards and boxes; under it, apart from
+   the courses, a soft band in the brand's colours (blue to gold), fading out at its ends. */
+#themeboostunionslider {
+    .carousel-inner {
+        border-radius: $salek-card-radius !important; /* stylelint-disable-line declaration-no-important */ // (Over .rounded.)
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        inset-inline: 0;
+        height: 20px;
+        background: linear-gradient(90deg, transparent, #80b0dc 31%, #eed286 72%, transparent);
+        pointer-events: none;
+    }
+}
+
+/* Mobile slider image. */
+@media (max-width: 767.98px) {
+    #themeboostunionslider {
+        picture,
+        picture img {
+            display: block;
+            width: 100%;
+        }
+
+        picture img {
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+}
+
+/* Custom responsive content widths. */
+@include media-breakpoint-up(md) {
+    /* General limited-width pages. */
+    @if variable-exists(bu-general-page-maxwidth) {
+        .pagelayout-standard #page.drawers .main-inner,
+        .pagelayout-admin #page.drawers .main-inner,
+        body.cm-type-qbank #page.drawers .main-inner,
+        body.limitedwidth:not(.path-course) #page.drawers .main-inner {
+            max-width: $bu-general-page-maxwidth;
+        }
+    }
+
+    /* Course-context pages. */
+    @if variable-exists(course-content-maxwidth) {
+        body[class*="course-"]:not(.pagelayout-frontpage) #page.drawers .main-inner {
+            max-width: $course-content-maxwidth;
+            margin-inline: auto;
+        }
+    }
+
+    /* Homepage-specific width. */
+    @if variable-exists(bu-homepage-content-maxwidth) {
+        body.pagelayout-frontpage #page.drawers .main-inner {
+            max-width: $bu-homepage-content-maxwidth;
+        }
+    }
+
+    /* Navbar content width.
+       The boxed desktop navbar follows the same horizontal gutter as
+       Moodle's #page.drawers layout and uses the configured navbar max width. */
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        .navbar.fixed-top:not(.boost-union-menubar) {
+            width: auto;
+
+            /* Match the visible page content inside .main-inner.
+               Boost uses 3rem page gutters plus 0.5rem inner padding
+               on each side, so subtract one full $spacer from the
+               configured max width. */
+            max-width: calc(#{$bu-navbar-content-maxwidth} - #{$spacer});
+            margin-inline: $spacer * 3.5;
+        }
+
+        .navbar.fixed-top:not(.boost-union-menubar) > .container-fluid {
+            width: 100%;
+            max-width: none;
+            margin-inline: 0;
+        }
+    }
+}
+
+/* Homepage horizontal alignment. */
+@include media-breakpoint-up(md) {
+    .pagelayout-frontpage #page.drawers div[role="main"] {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}

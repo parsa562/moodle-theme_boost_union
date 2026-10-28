@@ -1,0 +1,942 @@
+// Salek: Question bank page.
+
+/* 15. Question bank: the main action ("Create a new question") as the primary button, and the
+       question table as a card: a tinted header, white rows on clear lines, cells centred
+       vertically, the question type in a tinted square, the edit menu as a small
+       outlined button, the status as a coloured pill and quieter secondary text. */
+
+body.path-question #region-main {
+    .createnewquestion [class~="btn-secondary"] {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: var(--bs-primary);
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: rgba(var(--bs-primary-rgb), .88);
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: var(--bs-primary);
+        // Moodle draws it disabled until its question type chooser is ready (a moment after the
+        // page shows): the same blue meanwhile, not a grey that turns blue.
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: var(--bs-primary);
+        --bs-btn-disabled-border-color: transparent;
+        --bs-btn-disabled-opacity: 1;
+    }
+
+    .question-bank-table {
+        --bs-table-striped-bg: transparent;
+        --bs-table-hover-bg: transparent;
+        --bs-border-color: #{$salek-table-row-line};
+        margin-bottom: 0;
+        color: #0f172a;
+        font-size: .875rem;
+
+        > thead th {
+            padding: 12px 14px;
+            border-top: 0;
+            border-bottom: 1px solid $salek-table-head-line;
+            background-color: $salek-table-head-bg;
+            color: #1e293b;
+            font-size: .8125rem;
+            font-weight: 600;
+            vertical-align: middle;
+
+            .header-text {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                white-space: nowrap;
+            }
+
+            // A column with one sort option has it as its label: same look as the other labels,
+            // the brand colour when the table is sorted by it.
+            .sorters:not(.dropdown) a {
+                color: #1e293b;
+
+                &:hover,
+                &:has(.icon) {
+                    color: var(--bs-primary);
+                }
+            }
+
+            // Columns with several sort options: a small sort button and a list
+            // (theme template core_question/column_header).
+            .sorters-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                padding: 0;
+                border: 0;
+                border-radius: 6px;
+                background: transparent;
+                color: #94a3b8;
+
+                .icon {
+                    margin: 0;
+                    font-size: .75rem;
+                }
+
+                &:hover,
+                &[aria-expanded="true"] {
+                    background-color: #dfe5ee;
+                    color: #0f172a;
+                }
+            }
+
+            .sorters.dropdown:has(.dropdown-menu .icon) .sorters-toggle {
+                color: var(--bs-primary);
+            }
+
+            .sorters.dropdown .dropdown-menu {
+                font-size: 0; // Hides the " / " between the links.
+
+                a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    color: $salek-ink;
+                    font-size: .875rem;
+                    font-weight: 500;
+
+                    &:hover {
+                        background-color: $salek-soft;
+                    }
+
+                    &:has(.icon) {
+                        background-color: rgba(var(--bs-primary-rgb), .1);
+                        color: var(--bs-primary);
+                    }
+                }
+            }
+
+            // Column menus (⋮) and their arrows: present but quiet.
+            .action-menu .dropdown-toggle {
+                color: #94a3b8;
+                font-size: .75rem;
+            }
+        }
+
+        > tbody > tr {
+            background-color: transparent; // Moodle stripes .generaltable rows on the row itself.
+
+            &:hover {
+                background-color: #f1f5fe;
+            }
+
+            &:has(> td.checkbox input:checked) {
+                background-color: rgba(var(--bs-primary-rgb), .07);
+            }
+
+            &:last-child > td {
+                border-bottom: 0;
+            }
+        }
+
+        > tbody td {
+            padding: 12px 14px;
+            border-top: 0;
+            border-bottom: 1px solid $salek-table-row-line;
+            vertical-align: middle;
+        }
+
+        // Some breathing room at the card's edges.
+        > * > tr > :first-child {
+            padding-inline-start: 20px;
+        }
+
+        > * > tr > :last-child {
+            padding-inline-end: 20px;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--bs-primary);
+        }
+
+        // Question type: the icon in a tinted square, coloured by type.
+        td.qtype .icon {
+            box-sizing: content-box;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            padding: 10px;
+            border-radius: 11px;
+            background-color: #eef2f7;
+        }
+
+        @each $qtype, $bg in (multichoice: #eaf1fd, truefalse: #f1ecfe, shortanswer: #e4f6f1,
+                numerical: #fff4da, essay: #fdedf3, match: #e9f5fb, gapselect: #f3f0e8,
+                ddwtos: #f3f0e8, ddimageortext: #eef5e6, ddmarker: #eef5e6, multianswer: #f6ecfa) {
+            td.qtype .icon[src*="/qtype_#{$qtype}/"] {
+                background-color: $bg;
+            }
+        }
+
+        // Question name: dark and medium weight.
+        td.qnameidnumbertags {
+
+            .quickeditlink {
+                color: #0f172a;
+                font-weight: 500;
+            }
+
+            .quickediticon {
+                color: #94a3b8;
+                font-size: .75rem;
+            }
+        }
+
+        // Edit menu: a small outlined button.
+        td.editmenu .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid #cfd6e0;
+            border-radius: 9px;
+            background-color: #fff;
+            color: #334155;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover,
+            &[aria-expanded="true"] {
+                border-color: #b6c0ce;
+                background-color: $salek-soft;
+            }
+        }
+
+        // Status: a pill with a dot, green when ready, grey for drafts.
+        td.questionstatus select.form-select {
+            --salek-status-bg: #e8f7ee;
+            --salek-status-fg: #0f6b37;
+            --salek-status-dot: #1da453;
+            min-height: 0;
+            height: 30px;
+            margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-block: 0;
+            padding-inline: 24px 30px;
+            border: 0;
+            border-radius: 999px;
+            background-color: var(--salek-status-bg);
+            background-image: radial-gradient(circle, var(--salek-status-dot) 3.5px, transparent 4px), escape-svg($form-select-indicator);
+            // The RTL step flips only the first of two positions, so each direction is written out.
+            /*rtl:ignore*/
+            background-position: left 8px center, right 10px center;
+            background-repeat: no-repeat;
+            background-size: 10px 10px, 12px 9px;
+            box-shadow: none;
+            color: var(--salek-status-fg);
+            font-size: .8125rem;
+            font-weight: 500;
+
+            width: auto;
+            min-width: 104px; // Room for the dot, the longest status and the arrow.
+
+            [dir="rtl"] & {
+                /*rtl:ignore*/
+                background-position: right 8px center, left 10px center;
+            }
+
+            &:has(option[value="draft"]:checked) {
+                --salek-status-bg: #f1f4f8;
+                --salek-status-fg: #475569;
+                --salek-status-dot: #94a3b8;
+            }
+        }
+
+        td.questionversionnumber,
+        .qbank_statistics,
+        .date {
+            color: $salek-text-muted;
+        }
+
+        // Created by / Modified by: name above, the date small below it.
+        .qbank-creator-name {
+            display: block;
+            font-weight: 500;
+        }
+
+        .qbank-creator-name + br {
+            display: none;
+        }
+
+        .qbank-creator-name ~ .date {
+            display: block;
+            font-size: .75rem;
+        }
+
+        td.commentcount a,
+        td.questionusage a {
+            font-weight: 500;
+        }
+    }
+}
+
+/* 16. Question bank page layout (with the Salek core change in core_question\local\bank\view,
+       which adds .qbank-hero, .qbank-card-header and .qbank-card-footer): no content sheet,
+       but three cards on the grey page — a hero (tertiary navigation, heading, category and
+       the main actions), the filters, and the question table with its header and footer. */
+
+// The filters card on the question bank and on the participants page (section 18).
+body#page-question-edit #page.drawers #region-main:has(.qbank-hero),
+body#page-course-view-participants #page.drawers #region-main {
+    @include salek-filter-card;
+}
+
+// #page.drawers: as heavy as the content-sheet rule in section 1, which this one undoes.
+body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
+    --salek-qb-pad: 32px;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent;
+    box-shadow: none;
+    color: $salek-text-strong;
+
+    @include media-breakpoint-down(md) {
+        --salek-qb-pad: 16px;
+    }
+
+    // The cards line up with the tab bar above: no sheet inset.
+    div[role="main"] {
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Hero, part 1: the tertiary navigation is the top of the hero card.
+    .tertiary-navigation {
+        margin: 9px 0 0; // With the tab bar's 15px bottom padding: the 24px gap of the cards below; none below (part 2 follows).
+        padding: 26px $salek-card-pad 0;
+        @include salek-hero-top;
+
+        .navitem {
+            margin: 0;
+        }
+
+        // The view selector as a pill with a yellow dot.
+        select.urlselect {
+            min-height: 0;
+            height: 34px;
+            padding-block: 0;
+            padding-inline: 28px 32px;
+            border-color: $salek-control-border;
+            border-radius: 999px;
+            background-color: #fff;
+            background-image: radial-gradient(circle, $salek-accent-yellow 3.5px, transparent 4px), escape-svg($form-select-indicator);
+            /*rtl:ignore*/
+            background-position: left 10px center, right 12px center;
+            background-repeat: no-repeat;
+            background-size: 10px 10px, 12px 9px;
+            box-shadow: none;
+            font-size: .8125rem;
+            font-weight: 500;
+        }
+    }
+
+    &:is([dir="rtl"] *) .tertiary-navigation select.urlselect {
+        /*rtl:ignore*/
+        background-position: right 10px center, left 12px center;
+    }
+
+    .questionbankwindow {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    // Its content takes part in the column above, so the hero can move to the top.
+    #questionscontainer {
+        display: contents;
+    }
+
+    // Hero, part 2: heading, category with its number of questions, and the main actions.
+    .qbank-hero {
+        order: -1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 0;
+        padding: 14px $salek-card-pad 26px;
+        @include salek-hero-bottom;
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 2.125rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .qbank-hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            color: #5b6577;
+            font-size: .875rem;
+        }
+
+        .qbank-hero-category {
+            color: $salek-text-strong;
+            font-weight: 600;
+        }
+
+        .qbank-hero-separator {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #c2c9d4;
+        }
+
+        // The controls block from Moodle: a row of buttons, "Create" last.
+        > div:last-child {
+            flex-direction: row !important; /* stylelint-disable-line declaration-no-important */
+            align-items: center !important; /* stylelint-disable-line declaration-no-important */
+            gap: 10px !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            .createnewquestion {
+                order: 2;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            [class~="btn"] {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                height: 44px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 16px;
+                border-radius: $salek-button-radius;
+                font-weight: 500;
+            }
+
+            [data-action="reset"] {
+                --bs-btn-color: #{$salek-text};
+                --bs-btn-bg: #fff;
+                --bs-btn-hover-color: #{$salek-text-strong};
+                --bs-btn-hover-bg: #{$salek-soft};
+                border: 1px solid $salek-control-border;
+
+                &::before {
+                    @include salek-mask-icon($salek-icon-reset);
+                }
+            }
+
+            .createnewquestion [class~="btn"] {
+                padding-inline: 14px 18px;
+                box-shadow: 0 6px 16px -8px var(--bs-primary);
+
+                &::before {
+                    content: "";
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 7px;
+                    background: $salek-icon-plus-white center / 14px no-repeat, rgb(255 255 255 / 18%);
+                }
+            }
+        }
+    }
+
+    // Table card: header (outside the form) and body (.categoryquestionscontainer) as one card.
+    .qbank-card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: -24px; // Joins the card body below (the column gap is 24px).
+        padding: 14px $salek-card-pad;
+        border: 1px solid $salek-card-border;
+        border-radius: $salek-card-radius-lg $salek-card-radius-lg 0 0;
+        background-color: #fff;
+
+        > div {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .qbank-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+
+            .qbank-count {
+                padding: 3px 9px;
+                border-radius: 999px;
+                background-color: #e2e8f0;
+                color: #1e293b;
+                font-size: .75rem;
+            }
+        }
+
+        // "Show question text": a quiet label next to a compact select.
+        .input-group {
+            align-items: center;
+            flex-wrap: wrap; // On phones the label goes above the select.
+            row-gap: 6px;
+        }
+
+        .input-group > .input-group-text {
+            min-height: 0;
+            padding-inline: 0 12px;
+            white-space: normal;
+            border: 0;
+            background: transparent;
+            color: $salek-text;
+            font-size: .875rem;
+        }
+
+        .input-group > .form-select {
+            flex: none;
+            width: auto;
+            min-height: 0;
+            height: 36px;
+            border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */
+            border-color: $salek-control-border;
+            background-color: #fff;
+            box-shadow: none;
+        }
+    }
+
+    .categoryquestionscontainer {
+        overflow: clip; // Rounds the corners without breaking the sticky top scroll bar inside.
+        border: 1px solid $salek-card-border;
+        border-top: 0;
+        border-radius: 0 0 $salek-card-radius-lg $salek-card-radius-lg;
+        background-color: #fff;
+        box-shadow: $salek-card-shadow-lg;
+
+        @include salek-bottom-scrollbar($salek-card-pad);
+    }
+
+    .question-bank-table {
+        > * > tr > :first-child {
+            padding-inline-start: $salek-card-pad;
+        }
+
+        > * > tr > :last-child {
+            padding-inline-end: $salek-card-pad;
+        }
+
+        // The checkbox column: Moodle sets 30px for it, less than the card's edge space, so the
+        // checkbox ran into the next column (which covered it in the header). Room for the
+        // 18px checkbox, the edge space and a small gap.
+        > thead > tr > th.checkbox {
+            box-sizing: content-box;
+            width: 22px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > * > tr > .checkbox {
+            padding-inline: $salek-card-pad 8px;
+        }
+
+        > thead th {
+            border-top: 1px solid $salek-table-head-line;
+        }
+
+        > thead > tr:first-child > th {
+            border-top: 0;
+        }
+
+        // Edit and preview as icon buttons, the full menu behind the third one.
+        .qbank-row-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .qbank-row-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border: 1px solid #cfd6e0;
+            border-radius: 9px;
+            background-color: #fff;
+            color: #475569;
+
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-more, 15px);
+            }
+
+            &[href*="/editquestion/question.php"]::before {
+                mask-image: $salek-icon-edit;
+            }
+
+            &[href*="/previewquestion/preview.php"]::before {
+                mask-image: $salek-icon-eye;
+            }
+
+            &::after {
+                display: none; // Dropdown caret of the "more" button.
+            }
+
+            &:hover,
+            &[aria-expanded="true"] {
+                border-color: #b6c0ce;
+                background-color: $salek-soft;
+                color: $salek-text-strong;
+            }
+        }
+
+        // Created by: initials avatar (theme template qbank_viewcreator/creator_display) beside
+        // the name and the date.
+        .qbank-avatar {
+            display: inline-flex;
+            float: left;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            margin: 3px 10px 0 0;
+            border-radius: 50%;
+            background-color: #e3edfb;
+            color: var(--bs-primary);
+            font-size: .6875rem;
+            font-weight: 600;
+        }
+
+        // Question type below the question name.
+        .qbank-qtype-name {
+            margin-top: 2px;
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        .qbank-version {
+            padding: 3px 8px;
+            border-radius: 6px;
+            background-color: #f1f4f8;
+            color: #475569;
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        // The inline "edit name" pencil appears with the row, beside the name without taking
+        // room of its own (so a long name does not wrap because of it).
+        .quickeditlink {
+            position: relative;
+        }
+
+        .quickediticon {
+            position: absolute;
+            top: 0;
+            inset-inline-start: 100%;
+            opacity: 0;
+        }
+
+        > tbody > tr:is(:hover, :focus-within) .quickediticon {
+            opacity: 1;
+        }
+
+        // Header: one line per cell. The column tools (⋮ menu, move handle) show when the
+        // header cell is pointed at or focused.
+        > thead th {
+            height: 48px;
+            padding-block: 0;
+            vertical-align: middle !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .align-top.
+
+            .header-text > .title,
+            .header-text > span {
+                margin-inline-end: 4px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .action-menu,
+            .qbank_columnsortorder-action-handle {
+                opacity: 0;
+            }
+
+            .action-menu {
+                margin-inline-start: auto;
+            }
+
+            .action-menu .dropdown-toggle::after {
+                display: none;
+            }
+
+            &:is(:hover, :focus-within) :is(.action-menu, .qbank_columnsortorder-action-handle) {
+                opacity: 1;
+            }
+
+            // The type column has no title of its own (the type shows in the Question column);
+            // only its sort arrow, when the list is sorted by type.
+            &.qtype .sorters {
+                justify-content: center;
+                width: 38px; // Centred over the type squares below.
+            }
+
+            &.qtype .sorters a {
+                font-size: 0;
+
+                .icon {
+                    margin: 0;
+                    font-size: .8125rem;
+                }
+            }
+        }
+
+        td.commentcount a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #475569;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-chat, 15px);
+            }
+        }
+    }
+
+    // Card footer: page links.
+    .qbank-card-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        padding: 16px $salek-card-pad;
+        border-top: 1px solid $salek-card-border;
+        background-color: $salek-band-bg;
+
+        .pagination {
+            gap: 4px;
+            margin: 0;
+        }
+
+        .page-link {
+            min-width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */
+            background: transparent;
+            color: $salek-text;
+            text-align: center;
+        }
+
+        .page-item.active .page-link {
+            background-color: $salek-text-strong;
+            color: #fff;
+        }
+    }
+
+    // Persian: no letter spacing (it breaks the joined letters).
+    &:lang(fa) * {
+        letter-spacing: normal !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// The filters header is in every core filter panel (participants and other lists too).
+@include salek-content-scope {
+    .filter-group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .filter-group-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+
+        // (No icon before the title: the template's funnel is not shown.)
+        .icon {
+            display: none;
+        }
+    }
+
+    // Number of conditions, counted from the rows present (up to 9). The two site languages
+    // are written out here, as a template cannot follow rows added and removed in the page.
+    .filter-group-count::before {
+        padding: 4px 10px;
+        border: 1px solid #edcb6e;
+        border-radius: 999px;
+        background-color: #ffefc2;
+        color: #4a3300;
+        font-size: .75rem;
+        font-weight: 500;
+    }
+
+    $salek-fa-digits: "۱" "۲" "۳" "۴" "۵" "۶" "۷" "۸" "۹";
+    @for $i from 1 through 9 {
+        $rows: '[data-filterregion="filters"] > [data-filterregion="filter"]:nth-child(#{$i}):last-child';
+
+        .filter-group:has(#{$rows}) .filter-group-count::before {
+            content: if($i == 1, "1 condition", "#{$i} conditions");
+        }
+
+        .filter-group:lang(fa):has(#{$rows}) .filter-group-count::before {
+            content: "#{nth($salek-fa-digits, $i)} شرط";
+        }
+    }
+}
+
+/* Question bank wide-table scrolling. */
+body.cm-type-qbank {
+    #question_table {
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.34)
+            rgba(79, 110, 140, 0.04);
+    }
+
+    #question_table::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    #question_table::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.04);
+    }
+
+    #question_table::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.34);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    #question_table::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.50);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 12px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(79, 110, 140, 0.10);
+        border-radius: 999px;
+        background: rgba(79, 110, 140, 0.06);
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.42)
+            rgba(79, 110, 140, 0.06);
+    }
+
+    .boost-union-qbank-top-scroll[hidden] {
+        display: none;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.06);
+        border-radius: 999px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.42);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.58);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll-spacer {
+        height: 1px;
+    }
+}
+
+/* Question bank sticky horizontal scrollbar zone. */
+body.cm-type-qbank {
+    .qbank-sticky-scroll-zone {
+        position: sticky;
+        top: var(--navbar-height, 54px);
+        z-index: 20;
+
+        padding-top: 14px;
+        padding-bottom: 14px;
+
+        background: rgb(255 255 255);
+    }
+
+    .qbank-sticky-scroll-zone
+    .boost-union-qbank-top-scroll {
+        position: static;
+        top: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    @media (max-width: 767.98px) {
+        .qbank-sticky-scroll-zone {
+            padding-top: 1px;
+            padding-bottom: 8px;
+            background: rgb(255 255 255);
+        }
+
+        .qbank-sticky-scroll-zone
+        .boost-union-qbank-top-scroll {
+            margin: 0;
+            background: rgb(255 255 255);
+            border: 0;
+            box-shadow: none;
+
+            scrollbar-color:
+                #005bb3c2
+                rgb(255 255 255);
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+            background: #005bb3c2;
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+            background: #005bb3e0;
+        }
+    }
+}
+
+// The ID number of each question (the one set on it; Moodle's blue badge after its name in the
+// bank, in the quiz's "from question bank" dialog and, by the theme's quiz renderer, on the quiz's
+// questions page): a small light label, apart from the tags. (The number reads left to right in
+// Persian too.)
+:is(#categoryquestions, .slot .activityinstance) .accesshide + [class~="badge"],
+:is(#categoryquestions, .slot .activityinstance) [class~="badge"]:has(> .accesshide) {
+    display: inline-block;
+    margin-inline-start: 4px;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background-color: #e4edf8 !important; /* stylelint-disable-line declaration-no-important */ // (Over .bg-primary.)
+    color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-white.)
+    font-size: .75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    unicode-bidi: isolate;
+    vertical-align: middle;
+}

@@ -1,0 +1,187 @@
+// Salek: the file fields of forms (several files: Moodle's file manager; one file: its file picker).
+
+/* Plain: the tools as white pills on top and the place to drop files under them, with a dashed
+   edge and an upload sign; no frame around them. */
+$salek-files-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+$salek-files-drop-line: #b6c8e4;
+$salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3M7 8l5-5 5 5M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E");
+
+// The limits ("Maximum file size…") and the accepted types: quiet small lines.
+.filemanager .fp-restrictions,
+.felement .filetypes-descriptions-intro,
+.felement .form-filetypes-descriptions {
+    color: $salek-text-muted;
+    font-size: .8125rem;
+}
+
+.filemanager .fp-restrictions {
+    margin-bottom: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-1.)
+    text-align: start;
+}
+
+.felement .filetypes-descriptions-intro {
+    margin-top: 10px !important; /* stylelint-disable-line declaration-no-important */ // (Over .mt-1.)
+}
+
+.felement .form-filetypes-descriptions small {
+    color: inherit !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-dark.)
+    font-size: inherit;
+}
+
+// The tools' bar and the files below it: no frame of their own.
+.filemanager .fp-navbar {
+    padding: 0 0 8px;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.filemanager .filemanager-toolbar {
+    padding: 0;
+    overflow: visible;
+}
+
+.filemanager .filemanager-container {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.filemanager .fm-content-wrapper {
+    position: relative;
+    min-height: 150px;
+}
+
+// The files (when there are some): in a framed box.
+.filemanager .fp-content {
+    min-height: 150px;
+    border: 1px solid $salek-card-border;
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+// The tools: each a white button ("Add…" in the brand colour); the views as one white pill.
+.filemanager .fp-toolbar div {
+    margin-inline-end: 6px;
+}
+
+// (Also with the main area's id: the theme's soft grey buttons there are stronger.)
+.filemanager .fp-navbar [class~="btn"],
+#region-main .filemanager .fp-navbar [class~="btn"] {
+    --bs-btn-color: #5b6577;
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #{$salek-text-strong};
+    --bs-btn-hover-bg: #{$salek-soft};
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: var(--bs-primary);
+    --bs-btn-active-bg: rgba(var(--bs-primary-rgb), .1);
+    --bs-btn-active-border-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */ // (Over the theme's 15px.)
+}
+
+.filemanager .fp-toolbar [class~="btn"] {
+    box-shadow: $salek-files-shadow;
+}
+
+.filemanager .fp-btn-add [class~="btn"],
+#region-main .filemanager .fp-btn-add [class~="btn"] {
+    --bs-btn-color: var(--bs-primary);
+    --bs-btn-hover-color: var(--bs-primary);
+}
+
+.filemanager .fp-viewbar {
+    gap: 2px;
+    padding: 3px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: $salek-files-shadow;
+
+    [class~="btn"] {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px !important; /* stylelint-disable-line declaration-no-important */ // (Over the group's joined corners.)
+    }
+
+    &:not(.disabled) a.checked {
+        border-color: transparent;
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+    }
+}
+
+// The folder path ("Files"): small, under the tools.
+.filemanager .fp-pathbar {
+    margin-top: 6px;
+    font-size: .8125rem;
+
+    .fp-path-folder-name {
+        color: $salek-text;
+    }
+}
+
+// One file: the place under "Choose a file…".
+.filepicker-filelist {
+    min-height: 140px;
+    margin-top: 10px;
+    border: 0;
+    border-radius: 12px;
+    background-color: transparent;
+
+    .filepicker-filename {
+        padding: 8px 14px;
+    }
+}
+
+// The place to drop files (empty, and while files are dragged over it): a dashed edge.
+.filemanager.fm-noitems .fm-empty-container,
+.filepicker-filelist .filepicker-container,
+.filemanager-container .dndupload-target,
+.filepicker-filelist .dndupload-target {
+    inset: 0;
+    padding-top: 76px;
+    border: 1.5px dashed $salek-files-drop-line;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: none;
+    color: $salek-text-muted;
+    font-size: .875rem;
+}
+
+.filemanager-container.dndupload-over .dndupload-target,
+.filepicker-filelist.dndupload-over .dndupload-target {
+    inset: 0;
+    border-color: var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), .06);
+}
+
+// The upload sign: a thin arrow in a soft brand-coloured circle.
+:is(.filemanager, .filepicker-filelist) .dndupload-arrow {
+    top: 18px;
+    height: 48px;
+
+    .fa {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: rgba(var(--bs-primary-rgb), .08);
+
+        &::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            margin: auto;
+            background-color: var(--bs-primary);
+            mask: $salek-icon-upload center / contain no-repeat;
+        }
+    }
+}

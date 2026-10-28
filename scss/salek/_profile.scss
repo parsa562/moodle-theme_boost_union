@@ -1,0 +1,172 @@
+// Salek: the header of the user's pages (user/profile.php and every page whose header shows a
+// person: their preferences, edit profile, forum posts, blog, notes, badges, ...).
+
+/* The page's header as a white card like the profile's sections below it: the picture, the
+   person's name and "Message" at the start, "Reset page to default" at the end; the breadcrumb
+   above the card. Moodle's header puts these in two rows of its own; a grid places them (the
+   rows show their children, the card is drawn behind the second row). */
+body:not(.pagelayout-login) #page-header:has(.page-header-image .userinitials),
+body:not(.pagelayout-login) #page-header:has(.page-header-image .userpicture) {
+    > .w-100 {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 16px;
+        margin-bottom: $salek-space-stack; // (24px to the sections, as between them.)
+
+        &::before {
+            content: "";
+            grid-row: 2;
+            grid-column: 1 / -1;
+            align-self: stretch;
+            border-radius: $salek-card-radius;
+            background-color: #fff;
+            box-shadow: $salek-card-shadow;
+        }
+
+        > [class~="d-flex"]:first-child {
+            display: contents !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex.)
+        }
+
+        // The breadcrumb where the other pages have it (measured on pages with the tab bar: 22px
+        // lower than the header's top, 6px above what follows).
+        #page-navbar {
+            grid-row: 1;
+            grid-column: 1 / -1;
+            margin: 14px 0 -2px; // (Measured: the card 6px under the breadcrumb, as the tab bar is.)
+        }
+
+        #course-header:empty {
+            display: none;
+        }
+
+        // (Pages without a breadcrumb: the card where it would start.)
+        #page-navbar:not(:has(.breadcrumb)) {
+            height: 0;
+            margin-bottom: 0;
+        }
+
+        // "Reset page to default" (editing the profile page): at the card's end.
+        > [class~="d-flex"]:first-child > [class~="ms-auto"] {
+            grid-row: 2;
+            grid-column: 2;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline-end: $salek-space-inset;
+        }
+
+        > [class~="d-flex"]:last-child {
+            grid-row: 2;
+            grid-column: 1;
+            padding: 20px $salek-space-inset;
+        }
+
+        // Phones: "Reset page to default" under the name, in the card.
+        @include media-breakpoint-down(md) {
+            grid-template-columns: minmax(0, 1fr);
+
+            &::before {
+                grid-row: 2 / 4;
+            }
+
+            > [class~="d-flex"]:first-child > [class~="ms-auto"] {
+                grid-row: 3;
+                grid-column: 1;
+                padding: 0 $salek-space-inset 20px;
+            }
+        }
+    }
+
+    // The picture, the name and "Message" on one line.
+    .page-context-header {
+        flex-wrap: nowrap !important; /* stylelint-disable-line declaration-no-important */ // (Over .flex-wrap.)
+        align-items: center;
+        gap: 16px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-2.)
+        padding: 0;
+    }
+
+    .page-header-image {
+        flex: none;
+        margin: 0;
+
+        .userinitials,
+        img {
+            width: 72px;
+            height: 72px;
+            margin: 0;
+            background-color: #e3edfb;
+            color: #1859c9;
+            font-size: 1.375rem;
+            font-weight: 600;
+        }
+    }
+
+    // The name (the site hides page titles outside courses; a profile needs it).
+    .page-header-headings {
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+        min-width: 0;
+
+        h1 {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.375rem;
+            font-weight: 700;
+        }
+    }
+
+    // "Message": a soft button after the name.
+    .header-button-group {
+        flex: none;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mx-sm-3.)
+    }
+
+    #message-user-button,
+    .header-button-group [class~="btn"] {
+        @include salek-button-soft;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: $salek-button-radius;
+        background-color: $salek-button-soft;
+        font-size: .875rem;
+        font-weight: 500;
+
+        &:hover {
+            background-color: $salek-button-soft-hover;
+        }
+
+        .icon {
+            margin: 0;
+            color: var(--bs-primary);
+        }
+    }
+}
+
+/* Preferences: a page of its own under the card with the person, as editing the profile: the
+   white sheet with its title and the line under it, the groups of links in it as plain columns
+   with a small title (no frames: the columns and the space between them set them apart). (The admin SCSS makes this page's content area see-through and its groups
+   half-white cards with a shadow.) */
+body#page-user-preferences #page.drawers #region-main {
+    background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+
+    div[role="main"] .col-md-4 > .card {
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 0;
+        background-color: transparent;
+        box-shadow: none;
+
+        // (The titles in line with the page's title.)
+        > .card-body {
+            padding: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        H3 {
+            margin-bottom: 12px;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+}

@@ -1,0 +1,869 @@
+// Salek: shared building blocks (mixins) of the parts. They output nothing until a part
+// includes them.
+
+// From the spacing part.
+@mixin salek-canvas-pages {
+    body.pagelayout-mydashboard,
+    body.page-mycourses,
+    body#page-user-profile,
+    body#page-calendar-view,
+    body.path-course-view:has(.course-content) {
+        @content;
+    }
+}
+
+// From the base part.
+// Content area, page header (header buttons, admin search) and dialogs;
+// the navbar, drawers and login page keep their own designs.
+@mixin salek-content-scope {
+    body:not(.pagelayout-login) #region-main,
+    body:not(.pagelayout-login) #page-header,
+    .modal-dialog {
+        @content;
+    }
+}
+
+// Round open/close toggles. !important: the admin SCSS sets 4px !important on focused [role="button"].
+// The arrow is centred with flexbox; Moodle's .p-2 padding (8px !important) placed it 2px off.
+// Colour shows the state: open = filled brand colour, closed = white with an outline.
+// Used by the course page (section 2) and the sections of forms (section 27).
+@mixin salek-round-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $salek-toggle-size;
+    height: $salek-toggle-size;
+    padding: 0;
+    border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+    color: #fff;
+    background-color: var(--bs-primary);
+    transition: background-color .15s ease, color .15s ease;
+
+    // The outline is a border: Moodle removes the box-shadow of a button focused by a click,
+    // which took the circle away until one clicked elsewhere.
+    border: 1px solid var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+
+    &.collapsed {
+        color: var(--bs-primary);
+        background-color: #fff;
+        border-color: #c3ccd9 !important; /* stylelint-disable-line declaration-no-important */
+
+        &:hover {
+            border-color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .expanded-icon,
+    .collapsed-icon {
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // Bootstrap .p-2.
+    }
+
+    // The closed arrow sits in a direction wrapper (.dir-rtl-hide / .dir-ltr-hide) whose
+    // 24px line box put the 16px icon 2px high. Collapse the line box; keep its display,
+    // which hides the arrow of the other direction.
+    .collapsed-icon > span {
+        line-height: 0;
+    }
+
+    // The side-pointing chevron's ink sits 1px towards its point (measured); pull it back.
+    .collapsed-icon .icon {
+        position: relative;
+        inset-inline-start: -1px;
+    }
+
+    .icon {
+        margin: 0;
+    }
+}
+
+// From the controls part.
+@mixin salek-dropdown-menu {
+    .dropdown-menu {
+        padding: 6px;
+        border: 1px solid $salek-line;
+        border-radius: 10px;
+        box-shadow: $salek-menu-shadow;
+
+        .dropdown-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: $salek-ink;
+
+            &:hover,
+            &:focus {
+                background-color: $salek-soft;
+                color: $salek-ink;
+            }
+
+            &.active,
+            &:active,
+            &[aria-current="true"] {
+                background-color: rgba(var(--bs-primary-rgb), .1);
+                color: var(--bs-primary);
+            }
+        }
+
+        .dropdown-divider {
+            margin: 4px 6px;
+            border-top-color: $salek-line;
+        }
+
+        // Groups inside a list (page selectors such as "Enrolled users"): a short hairline
+        // between them, inset from the panel edges like the items.
+        > li[role="none"] + li[role="none"] {
+            margin: 6px 6px 0;
+            padding-top: 2px;
+            border-top: 1px solid $salek-line;
+        }
+
+        // Group titles.
+        [role="presentation"] {
+            padding: 10px 12px 4px;
+            color: #94a3b8;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        // Moodle draws a check mark at the start of the current item (absolutely
+        // positioned); keep room for it in lists that have one, group titles included,
+        // so all texts start on one line.
+        &:has([aria-current="true"], [aria-selected="true"]) :is(.dropdown-item, [role="presentation"]) {
+            padding-inline-start: 28px;
+        }
+    }
+}
+
+// From the question-bank part.
+@mixin salek-card {
+    border: 1px solid $salek-card-border;
+    border-radius: $salek-card-radius-lg;
+    background-color: #fff;
+    box-shadow: $salek-card-shadow-lg;
+}
+
+// The dotted card at the top of the first page of a course tab (participants, grades, settings;
+// the question bank and the activities overview build theirs from two parts with the same
+// background and outline).
+@mixin salek-hero-card {
+    @include salek-card;
+    border-color: $salek-hero-border;
+    background: $salek-hero-bg;
+}
+
+// The same card built from two elements, one above the other (where the page's own markup puts
+// the title and the rest in separate elements): the top part and the bottom part.
+@mixin salek-hero-top {
+    border: 1px solid $salek-hero-border;
+    border-bottom: 0;
+    border-radius: $salek-card-radius-lg $salek-card-radius-lg 0 0;
+    background: $salek-hero-bg;
+}
+
+@mixin salek-hero-bottom {
+    border: 1px solid $salek-hero-border;
+    border-top: 0;
+    border-radius: 0 0 $salek-card-radius-lg $salek-card-radius-lg;
+    background: $salek-hero-bg;
+    box-shadow: $salek-card-shadow-lg;
+}
+
+@mixin salek-mask-icon($icon, $size: 16px) {
+    content: "";
+    display: inline-block;
+    flex: none;
+    width: $size;
+    height: $size;
+    background-color: currentColor;
+    mask: $icon center / contain no-repeat;
+}
+
+// Shared by the question bank and the participants page (section 18): the filters card and
+// the checkboxes of the filters and tables.
+@mixin salek-checkbox {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    border: 1.5px solid #b6c0ce;
+    border-radius: 5px;
+    background-color: #fff;
+    vertical-align: middle;
+    cursor: pointer;
+
+    &::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background-color: #fff;
+        mask: $salek-icon-check center / contain no-repeat;
+        transform: scale(0);
+        transition: transform .12s ease-in-out;
+    }
+
+    &:hover {
+        border-color: #94a3b8;
+    }
+
+    &:checked,
+    &:indeterminate {
+        border-color: var(--bs-primary);
+        background-color: var(--bs-primary);
+
+        &::before {
+            transform: scale(1);
+        }
+    }
+
+    &:indeterminate::before {
+        mask-image: $salek-icon-dash;
+    }
+
+    &:focus-visible {
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .25);
+    }
+}
+
+@mixin salek-filter-card {
+    // Filters card.
+    // Before its script runs, Moodle draws one empty row, then replaces it with the real ones
+    // (a flash of the wrong row on every load): the rows wait until the card is ready.
+    @at-root body.jsenabled .filter-group[data-filterverb]:not(.salek-filters-ready) :is([data-filterregion="filtermatch"], [data-filterregion="filters"]) {
+        animation: salek-filters-wait 3s step-end;
+    }
+
+    .filter-group[data-filterverb] {
+        @include salek-card;
+        --bs-border-color: #{$salek-card-border};
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 0 22px !important; /* stylelint-disable-line declaration-no-important */
+        overflow: hidden;
+        background-color: $salek-band-bg !important; /* stylelint-disable-line declaration-no-important */
+
+        > [data-filterregion] {
+            padding-inline: $salek-card-pad;
+        }
+
+        [data-filterregion="filtermatch"] {
+            margin-bottom: 20px;
+            padding-top: 22px;
+            color: $salek-text;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-lines, 18px);
+                color: #64748b;
+            }
+
+            .form-select {
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+        }
+
+        .form-autocomplete-input .form-control {
+            padding-inline-start: 36px;
+            background: $salek-icon-search no-repeat 12px center / 16px #fff;
+            /*rtl:ignore*/
+            background-position: left 12px center;
+        }
+
+        &:is([dir="rtl"] *) .form-autocomplete-input .form-control {
+            /*rtl:ignore*/
+            background-position: right 12px center;
+        }
+
+        // Selects and the value field: the theme's filled fields, white on the card's grey (as in the
+        // dashboard's timeline bar), without an outline; the blue ring while in use.
+        .form-select,
+        .form-autocomplete-input .form-control {
+            border-color: transparent;
+            border-radius: $salek-field-radius;
+            background-color: #fff;
+            box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+            font-weight: 500;
+
+            &:focus {
+                border-color: var(--bs-primary);
+                box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+            }
+
+            // A condition's kind ("Category") is fixed once chosen; it reads as its name, not as a
+            // disabled field.
+            &:disabled {
+                background-color: #fff;
+                color: $salek-text-strong;
+            }
+        }
+
+        // The "Match" label of a row is only useful when its join choice is shown.
+        [data-filterregion="filter"] fieldset > div > div:has(> select[data-filterfield="join"][hidden]) {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // The parts of a condition on a line.
+        [data-filterregion="filter"] fieldset > div:not([data-filterregion]) {
+            gap: 10px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Between two conditions: a horizontal line with the join word ("and", "or") in a pill,
+        // the line fading out towards the card edges.
+        [data-filterregion="filter"]:not(:last-child) [data-filterregion="joinadverb"] {
+            gap: 16px;
+            margin: 4px 0;
+            padding: 10px 0 !important; /* stylelint-disable-line declaration-no-important */
+            // A very faint light band behind the separator.
+            background: radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 90%), rgb(255 255 255 / 0%));
+            color: var(--bs-primary);
+            font-size: .6875rem;
+            font-weight: 700 !important; /* stylelint-disable-line declaration-no-important */
+            text-transform: uppercase;
+
+            // Letter spacing only for Latin text: it breaks joined Persian letters.
+            [dir="ltr"] & {
+                letter-spacing: .15em;
+            }
+
+            &::before,
+            &::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                border: 0;
+            }
+
+            // Each line is strongest next to the pill and fades towards the card edge. The RTL
+            // step does not turn gradients round, so the right-to-left direction is written out.
+            &::before {
+                background: linear-gradient(90deg, transparent, rgba(var(--bs-primary-rgb), .45));
+            }
+
+            &::after {
+                background: linear-gradient(90deg, rgb(237 203 110 / 90%), transparent);
+            }
+
+            [dir="rtl"] & {
+                &::before {
+                    background: linear-gradient(270deg, transparent, rgba(var(--bs-primary-rgb), .45));
+                }
+
+                &::after {
+                    background: linear-gradient(270deg, rgb(237 203 110 / 90%), transparent);
+                }
+            }
+
+            [data-filterverbfor] {
+                padding: 3px 16px;
+                border: 1px solid rgba(var(--bs-primary-rgb), .45);
+                border-radius: 999px;
+                background-color: #fff;
+                line-height: 1.4;
+            }
+        }
+
+        // Number of questions in a chosen category (theme JS questionbankchips).
+        .salek-chip-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 999px;
+            background-color: $salek-accent-yellow;
+            color: #3d2a00;
+            font-size: .75rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        // Chosen values: amber chips.
+        .form-autocomplete-selection [role="option"][data-value] {
+            gap: 8px;
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid #f7de9c;
+            border-radius: $salek-button-radius;
+            line-height: 1;
+
+            .icon {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // Persian letters sit low in the line (measured: 1px on Persian pages, 3px on English
+            // pages, where they come from the fallback font): lifted to the middle.
+            .salek-chip-text-arabic {
+                transform: translateY(-1px);
+
+                [dir="ltr"] & {
+                    transform: translateY(-2.5px);
+                }
+            }
+            background-color: #fff8e6 !important; /* stylelint-disable-line declaration-no-important */
+            color: #5c3d00 !important; /* stylelint-disable-line declaration-no-important */
+
+            &:hover {
+                background-color: #fff1cc !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &[data-active-selection="true"] {
+                box-shadow: inset 0 0 0 1px #d9a400;
+            }
+        }
+
+        label:has(> input[type="checkbox"]) {
+            gap: 8px;
+            color: #475569;
+        }
+
+        [data-filterregion="actions"] {
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 0;
+            border-top: 0;
+
+            @include media-breakpoint-down(md) {
+                [data-filteraction="add"] {
+                    flex-basis: 100%;
+                    margin-inline-start: -12px !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+
+            [data-filteraction="add"] {
+                margin-inline-start: 26px;
+            }
+
+            [data-filteraction="reset"] {
+                --bs-btn-color: #{$salek-text};
+                --bs-btn-bg: #fff;
+                --bs-btn-hover-bg: #{$salek-soft};
+                border: 1px solid $salek-control-border;
+            }
+
+            [data-filteraction="reset"],
+            [data-filteraction="apply"] {
+                display: inline-flex;
+                align-items: center; // The text centred in the fixed height.
+                height: 40px;
+                padding-inline: 16px;
+                border-radius: $salek-button-radius;
+                font-weight: 500;
+            }
+        }
+    }
+
+    // Filters card header (theme template core/datafilter/filter).
+    .filter-group-header {
+        padding: 14px $salek-card-pad;
+        border-bottom: 1px solid $salek-card-border;
+        background-color: #fff;
+    }
+
+    :is(.filter-group, table) input[type="checkbox"]:not([role="switch"]):not(.form-switch *) {
+        @include salek-checkbox;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // Moodle adds .m-1.
+    }
+}
+
+// Horizontal scrollbar of a wide table (theme JS questionbankscroll): below the table, sticky
+// at the bottom of the window while the table is in view; the table's own bar is hidden.
+// Used for the question bank (section 16) and the grader report (section 21).
+@mixin salek-bottom-scrollbar($pad) {
+    .boost-union-wide-table-scroll-below {
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .qbank-sticky-scroll-zone-bottom {
+        position: sticky;
+        top: auto;
+        bottom: 0;
+        z-index: 20;
+        padding: 8px $pad;
+        border-top: 1px solid $salek-table-row-line;
+        background: rgb(255 255 255 / 92%);
+        backdrop-filter: blur(6px);
+
+        // Above the phone bottom bar.
+        @include media-breakpoint-down(md) {
+            :root:has(.boost-union-bottom-menu .nav-link) & {
+                bottom: 60px; // Height of the bottom bar (section "phone bottom navigation").
+            }
+        }
+
+        .boost-union-qbank-top-scroll {
+            height: 10px;
+            margin: 0;
+            border: 0;
+            border-radius: 999px;
+            background: #edf1f6;
+            scrollbar-width: thin;
+            scrollbar-color: #94a3b8 #edf1f6;
+
+            &::-webkit-scrollbar {
+                height: 10px;
+            }
+
+            &::-webkit-scrollbar-track {
+                border-radius: 999px;
+                background: #edf1f6;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border: 2px solid #edf1f6;
+                border-radius: 999px;
+                background: #94a3b8;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: #64748b;
+            }
+        }
+    }
+}
+
+// From the participants part.
+// List tables, the parts every list table shares: the colours and size of the text, the tinted
+// header cells with their sort arrow and hide / show buttons, the rows with a faint hover and
+// a tint when checked, the cells with row lines only. Used by salek-data-table (tables in a
+// card) and by the framed tables of every other list (tables part).
+@mixin salek-table-base {
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: transparent;
+    --bs-border-color: #{$salek-table-row-line};
+    color: $salek-text-strong;
+    font-size: .875rem;
+}
+
+@mixin salek-table-head-cell {
+    border-top: 0;
+    border-bottom: 1px solid $salek-table-head-line;
+    background-color: $salek-table-head-bg;
+    color: #1e293b;
+    font-size: .8125rem;
+    font-weight: 600;
+    vertical-align: middle;
+
+    a {
+        color: #1e293b;
+
+        &:hover {
+            color: var(--bs-primary);
+        }
+    }
+
+    // Sort direction of the current sort.
+    > .icon {
+        color: var(--bs-primary);
+    }
+
+    // Hide / show column buttons: present but only with the header cell.
+    .commands:empty {
+        display: none;
+    }
+
+    .commands {
+        opacity: 0;
+    }
+
+    &:is(:hover, :focus-within) .commands {
+        opacity: 1;
+    }
+}
+
+@mixin salek-table-row {
+    background-color: transparent;
+
+    &:hover {
+        background-color: #f1f5fe;
+    }
+
+    // A chosen row (its selection box ticked; not an on/off switch, as on the plugins pages).
+    &:has(input[type="checkbox"]:not([role="switch"]):not(.form-switch *):checked) {
+        background-color: rgba(var(--bs-primary-rgb), .07);
+    }
+
+    &:last-child > * {
+        border-bottom: 0;
+    }
+
+    > * {
+        padding: 12px 14px;
+        border-top: 0;
+        border-bottom: 1px solid $salek-table-row-line;
+        background-color: transparent;
+        vertical-align: middle;
+    }
+}
+
+// A flexible (Moodle "flexible_table") table inside a card: the list table base with a 48px
+// header on one line, the first and last cells as far in as the card's text, edit pencils
+// shown with their row.
+@mixin salek-data-table {
+    @include salek-table-base;
+    margin-bottom: 0;
+
+    > thead th {
+        @include salek-table-head-cell;
+        height: 48px;
+        padding: 0 14px;
+        white-space: nowrap;
+
+        > .icon {
+            font-size: .75rem;
+        }
+
+        .commands {
+            display: inline-flex;
+            margin-inline-start: 4px;
+            vertical-align: middle;
+
+            .icon {
+                color: #94a3b8;
+                font-size: .75rem;
+            }
+        }
+    }
+
+    > tbody > tr {
+        @include salek-table-row;
+
+        > * {
+            font-weight: 400;
+        }
+    }
+
+    > * > tr > :first-child {
+        padding-inline-start: $salek-card-pad;
+    }
+
+    > * > tr > :last-child {
+        padding-inline-end: $salek-card-pad;
+    }
+
+    // Inline edit pencils appear with the row.
+    .quickediticon {
+        opacity: 0;
+    }
+
+    > tbody > tr:is(:hover, :focus-within) .quickediticon {
+        opacity: 1;
+    }
+}
+
+// Page selector of a tertiary navigation ("Enrolled users", "Grader report"): the title with a
+// round arrow button, so it reads as a choice. Used in sections 18 and 21.
+@mixin salek-page-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-inline-start: -10px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    box-shadow: none;
+    color: $salek-text-strong;
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+
+    &::after {
+        content: "";
+        width: 32px;
+        height: 32px;
+        margin: 0;
+        border: 1px solid $salek-control-border;
+        border-radius: 50%;
+        background: escape-svg($form-select-indicator) center / 14px no-repeat, #fff;
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        transition: transform .15s ease-in-out;
+    }
+
+    &:hover,
+    &:focus-visible {
+        background-color: rgb(255 255 255 / 70%);
+
+        &::after {
+            border-color: var(--bs-primary);
+        }
+    }
+
+    &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+    }
+}
+
+// Shared geometry for title actions; colours and action-specific icons stay with the button.
+@mixin salek-title-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: $salek-control-height;
+    padding: 8px 16px;
+    // Moodle's role="button" focus rule otherwise forces 4px corners.
+    border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+    font-size: .875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: normal;
+    text-align: center;
+}
+
+// From the enrolment-methods part.
+// The main button of a page header, as on the participants page ("Enrol users", section 18):
+// 44px high, a light square with a plus before the text.
+@mixin salek-page-action {
+    @include salek-title-action;
+    padding-inline: 14px 18px;
+    box-shadow: 0 6px 16px -8px var(--bs-primary);
+
+    &::before {
+        content: "";
+        flex: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        background: $salek-icon-plus-white center / 14px no-repeat, rgb(255 255 255 / 18%);
+    }
+}
+
+// A row action of a list table (edit, delete, show, move): a small outline button with a stroke
+// icon in place of Moodle's filled icon, which is read from its class.
+@mixin salek-row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    margin-inline-end: 6px !important; /* stylelint-disable-line declaration-no-important */
+    vertical-align: middle;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border: 1px solid #cfd6e0;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #475569;
+
+    .icon {
+        display: none;
+    }
+
+    &::before {
+        @include salek-mask-icon($salek-icon-edit, 15px);
+    }
+
+    &:has(.fa-eye)::before {
+        mask-image: $salek-icon-eye;
+    }
+
+    &:has(.fa-eye-slash)::before {
+        mask-image: $salek-icon-eye-off;
+    }
+
+    &:has(.fa-user-plus)::before {
+        mask-image: $salek-icon-user-plus;
+    }
+
+    &:has(.fa-trash-can)::before {
+        mask-image: $salek-icon-trash;
+    }
+
+    &:has(.fa-arrow-up)::before {
+        mask-image: $salek-icon-arrow-up;
+    }
+
+    &:has(.fa-arrow-down)::before {
+        mask-image: $salek-icon-arrow-down;
+    }
+
+    &:has(.fa-circle-user, .fa-users)::before {
+        mask-image: $salek-icon-users;
+    }
+
+    &:hover {
+        border-color: #b6c0ce;
+        background-color: $salek-soft;
+        color: $salek-text-strong;
+    }
+
+    // Delete: red, as it removes something.
+    &:has(.fa-trash-can) {
+        border-color: #f3c4c4;
+        color: #dc2626;
+
+        &:hover {
+            border-color: #e9a3a3;
+            background-color: #fef2f2;
+            color: #b91c1c;
+        }
+    }
+
+    // Up and down: quiet, without a frame.
+    &:has(.fa-arrow-up, .fa-arrow-down) {
+        border-color: transparent;
+        background-color: transparent;
+
+        &:hover {
+            background-color: $salek-soft;
+        }
+    }
+}
+
+// From the forms part.
+// Across the whole sheet: the form's --salek-sheet-pad is the sheet's side padding (24px, 16px
+// on phones; the course settings card sets its own, section 28).
+@mixin salek-sheet-bleed {
+    margin-inline: calc(-1 * var(--salek-sheet-pad));
+    padding-inline: var(--salek-sheet-pad);
+}
+
+// A secondary button: a soft grey fill without an outline (the "Cancel" of the form design).
+@mixin salek-button-soft {
+    --bs-btn-color: #{$salek-text-strong};
+    --bs-btn-bg: #{$salek-button-soft};
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #{$salek-ink};
+    --bs-btn-hover-bg: #{$salek-button-soft-hover};
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: #{$salek-ink};
+    --bs-btn-active-bg: #{$salek-button-soft-hover};
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-disabled-color: #{$salek-text-muted};
+    --bs-btn-disabled-bg: #{$salek-button-soft};
+    --bs-btn-disabled-border-color: transparent;
+    border-color: transparent;
+}
+
+// The title area of a page closed by a line across the sheet (to its edges: its padding is 24px,
+// 16px on phones), 24px above the content.
+@mixin salek-title-line {
+    width: auto;
+    max-width: none; // (Boost Union caps report title rows at 100%.)
+    margin-inline: calc(-1 * #{$salek-space-inset});
+    margin-bottom: $salek-page-header-gap;
+    padding: 0 $salek-space-inset 20px;
+    border-bottom: 1px solid $salek-line;
+
+    @include media-breakpoint-down(md) {
+        margin-inline: calc(-1 * #{$salek-space-inset-sm});
+        padding-inline: $salek-space-inset-sm;
+    }
+}
+
+// From the page header part.
+// The content area of every page except the login and front pages, which have their own design.
+@mixin salek-page-content {
+    body:not(.pagelayout-login):not(.pagelayout-frontpage) #region-main {
+        @content;
+    }
+}

@@ -1,0 +1,148 @@
+// Salek: Course index side menu.
+
+/* ==========================================================================
+   Salek: course index side menu.
+   Sections stay clearly separated (a hairline between them and a title row that is
+   tinted when open), without boxes around every item: activities are plain rows
+   indented under their section, lessons are bold rows with their activities below.
+   Scoped to #theme_boost-drawers-courseindex (not the blocks or message drawers).
+   ========================================================================== */
+#theme_boost-drawers-courseindex .courseindex {
+    $ci-text: #475569;
+    $ci-hover: #f1f5f9;
+    $ci-open: rgba(var(--bs-primary-rgb), .08);
+
+    .courseindex-section {
+        margin: 0;
+        padding: 6px 0;
+        border: 0;
+        background: transparent;
+    }
+
+    // A hairline between top-level sections.
+    > .courseindex-section + .courseindex-section {
+        border-top: 1px solid #edf1f6;
+    }
+
+    .courseindex-item {
+        align-items: center;
+        margin: 0;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .courseindex-chevron {
+        flex: none;
+        color: #94a3b8;
+    }
+
+    // Section title rows.
+    .courseindex-section-title {
+        padding: 9px 8px;
+        color: #1e293b;
+        font-weight: 600;
+
+        .courseindex-link {
+            color: inherit;
+        }
+
+        &:hover {
+            background-color: $ci-hover;
+        }
+    }
+
+    // Open section: tinted title in the brand colour.
+    > .courseindex-section > .courseindex-section-title:has(.courseindex-chevron[aria-expanded="true"]) {
+        background-color: $ci-open;
+        color: var(--bs-primary);
+
+        .courseindex-chevron {
+            color: var(--bs-primary);
+        }
+    }
+
+    // Activities: plain rows indented under the section title.
+    .courseindex-item[data-for="cm"] {
+        margin-top: 2px;
+        padding: 7px 8px;
+        padding-inline-start: 30px;
+        color: $ci-text;
+        font-size: .875rem;
+
+        .courseindex-link {
+            color: inherit;
+        }
+
+        &:hover {
+            background-color: $ci-hover;
+            color: #1e293b;
+        }
+
+        // The page being shown.
+        &.pageitem {
+            background-color: $ci-open;
+            color: var(--bs-primary);
+            font-weight: 600;
+
+            .courseindex-link {
+                color: inherit;
+            }
+        }
+    }
+
+    // Lessons (subsections): an activity row holding a section; no row look of its own.
+    .courseindex-item[data-for="cm"]:has(> .courseindex-section.delegated-section) {
+        display: block;
+        padding: 0;
+        padding-inline-start: 18px;
+
+        &:hover {
+            background-color: transparent;
+        }
+    }
+
+    .courseindex-section.delegated-section {
+        padding: 0;
+
+        > .courseindex-item[data-for="section_item"] {
+            margin-top: 4px;
+            padding: 8px;
+            color: #1e293b;
+            font-weight: 600;
+
+            .courseindex-link {
+                color: inherit;
+            }
+
+            // A small amber dot marks a lesson.
+            &::before {
+                content: "";
+                flex: none;
+                width: 6px;
+                height: 6px;
+                margin-inline-end: 6px;
+                border-radius: 50%;
+                background-color: #f5b301;
+                order: 1;
+            }
+
+            .courseindex-chevron {
+                order: 0;
+            }
+
+            .courseindex-link {
+                order: 2;
+            }
+
+            &:hover {
+                background-color: $ci-hover;
+            }
+        }
+
+        .courseindex-item[data-for="cm"] {
+            padding-inline-start: 34px;
+        }
+    }
+}

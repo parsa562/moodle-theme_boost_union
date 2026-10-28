@@ -1,0 +1,479 @@
+// Salek: managing course categories and courses (course/management.php).
+
+/* Like the site's list tables: each column (the categories, the courses of the chosen category,
+   the chosen course's details) a card with a tinted title band; under it a row of its tools
+   ("Create new ...", the sort and per-page menus) at the start; the categories and courses as
+   rows with hairlines, a faint hover and a tint for the chosen one, their actions as quiet
+   icons; how many are shown and the bulk actions (sort, move the selected) in a grey band at
+   the bottom. The page title with the line across the sheet under it. */
+body#page-course-management #region-main {
+    div[role="main"] > H2 {
+        @include salek-title-line;
+        margin-top: 8px;
+    }
+
+    #course-category-listings {
+        row-gap: 24px;
+        margin-inline: -12px;
+
+        > [class~="grid_column_start"] {
+            margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-3.)
+            padding-inline: 12px !important; /* stylelint-disable-line declaration-no-important */ // (Over .px-3.)
+        }
+    }
+
+    // A column: the card and its title band. (The search results: a list without a card of its
+    // own, its title a plain heading; drawn the same.)
+    #course-category-listings [class~="card"],
+    #course-category-listings .course-listing {
+        overflow: hidden;
+        border: 1px solid $salek-card-border !important; /* stylelint-disable-line declaration-no-important */ // (Over the site's borderless cards.)
+        border-radius: 16px;
+        background-color: #fff;
+        box-shadow: none;
+
+        display: flex;
+        flex-direction: column;
+
+        > [class~="card-header"],
+        > H3 {
+            display: flex;
+            align-items: center;
+            min-height: 52px;
+            margin: 0;
+            padding: 12px 16px;
+            border-bottom: 1px solid $salek-table-head-line;
+            background-color: $salek-table-head-bg;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 700;
+
+            // (The course's details: its title inside the band.)
+            [class~="card-title"] {
+                margin: 0;
+                font-size: inherit;
+                font-weight: inherit;
+            }
+        }
+
+        // (The grey band at the bottom reaches the card's end when the other column is longer.)
+        > [class~="card-body"] {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            padding: 0;
+        }
+    }
+
+    // The tools: at the start, on one line.
+    .listing-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-3.)
+        padding: 12px 16px;
+        border-bottom: 1px solid $salek-table-row-line;
+        text-align: start;
+
+        // "Create new category", "Create new course": the brand's colour with a plus.
+        &:is(.category-listing-actions, .course-listing-actions) > [class~="btn"] {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 38px;
+            margin: 0;
+            padding: 0 16px 0 12px;
+            border: 0;
+            border-radius: 12px;
+            background-color: var(--bs-primary);
+            color: #fff;
+            font-size: .875rem;
+            font-weight: 600;
+
+            &::before {
+                content: "";
+                flex: none;
+                width: 20px;
+                height: 20px;
+                border-radius: 6px;
+                background: $salek-icon-plus-white center / 12px no-repeat, rgb(255 255 255 / 18%);
+            }
+
+            &:hover {
+                filter: brightness(.94);
+            }
+        }
+
+        // The course's actions (View, Edit, ...): soft buttons.
+        &.course-detail-listing-actions > [class~="btn"] {
+            @include salek-button-soft;
+            min-height: 36px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-1 and .mb-3.)
+            padding: 0 14px;
+            border-radius: 12px;
+            font-size: .8125rem;
+            font-weight: 600;
+            line-height: 36px;
+        }
+
+        // "Sort courses", "Per page": small white chips.
+        .action-menu .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid $salek-field-border;
+            border-radius: 12px;
+            background-color: #fff;
+            color: $salek-text;
+            font-size: .8125rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                border-color: $salek-field-border-hover;
+                color: $salek-text-strong;
+            }
+        }
+    }
+
+    // The rows.
+    :is(.category-list, .course-list),
+    .course-listing > ul {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-1.)
+        padding: 0;
+        border-radius: 0;
+    }
+
+    .listitem {
+        position: relative;
+        padding: 0;
+        border: 0;
+        border-bottom: 1px solid $salek-table-row-line;
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent;
+        color: $salek-text-strong;
+        font-size: .875rem;
+
+        // (The tint of a row covers its own line only; its sub-categories have theirs.)
+        // (On narrow screens the actions go under the name.)
+        > div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            min-height: 52px;
+            padding: 8px 12px 8px 16px;
+            float: none;
+
+            &:hover {
+                background-color: #f1f5fe;
+            }
+
+            > [class~="float-start"],
+            > [class~="float-end"] {
+                float: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // The chosen category or course: a tint and a brand-coloured bar at its start.
+        &[data-selected="1"] > div:first-child {
+            background-color: rgba(var(--bs-primary-rgb), .07);
+            box-shadow: inset 3px 0 0 var(--bs-primary);
+
+            [dir="rtl"] & {
+                box-shadow: inset -3px 0 0 var(--bs-primary);
+            }
+        }
+
+        // Hidden from students: quieter.
+        &[data-visible="0"] > div:first-child :is(.categoryname, .coursename) {
+            color: $salek-text-muted;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            min-height: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        :is(.categoryname, .coursename) {
+            flex: 1 1 160px;
+            min-width: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-2.)
+            padding: 0;
+            color: $salek-text-strong;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        // Sub-categories: further in.
+        ul {
+            margin-inline-start: 24px !important; /* stylelint-disable-line declaration-no-important */
+            border-top: 1px solid $salek-table-row-line;
+
+            > .listitem:last-child {
+                border-bottom: 0;
+            }
+        }
+
+        // Show or hide: only the one that applies (Moodle hides the other; the rule below
+        // shows the icons).
+        &[data-visible="1"] > div:first-child [data-action="show"],
+        &[data-visible="0"] > div:first-child [data-action="hide"] {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // The expand / collapse arrow of a category with sub-categories.
+        .tree-icon {
+            width: 16px;
+            margin: 0;
+            color: $salek-text-muted;
+        }
+
+        > div:first-child > span:has(> .tree-icon:empty) {
+            display: none;
+        }
+
+        // A course's drag handle.
+        .drag-handle {
+            display: flex;
+            color: #94a3b8;
+            cursor: move;
+
+            .icon {
+                margin: 0;
+            }
+        }
+
+        // (The search results: the course's category after its name.)
+        .coursename + [class~="text-muted"] {
+            flex: none;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+        }
+
+        > div:first-child > :is([class~="ms-auto"], [class~="float-end"]) {
+            display: flex;
+            flex: none;
+            align-items: center;
+            margin-inline-start: auto;
+
+            .idnumber:empty {
+                display: none;
+            }
+        }
+    }
+
+    .listitem:last-child {
+        border-bottom: 0;
+    }
+
+    // The actions of a row: quiet icons, the brand colour under the mouse.
+    .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+
+        .menubar {
+            align-items: center;
+            gap: 2px;
+        }
+
+        :is(a[class~="btn"], a.menu-action, .action-menu-trigger .dropdown-toggle) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0;
+            border-radius: 8px;
+            color: #64748b;
+
+            &:hover {
+                background-color: $salek-soft;
+                color: var(--bs-primary);
+            }
+
+            .icon {
+                margin: 0;
+            }
+        }
+
+        // Delete: red under the mouse.
+        a.action-delete:hover {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+    }
+
+    // How many courses a category holds: a small grey label.
+    .course-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's room after it.)
+        margin-inline-start: 8px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 2px 8px;
+        border-radius: 999px;
+        background-color: $salek-soft;
+        color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-muted.)
+        font-size: .75rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        .icon {
+            margin: 0;
+            font-size: .75rem;
+        }
+    }
+
+    // How many are shown, and the bulk actions: the card's grey bottom band.
+    .listing-pagination-totals {
+        padding: 10px 16px;
+        border-top: 1px solid $salek-table-row-line;
+        color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */
+        font-size: .8125rem;
+        text-align: start;
+    }
+
+    .listing-pagination {
+        padding: 8px 16px 0;
+    }
+
+    // Each part (sorting, moving the selected) a title above its controls, apart by a line;
+    // each dropdown of the sorting with its own label above it (theme JS coursemanagement), the
+    // ones not usable yet faded.
+    .bulk-actions {
+        --salek-field: #fff; // (The dropdowns white on the grey band.)
+        --salek-field-hover: #fff;
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        margin: 0;
+        padding: 0 16px;
+        border-top: 1px solid $salek-table-row-line;
+        background-color: $salek-band-bg;
+
+        .detail-pair {
+            flex-direction: column;
+            gap: 10px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .my-1.)
+            padding: 14px 0 16px;
+
+            + .detail-pair {
+                border-top: 1px solid $salek-table-row-line;
+            }
+
+            > * {
+                width: auto;
+                max-width: 100%;
+                padding: 0;
+            }
+        }
+
+        .pair-key {
+            color: $salek-text-strong;
+            font-size: .875rem;
+            font-weight: 700 !important; /* stylelint-disable-line declaration-no-important */ // (Over .fw-bold.)
+        }
+
+        .pair-value {
+            min-width: 0;
+
+            > div {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px;
+            }
+
+            // The sorting: its dropdowns one under the other, the button under them.
+            > div:has(> .salek-cm-field) {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        .salek-cm-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: min(100%, 420px);
+
+            .form-select {
+                width: 100%;
+            }
+
+            &:has(select:disabled) .salek-cm-label {
+                opacity: .55;
+            }
+        }
+
+        .salek-cm-label {
+            margin: 0;
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        .form-select {
+            width: auto;
+            max-width: 100%;
+            height: 38px;
+            min-height: 38px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-1 and .mt-1.)
+            font-size: .8125rem;
+            box-shadow: 0 0 0 1px $salek-field-border;
+
+            &:disabled {
+                opacity: .55;
+            }
+        }
+
+        [class~="btn"] {
+            @include salek-button-soft;
+            min-height: 38px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .my-1.)
+            padding: 0 18px;
+            border-radius: 12px;
+            background-color: #fff;
+            font-size: .8125rem;
+            font-weight: 600;
+            box-shadow: 0 0 0 1px $salek-field-border;
+        }
+    }
+
+    // The course's details: a label and its value in each row, with hairlines.
+    .course-detail [class~="card-body"] > .detail-pair {
+        align-items: baseline;
+        margin: 0;
+        padding: 10px 16px;
+        border-bottom: 1px solid $salek-table-row-line;
+        font-size: .875rem;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+        .pair-key {
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */ // (Over .fw-bold.)
+        }
+
+        .pair-value {
+            color: $salek-text-strong;
+        }
+    }
+}

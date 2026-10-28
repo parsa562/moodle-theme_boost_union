@@ -1,0 +1,756 @@
+// Salek: parts that look the same on every page: confirmations, lists to move people or groups
+// between, the message in empty tables. (First made for the participants pages.)
+
+@include salek-page-content {
+    div[role="main"] {
+        tr:has(> td.salek-empty-cell) {
+            background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        td.salek-empty-cell {
+            padding: 28px 14px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            text-align: center;
+        }
+
+        // Buttons as high as the fields, the text centred in that height (forms: section 27).
+        .modal-in-page .modal-footer [class~="btn"],
+        .continuebutton [class~="btn"] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: $salek-control-height;
+        }
+
+        // Confirmations ("Unenrol", "Delete"): one soft panel instead of a framed dialogue with
+        // lines in it; the main button first, as in the forms.
+        .modal-in-page {
+            max-width: 640px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            .modal-content {
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+                border: 1px solid $salek-line;
+                border-radius: 12px;
+                background-color: $salek-subtle;
+                box-shadow: none;
+            }
+
+            .modal-header {
+                padding: 20px 24px 0 !important; /* stylelint-disable-line declaration-no-important */
+                border: 0;
+
+                [class~="modal-title"],
+                h4 {
+                    margin: 0;
+                    color: $salek-text-strong;
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                }
+            }
+
+            .modal-body {
+                padding: 8px 24px 0 !important; /* stylelint-disable-line declaration-no-important */
+                color: $salek-text;
+                font-size: .875rem;
+                line-height: 1.8;
+
+                // Moodle wraps the message in empty paragraphs.
+                p {
+                    margin: 0;
+
+                    &:empty {
+                        display: none;
+                    }
+                }
+
+                p:not(:empty) ~ p:not(:empty) {
+                    margin-top: 8px;
+                }
+            }
+
+            .modal-footer {
+                justify-content: flex-start;
+                gap: 8px;
+                padding: 20px 24px !important; /* stylelint-disable-line declaration-no-important */
+                border: 0;
+
+                > * {
+                    margin: 0;
+                }
+
+                > :has([class~="btn-primary"]) {
+                    order: -1;
+                }
+            }
+        }
+
+        // Lists of users or groups to move between (manual enrolment, assigning a role, group
+        // members, the groups of a grouping): the current and the other ones as two equal cards,
+        // the options and the add / remove buttons between them; one under the other on phones and
+        // tablets.
+        table:is(.roleassigntable, .groupmanagementtable):has(#existingcell) {
+            display: block;
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+            font-size: .875rem;
+
+            > tbody,
+            > tbody > tr {
+                display: block;
+            }
+
+            > tbody > tr {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 240px minmax(0, 1fr);
+                gap: 24px;
+                background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+
+                // Group members: the groups of the chosen person in a fourth, narrower column.
+                &:has(> td:nth-child(4)) {
+                    grid-template-columns: minmax(0, 1fr) 200px minmax(0, 1fr) 200px;
+                }
+
+                @include media-breakpoint-down(lg) {
+                    grid-template-columns: minmax(0, 1fr) !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                // "Back to groups": its own row below the lists.
+                &:has(> #backcell) {
+                    display: block;
+                    margin-top: $salek-page-header-gap;
+                }
+            }
+
+            > tbody > tr > td {
+                display: block;
+                width: auto !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0;
+                border: 0;
+                background-color: transparent;
+            }
+
+            #existingcell,
+            #potentialcell {
+                > p,
+                > label {
+                    display: block;
+                    margin: 0 0 8px;
+                    font-weight: 600;
+                }
+            }
+
+            // Without the script (or before it runs): Moodle's lists as cards.
+            :is(#existingcell, #potentialcell) > .userselector > select:not(.salek-userpicker-source) {
+                width: 100%;
+                height: 360px;
+                padding: 8px;
+                border: 1px solid $salek-card-border;
+                border-radius: 12px;
+                background-color: #fff;
+
+                @include media-breakpoint-down(lg) {
+                    height: 220px;
+                }
+            }
+
+            #buttonscell {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 24px;
+
+                br {
+                    display: none;
+                }
+
+                // Moodle pushes both groups down with large top margins.
+                > div,
+                > p.arrow_button {
+                    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                // Group lists: add and remove one under the other.
+                > p.arrow_button {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+
+                    #add {
+                        margin-bottom: 0;
+                    }
+                }
+
+                p {
+                    margin: 0 0 12px;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+
+                label {
+                    margin-bottom: 4px;
+                    color: $salek-text-muted;
+                    font-size: .8125rem;
+                }
+
+                select {
+                    width: 100%;
+                }
+
+                input[class~="btn"] {
+                    width: 100%;
+                    min-height: $salek-control-height;
+                }
+
+                // Add: the main action of the page.
+                #add {
+                    margin-bottom: 16px;
+                    border-color: var(--bs-primary);
+                    background-color: var(--bs-primary);
+                    color: #fff;
+                }
+
+                // Remove: red outline, as it unenrols people.
+                #remove {
+                    border: 1px solid #f3c4c4;
+                    background-color: #fff;
+                    color: #dc2626;
+
+                    &:hover {
+                        border-color: #e9a3a3;
+                        background-color: #fef2f2;
+                        color: #b91c1c;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Moodle's user selectors (theme JS userpicker): the people of each group of Moodle's list with
+// their initials, name and email: cards when one person is chosen (checking permissions), rows
+// with checkboxes when several are (the two lists of the add and remove pages); the chosen ones in
+// the brand colour. The search above the people.
+@include salek-page-content {
+    // Until the script draws the people, Moodle's list is not shown (it showed first, then turned
+    // into cards). If the script fails, the list comes back after 3 seconds.
+    @at-root body.jsenabled #region-main .userselector > select:not(.salek-userpicker-source),
+        body.jsenabled#page-group-index #region-main :is(#groups, #members):not(.salek-userpicker-source) {
+        animation: salek-userpicker-wait 3s step-end;
+    }
+
+    .userselector {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    // The search above the people, with a magnifier in the field (its label only for screen
+    // readers); "Clear" and "Search options" next to it (the part below the keyframes).
+    .userselector > [class~="d-flex"] {
+        order: -1;
+        gap: 8px;
+
+        > label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        > input[type="text"] {
+            flex: 1 1 160px;
+            width: auto;
+            min-width: 0;
+            padding-inline-start: 38px;
+            background: $salek-icon-search left 12px center / 16px no-repeat, $salek-field-bg;
+
+            // The magnifier at the start of the field in Persian too (not flipped by the RTL step).
+            [dir="rtl"] & {
+                /*rtl:ignore*/
+                background-position: right 12px center;
+            }
+        }
+
+        > [class~="btn"] {
+            min-height: $salek-control-height;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Moodle's list stays in the form, hidden.
+    .salek-userpicker-source {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+
+    .salek-userpicker {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .salek-userpicker-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    .salek-userpicker-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background-color: $salek-soft;
+        color: $salek-text;
+        font-size: .75rem;
+    }
+
+    .salek-userpicker-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 8px;
+    }
+
+    .salek-userpicker-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 60px;
+        margin: 0;
+        padding: 8px 14px;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: #fff;
+        cursor: pointer;
+        transition: border-color .15s ease, background-color .15s ease;
+
+        &:hover {
+            border-color: #b6c0ce;
+        }
+
+        &:has(input:checked) {
+            border-color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), .06);
+            box-shadow: inset 0 0 0 1px var(--bs-primary);
+        }
+
+        &:has(input:focus-visible) {
+            outline: 3px solid rgba(var(--bs-primary-rgb), .35);
+            outline-offset: 2px;
+        }
+
+        input[type="radio"] {
+            flex: none;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: var(--bs-primary);
+        }
+    }
+
+    // Initials in a few soft colours, taking turns (as in the tables).
+    .salek-userpicker-avatar {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #e3edfb;
+        color: #1859c9;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    @each $i, $bg, $fg in (1, #fff4da, #8a5a00), (2, #e3edfb, #1859c9), (3, #f1ecfe, #6236c9),
+            (4, #e4f6f1, #0b7261), (5, #fdedf3, #ae2161), (6, #eef2f7, #475569) {
+        .salek-userpicker-cards > :nth-child(6n + #{$i}) .salek-userpicker-avatar,
+        .salek-userpicker-rows > :nth-child(6n + #{$i}) .salek-userpicker-avatar {
+            background-color: $bg;
+            color: $fg;
+        }
+    }
+
+    .salek-userpicker-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.45;
+    }
+
+    .salek-userpicker-name,
+    .salek-userpicker-details {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .salek-userpicker-name {
+        color: $salek-text-strong;
+        font-size: .875rem;
+        font-weight: 600;
+    }
+
+    // Emails and other details read left to right in a Persian page too.
+    .salek-userpicker-details {
+        color: $salek-text-muted;
+        font-size: .75rem;
+        unicode-bidi: plaintext;
+        text-align: start;
+    }
+
+    // "Too many users (101) to show - please use the search": a quiet line with a magnifier.
+    .salek-userpicker-message {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0;
+        color: $salek-text;
+        font-size: .8125rem;
+
+        &::before {
+            content: "";
+            flex: none;
+            width: 16px;
+            height: 16px;
+            background: $salek-icon-search center / 16px no-repeat;
+        }
+    }
+
+    // Several people (the add and remove pages): one framed list that scrolls, each group with
+    // its name, number and a checkbox for all its people staying at the top; the people as rows
+    // under lines.
+    .salek-userpicker-multi {
+        gap: 0;
+        height: 360px;
+        overflow-y: auto;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: #fff;
+
+        @include media-breakpoint-down(lg) {
+            height: 260px;
+        }
+
+        .salek-userpicker-group {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            gap: 10px;
+            margin: 0;
+            padding: 10px 14px;
+            border-bottom: 1px solid $salek-table-row-line;
+            background-color: $salek-table-head-bg;
+        }
+
+        .salek-userpicker-rows + .salek-userpicker-group {
+            border-top: 1px solid $salek-table-row-line;
+        }
+
+        input[type="checkbox"] {
+            @include salek-checkbox;
+        }
+
+        .salek-userpicker-message {
+            padding: 12px 14px;
+        }
+    }
+
+    .salek-userpicker-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        padding: 8px 14px;
+        cursor: pointer;
+        transition: background-color .15s ease;
+
+        + .salek-userpicker-row {
+            border-top: 1px solid $salek-table-row-line;
+        }
+
+        &:hover {
+            background-color: $salek-band-bg;
+        }
+
+        &:has(input:checked) {
+            background-color: rgba(var(--bs-primary-rgb), .06);
+        }
+
+        &:has(input:focus-visible) {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: -2px;
+        }
+
+        .salek-userpicker-avatar {
+            width: 32px;
+            height: 32px;
+        }
+
+        // The members of a group: only to look at.
+        &:is(div) {
+            cursor: default;
+        }
+
+        // The number after a person (their groups, on the group members page).
+        > .salek-userpicker-count {
+            margin-inline-start: auto;
+        }
+    }
+
+    // A list of groups (the groups page): a group sign in place of initials.
+    .salek-userpicker-grouplist .salek-userpicker-avatar {
+        font-size: 0;
+
+        &::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: currentColor;
+            mask: $salek-icon-users center / contain no-repeat;
+        }
+    }
+
+    // The groups page: each list as high as the other, under its label.
+    @at-root #page-group-index #region-main .salek-userpicker-multi {
+        margin-bottom: 12px;
+    }
+
+    // The form's button with the chosen person (checking permissions): under a line across the
+    // sheet, at its bottom (its padding is 24px, 16px on phones).
+    #chooseusersubmit {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px 16px;
+        margin: $salek-page-header-gap calc(-1 * #{$salek-space-inset}) calc(-1 * #{$salek-space-inset});
+        padding: 16px $salek-space-inset;
+        border-top: 1px solid $salek-line;
+
+        @include media-breakpoint-down(md) {
+            margin-inline: calc(-1 * #{$salek-space-inset-sm});
+            margin-bottom: calc(-1 * #{$salek-space-inset-sm});
+            padding-inline: $salek-space-inset-sm;
+        }
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+        }
+    }
+
+    // The chosen person, next to the form's button.
+    .salek-userpicker-chosen {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        color: $salek-text;
+        font-size: .8125rem;
+
+        .salek-userpicker-avatar {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    .salek-userpicker-chosen-label,
+    .salek-userpicker-chosen-none {
+        color: $salek-text-muted;
+    }
+}
+
+@keyframes salek-userpicker-wait {
+    from {
+        height: 0;
+        padding: 0;
+        border-width: 0;
+        visibility: hidden;
+    }
+}
+
+// The search of the user selectors: "Clear" and "Search options" as soft buttons next to
+// the field; the options on a panel under the search, opened and closed at once (theme JS
+// userpicker sets salek-options-open/-closed; until it runs, Moodle's "collapsed" class decides),
+// the ways of matching as pills.
+#region-main .userselector > [class~="d-flex"] {
+    > [class~="btn"],
+    .collapsibleregioncaption a {
+        @include salek-button-soft;
+        border-radius: $salek-button-radius;
+        padding-inline: 16px;
+        font-weight: 600;
+    }
+
+    .collapsibleregion,
+    .collapsibleregion > div {
+        display: contents; // The caption and the panel take part in the search row.
+    }
+
+    .collapsibleregioncaption {
+        min-height: 0;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: $salek-control-height;
+            border: 1px solid var(--bs-btn-border-color);
+            background-color: var(--bs-btn-bg);
+            color: var(--bs-btn-color);
+            text-decoration: none;
+            white-space: nowrap;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-sliders);
+                color: $salek-text-muted;
+            }
+
+            &::after {
+                @include salek-mask-icon($salek-icon-chevron, 14px);
+                /*rtl:ignore*/
+                transform: rotate(90deg);
+                transition: transform .15s ease-in-out;
+            }
+
+            &:hover {
+                background-color: var(--bs-btn-hover-bg);
+                color: var(--bs-btn-hover-color);
+            }
+        }
+
+        img {
+            display: none;
+        }
+    }
+
+    .collapsibleregion.salek-options-open .collapsibleregioncaption a {
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+
+        &::before {
+            color: currentColor;
+        }
+
+        &::after {
+            /*rtl:ignore*/
+            transform: rotate(-90deg);
+        }
+    }
+
+    .collapsibleregion:is(.collapsed:not(.salek-options-open), .salek-options-closed) .collapsibleregioninner {
+        display: none;
+    }
+
+    .collapsibleregioninner {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 100%;
+        gap: 12px;
+        margin-top: 4px;
+        padding: 16px;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: #fff;
+        visibility: visible; // (Moodle hides it until its animation ends.)
+
+        .form-check {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            min-height: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0;
+        }
+
+        .form-check-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            color: $salek-text;
+            font-size: .875rem;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            @include salek-checkbox;
+            float: none;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // "Matching": under a line, the three ways as pills, the chosen one in the brand colour.
+        .form-check:has(input[type="radio"]) {
+            padding-top: 12px;
+            border-top: 1px solid $salek-line;
+
+            > span {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                margin-inline-end: 4px !important; /* stylelint-disable-line declaration-no-important */
+                color: $salek-text-muted;
+                font-size: .875rem;
+                font-weight: 500;
+            }
+
+            label {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                min-height: 32px;
+                margin: 0;
+                padding: 0 14px;
+                border: 1px solid $salek-control-border;
+                border-radius: 999px;
+                color: $salek-text;
+                font-size: .8125rem;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: $salek-soft;
+                }
+
+                &:has(> input:checked) {
+                    border-color: var(--bs-primary);
+                    background-color: rgba(var(--bs-primary-rgb), .08);
+                    color: var(--bs-primary);
+                    font-weight: 500;
+                }
+
+                &:has(> input:focus-visible) {
+                    outline: 2px solid var(--bs-primary);
+                    outline-offset: 2px;
+                }
+            }
+
+            input[type="radio"] {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                opacity: 0;
+                cursor: pointer;
+            }
+        }
+    }
+}
+

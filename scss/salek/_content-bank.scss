@@ -1,0 +1,141 @@
+// Salek: the content bank (contentbank/index.php).
+
+/* The tools on one line, centred (search at the start; "Show unlisted content", Add, Upload and
+   the two views at the end); the place selector as a field fitted to its text, in line with the
+   rest; the files in a card like the site's tables: a header band (the folder path, the column
+   names of the list view), rows with hairlines, no column lines. */
+body:not(.pagelayout-login) #region-main .content-bank-container {
+    > [class~="d-flex"]:first-child {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .cb-search-container,
+    .cb-toolbar-container {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-2 and .me-2.)
+    }
+
+    .cb-toolbar-container {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+
+        // "Show unlisted content": the box and its words centred with the buttons.
+        > :has(> .displayunlisted) {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-3.)
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .pt-1.)
+
+            input,
+            label {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .m-2.)
+            }
+        }
+
+        > [class~="btn-group"],
+        > [class~="btn"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-1 and .ms-2.)
+        }
+
+        // The two views (icons, list): one joined control.
+        > button[class~="btn"]:has(+ button[class~="btn"]) {
+            border-start-end-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-end-end-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > button[class~="btn"] + button[class~="btn"] {
+            margin-inline-start: -8px !important; /* stylelint-disable-line declaration-no-important */
+            border-start-start-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-end-start-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The place (course, category) to show: a field as wide as its text, at the start.
+    .cb-navigation-container {
+        margin-bottom: 12px !important; /* stylelint-disable-line declaration-no-important */
+
+        .singleselect {
+            display: block !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .form-select {
+            width: auto;
+            min-width: 240px;
+            max-width: 100%;
+        }
+    }
+
+    // The files: a card.
+    > [class~="pb-3"][class~="border"] {
+        overflow: hidden;
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-color: $salek-card-border !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 16px;
+    }
+
+    .cb-navbar {
+        padding: 12px 14px !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom-color: $salek-table-head-line !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-table-head-bg !important; /* stylelint-disable-line declaration-no-important */ // (Over .bg-light.)
+        color: $salek-text;
+        font-size: .8125rem;
+        font-weight: 600;
+
+        .icon {
+            color: $salek-text-muted;
+        }
+    }
+
+    .cb-content-wrapper {
+        min-height: 140px;
+    }
+
+    // The list view: the site's table look.
+    &.view-list {
+        .cb-content-wrapper {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .cb-heading {
+            border-bottom: 1px solid $salek-table-head-line;
+            background-color: $salek-table-head-bg !important; /* stylelint-disable-line declaration-no-important */ // (Over .bg-white.)
+        }
+
+        .cb-listitem {
+            border-bottom: 1px solid $salek-table-row-line;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+
+            &:hover {
+                background-color: #f1f5fe;
+            }
+        }
+
+        .cb-column {
+            align-items: center;
+            padding: 12px 14px;
+            border-inline-end: 0;
+            font-size: .875rem;
+        }
+
+        .cb-heading .cb-column {
+            padding-block: 0;
+        }
+
+        .cb-btnsort {
+            min-height: 48px;
+            padding: 0;
+            border: 0;
+            color: #1e293b;
+            font-size: .8125rem;
+            font-weight: 600;
+        }
+    }
+}

@@ -1,0 +1,677 @@
+// Salek: Navbar (guest and logged in), user menu, phone navbar and the phone bottom bar.
+
+/* Guest navbar: make the login link a subtle outline action. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .login {
+        margin-inline-end: .75rem;
+    }
+
+    .login a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: .35rem .85rem;
+        border: 1px solid var(--bs-primary);
+        border-radius: .75rem;
+        color: var(--bs-primary);
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover,
+        &:focus {
+            background: rgba(var(--bs-primary-rgb), .06);
+            color: var(--bs-primary);
+            text-decoration: none;
+        }
+    }
+}
+
+/* Guest navbar: simplify the language selector button appearance. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu #lang-menu-toggle {
+        border: 0;
+        box-shadow: none;
+        border-radius: .4rem;
+
+        &:hover,
+        &:focus,
+        &.show {
+            background: rgba(0, 0, 0, .035);
+            box-shadow: none;
+            outline: 0;
+        }
+    }
+}
+
+/* Guest navbar: improve language dropdown spacing and text direction. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+        min-width: 9.5rem;
+        padding: .35rem;
+
+        .dropdown-item {
+            padding: .45rem .7rem;
+            text-align: start;
+        }
+    }
+}
+
+/* Guest navbar: improve spacing between the selected language and dropdown arrow. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu #lang-menu-toggle {
+        gap: .35rem;
+    }
+}
+
+/* Guest navbar: refine the separator beside the language selector.
+ * Keep it subtle, slightly shorter, and give the login side a little
+ * more breathing room for better visual balance.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    #usernavigation > .divider {
+        height: 45% !important;
+        opacity: .5;
+        margin-inline-start: .2rem !important;
+        margin-inline-end: .7rem !important;
+    }
+}
+
+/* Navbar: slightly refine spacing between the logo and primary navigation. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .navbar-brand {
+        margin-inline-end: 1.35rem !important;
+    }
+}
+
+/* Logged-in navbar: reduce the visual prominence of Edit mode. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .editmode-switch-form {
+        opacity: .72;
+
+        &:hover,
+        &:focus-within {
+            opacity: 1;
+        }
+    }
+}
+
+/* Language dropdown: active-language check at the logical end of the row.
+   Panel, item shape, hover and current-item colours: see "Salek: shared surfaces", section 11. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .langmenu .dropdown-menu {
+        .dropdown-item {
+            position: relative;
+            padding-inline-start: .9rem !important;
+            padding-inline-end: 2.25rem !important;
+            padding-block: .55rem;
+        }
+
+        .dropdown-item[aria-current="true"]::before {
+            position: absolute;
+            inset-inline-end: .65rem;
+            inset-inline-start: auto;
+            color: var(--bs-primary);
+            opacity: .78;
+        }
+    }
+}
+
+/* Logged-in navbar: refine spacing between notification, message and user menu controls. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    #usernavigation {
+        > * {
+            margin-inline: .1rem;
+        }
+
+        .usermenu-container {
+            margin-inline-start: .2rem;
+        }
+    }
+}
+
+/* Navbar user menu: item spacing like the standalone navbar language dropdown.
+   Panel, item shape, hover and current-item colours: see "Salek: shared surfaces", section 11. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        .dropdown-item {
+            padding: .55rem .9rem !important;
+        }
+    }
+}
+
+/* Navbar user-menu language submenu: keep the active-language check
+ * on the logical end side and away from the text.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        .dropdown-item[aria-current="true"] {
+            position: relative;
+            padding-inline-end: 2.25rem !important;
+        }
+
+        .dropdown-item[aria-current="true"]::before {
+            position: absolute;
+            inset-inline-end: .65rem;
+            inset-inline-start: auto;
+        }
+    }
+}
+
+/* Navbar user menu: match the active-language indicator used by the
+ * standalone language dropdown.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .dropdown-menu {
+        .dropdown-item[aria-current="true"]::before {
+            color: var(--bs-primary);
+            opacity: .78;
+        }
+    }
+}
+
+/* Navbar user menu: use the same direction-aware dropdown alignment as
+ * the standalone language selector instead of Moodle's forced end alignment.
+ * The menu then grows towards the viewport edge, which only has enough room
+ * on wide screens. Below 1680px, align it to the avatar's end edge instead
+ * (Moodle's default), so it opens towards the page and stays in view.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu > .dropdown > .dropdown-menu {
+        inset-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        @media (max-width: 1679.98px) {
+            inset-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+            inset-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
+            max-width: calc(100vw - 1rem);
+        }
+    }
+}
+
+/* Navbar user-menu submenus: match the language-item spacing used by
+ * the standalone navbar language dropdown.
+ */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu .carousel-item.submenu .dropdown-item {
+        padding-inline-start: .9rem !important;
+        padding-inline-end: 2.25rem !important;
+        padding-block: .55rem;
+    }
+}
+
+/* Logged-in navbar: keep the user/avatar trigger compact and lightweight. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    .usermenu #user-menu-toggle {
+        padding: .25rem .4rem;
+        border: 0;
+        box-shadow: none;
+        background: transparent;
+        border-radius: .45rem;
+
+        &:hover,
+        &:focus,
+        &.show {
+            background: rgba(0, 0, 0, .035);
+            box-shadow: none;
+        }
+    }
+}
+
+/* Salek: calmer navbar user area (notifications, messages, avatar, edit mode).
+   Shape and layout rules apply to every navbar colour; colours that assume a
+   light background are limited to the light navbar (.bg-body) further below. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    /* Outline icons: Font Awesome's regular (400) style instead of solid. */
+    .popover-region-toggle .icon {
+        font-size: 18px;
+        font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */
+        transition: color .15s ease;
+    }
+
+    /* Messages: the rounded speech bubble instead of the square one. */
+    [data-region="popover-region-messages"] .popover-region-toggle .icon::before {
+        content: "#{$fa-var-comment}";
+    }
+
+    /* Unread count: a small dot near the icon's top end corner. The number
+       stays available to screen readers via the badge's visually hidden text
+       and in the toggle's title. */
+    .popover-region-toggle .count-container {
+        top: calc(50% - 12px);
+        inset-inline-end: 5px;
+        width: 9px;
+        min-width: 9px;
+        height: 9px;
+        padding: 0;
+        border-radius: 50%;
+        background-color: #ef4444;
+        font-size: 0;
+    }
+
+    /* Avatar: no dropdown caret. */
+    .usermenu #user-menu-toggle::after {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Edit mode: hide the label text visually but keep it as the switch's
+       accessible name (Moodle does the same below md). The switch shows it as
+       a tooltip via templates/core/editswitch.mustache. Only the navbar switch
+       is affected; the copy in the user menu (phones) keeps its label. */
+    #usernavigation > .editmode-switch-form .input-group > label {
+        @include visually-hidden();
+    }
+}
+
+.navbar.fixed-top.bg-body:not(.boost-union-menubar) {
+    .popover-region-toggle .icon {
+        color: #475569;
+    }
+
+    .popover-region-toggle:hover .icon,
+    .popover-region-toggle[aria-expanded="true"] .icon {
+        color: #0f172a;
+    }
+
+    /* Separate the dot from the icon with a ring in the navbar colour. */
+    .popover-region-toggle .count-container {
+        box-shadow: 0 0 0 1.5px var(--bs-body-bg);
+    }
+
+    .usermenu .userinitials {
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+        font-size: small;
+        font-weight: 600;
+    }
+}
+
+/* Salek: phone navbar (below md).
+   Centre every item vertically with flexbox instead of relying on percentage
+   heights, give the logo and the avatar the same inset from their screen edge,
+   and move the Edit mode switch into the user menu (templates/core/user_menu.mustache). */
+@include media-breakpoint-down(md) {
+    .navbar.fixed-top:not(.boost-union-menubar) {
+        > .container-fluid {
+            align-items: center;
+        }
+
+        /* Moodle only shows the logo on phones when the Boost Union bottom bar is active. */
+        .navbar-brand {
+            height: 50px;
+            margin-inline-start: .25rem !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navbar-brand .logo {
+            height: 50px;
+            max-height: none;
+        }
+
+        #usernavigation {
+            align-items: center;
+        }
+
+        #usernavigation > .divider,
+        #usernavigation > .editmode-switch-form {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        #usernavigation .usermenu-container {
+            margin-inline-end: .25rem;
+        }
+
+        .usermenu-container,
+        .usermenu,
+        .usermenu .dropdown {
+            align-items: center;
+        }
+
+        .usermenu #user-menu-toggle {
+            display: flex;
+            align-items: center;
+            height: auto;
+            padding: 0;
+            border-radius: 50%;
+        }
+    }
+}
+
+/* Salek: Edit mode switch inside the user menu (phones only, see above). */
+.navbar.fixed-top:not(.boost-union-menubar) .usermenu .salek-usermenu-editswitch {
+    padding: .55rem .9rem;
+    border-bottom: 1px solid var(--bs-dropdown-divider-bg);
+    margin-bottom: .3rem;
+
+    &:empty {
+        display: none;
+    }
+
+    > .divider {
+        display: none;
+    }
+
+    .input-group {
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Moodle core visually hides this label below md (primarynavigation.scss);
+       in the menu the switch needs its visible text. */
+    .editmode-switch-form label {
+        position: static !important; /* stylelint-disable-line declaration-no-important */
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        height: auto !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: visible !important; /* stylelint-disable-line declaration-no-important */
+        clip: auto !important; /* stylelint-disable-line declaration-no-important */
+        white-space: nowrap !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Salek: phone bottom navigation (Boost Union smart menu "Bottom bar").
+   Icon above a short one-line label, no underline, the current page in the
+   brand colour. Items never wrap, so Moodle's more menu keeps every item in
+   the bar.
+
+   Expected smart menu setup (Appearance > Boost Union > Smart menus):
+   a bottom bar Calendar item with CSS class "salek-nav-calendar", visible to
+   all users. Boost Union only renders this bar when the user can see at least
+   one bottom bar smart menu item, so this item keeps the bar available.
+   Users who get Moodle's own Site administration item see that instead of
+   Calendar (see the :has() rule below). */
+.theme-boost-union-smartmenu #page-wrapper #page #page-footer .navbar.boost-union-bottom-menu {
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: 0 -6px 24px rgb(15 23 42 / 12%);
+
+    /* Boost Union fixes the height on .moremenu only; stretch the list and
+       its items to that height so the links can centre their content. */
+    .bottom-navigation .more-nav {
+        height: 100%;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 2px;
+        padding-inline: 6px;
+
+        /* Every item, including smart menu items, gets an equal share.
+           Utility classes such as .d-none still win (they use !important). */
+        > li:not(.dropdownmoremenu) {
+            display: flex;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        /* "Site administration" is too long for the bar: show a short label
+           instead. font-size: 0 hides the original text visually, but it stays
+           the link's accessible name. */
+        > li[data-key="siteadminnode"] > .nav-link {
+            font-size: 0;
+            /* The hidden text is still an (empty) flex item between the icon
+               and the label; halve the gap so the spacing matches the others. */
+            gap: 2px;
+
+            /* Boost Union positions ::after absolutely in this bar (for dropdown
+               carets); keep the label in the normal column flow instead. */
+            &::after {
+                content: "Admin";
+                position: static;
+                margin: 0;
+                font-size: 11px;
+                line-height: 1.2;
+            }
+
+            &:lang(fa)::after {
+                content: "مدیریت";
+            }
+        }
+
+        /* Smart menu links carry .d-inline-flex, so also set the width to make
+           them fill their slot like the core links. */
+        > li > .nav-link {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            /* Optical centring: the content looks too high when exactly centred. */
+            padding: 4px 2px 0;
+            border: 0;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.2;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: background-color .15s ease;
+
+            /* The current page fills its whole cell with a soft brand tint. */
+            &.active {
+                background-color: rgba(var(--bs-primary-rgb), .14);
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+
+            /* Hover tint only for real pointers; on touch screens it would stick after a tap. */
+            @media (hover: hover) {
+                &:not(.active):hover {
+                    background-color: rgba(var(--bs-primary-rgb), .06);
+                }
+            }
+
+            .icon {
+                width: auto;
+                height: auto;
+                margin: 0;
+                font-size: 18px;
+            }
+        }
+
+        > li[data-key="home"] > .nav-link::before,
+        > li[data-key="myhome"] > .nav-link::before,
+        > li[data-key="mycourses"] > .nav-link::before,
+        > li[data-key="siteadminnode"] > .nav-link::before {
+            font-family: "Font Awesome 6 Free";
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        > li[data-key="home"] > .nav-link::before {
+            content: "#{$fa-var-house}";
+        }
+
+        > li[data-key="myhome"] > .nav-link::before {
+            content: "#{$fa-var-gauge-high}";
+        }
+
+        > li[data-key="mycourses"] > .nav-link::before {
+            content: "#{$fa-var-book-open}";
+        }
+
+        > li[data-key="siteadminnode"] > .nav-link::before {
+            content: "#{$fa-var-gear}";
+        }
+    }
+
+    /* Show Calendar only to users without Moodle's Site administration item.
+       That item follows Moodle's own permissions, which a smart menu
+       restriction cannot express (e.g. managers). Browsers without :has()
+       simply show both items. */
+    .more-nav:has(li[data-key="siteadminnode"]) .salek-nav-calendar,
+    .more-nav:has(li[data-key="siteadminnode"]) li:has(> .salek-nav-calendar) {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Smart menu items get no active state from Boost Union; derive it from the page. */
+body.path-calendar .boost-union-bottom-menu .salek-nav-calendar.nav-link,
+body.path-calendar .boost-union-bottom-menu .salek-nav-calendar > .nav-link {
+    background-color: rgba(var(--bs-primary-rgb), .14) !important; /* stylelint-disable-line declaration-no-important */
+    color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+    font-weight: 600;
+}
+
+/* Gradebook grader: keep wide tables inside the page width. */
+.path-grade-report-grader {
+    .gradeparent {
+        max-width: 100%;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    #user-grades {
+        max-width: none;
+        width: max-content;
+        min-width: 100%;
+    }
+}
+
+/* Gradebook grader: use the same wide-table scrolling design as Question bank. */
+body.path-grade-report-grader {
+    .gradeparent {
+        max-width: 100%;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.34)
+            rgba(79, 110, 140, 0.04);
+    }
+
+    #user-grades {
+        max-width: none;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .gradeparent::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .gradeparent::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.04);
+    }
+
+    .gradeparent::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.34);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .gradeparent::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.50);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 12px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(79, 110, 140, 0.10);
+        border-radius: 999px;
+        background: rgba(79, 110, 140, 0.06);
+
+        scrollbar-width: thin;
+        scrollbar-color:
+            rgba(79, 110, 140, 0.42)
+            rgba(79, 110, 140, 0.06);
+    }
+
+    .boost-union-qbank-top-scroll[hidden] {
+        display: none;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-track {
+        background: rgba(79, 110, 140, 0.06);
+        border-radius: 999px;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+        background: rgba(79, 110, 140, 0.42);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 110, 140, 0.58);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .boost-union-qbank-top-scroll-spacer {
+        height: 1px;
+    }
+
+    .qbank-sticky-scroll-zone {
+        position: sticky;
+        top: var(--navbar-height, 54px);
+        z-index: 20;
+
+        padding-top: 14px;
+        padding-bottom: 14px;
+
+        background: rgb(255 255 255);
+    }
+
+    .qbank-sticky-scroll-zone
+    .boost-union-qbank-top-scroll {
+        position: static;
+        top: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    @media (max-width: 767.98px) {
+        .qbank-sticky-scroll-zone {
+            padding-top: 1px;
+            padding-bottom: 8px;
+            background: rgb(255 255 255);
+        }
+
+        .qbank-sticky-scroll-zone
+        .boost-union-qbank-top-scroll {
+            margin: 0;
+            background: rgb(255 255 255);
+            border: 0;
+            box-shadow: none;
+
+            scrollbar-color:
+                #005bb3c2
+                rgb(255 255 255);
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb {
+            background: #005bb3c2;
+        }
+
+        .boost-union-qbank-top-scroll::-webkit-scrollbar-thumb:hover {
+            background: #005bb3e0;
+        }
+    }
+}
+
+/* Keep tertiary navigation borders within the normal page content width. */
+.tertiary-navigation.full-width-bottom-border {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    box-sizing: border-box;
+
+    > .row {
+        padding-inline: 0;
+    }
+}

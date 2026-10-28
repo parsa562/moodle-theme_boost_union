@@ -1,0 +1,278 @@
+// Salek: Spacing around lists; info messages; in-page tabs; assignment grading.
+
+/* 24. Spacing and small parts around lists: titles, tables and the controls after them follow
+       one rhythm (24px before a title, 12px after it, 16px after a table); label + list rows
+       (Grouping, Add method, Download as) have their parts spaced; info messages and in-page
+       tabs in the quieter style of the rest of the site; assignment statuses as pills. */
+@include salek-content-scope {
+    div[role="main"] > :is(h2, h3, h4):not(:first-child),
+    .generalbox > :is(h2, h3, h4):not(:first-child) {
+        margin-top: 24px;
+    }
+
+    div[role="main"] > :is(h2, h3, h4),
+    .generalbox > :is(h2, h3, h4) {
+        margin-bottom: 12px;
+    }
+
+    .table-responsive {
+        margin-bottom: 16px;
+
+        > table {
+            margin-bottom: 0;
+        }
+    }
+
+    // Label + list (+ button) rows.
+    .singleselect,
+    .urlselect {
+        form {
+            gap: 8px;
+        }
+
+        label {
+            margin: 0;
+        }
+    }
+
+    .singleselect.d-inline-block {
+        margin: 4px 0;
+        margin-inline: 8px 16px; // Also apart from a text before it ("Filter groups by:").
+    }
+
+    .dataformatselector {
+        margin: 12px 0 !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .m-1.
+
+        > .d-flex {
+            align-items: center !important; /* stylelint-disable-line declaration-no-important */
+            gap: 8px;
+        }
+
+        label {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    nav.pagination {
+        margin-block: 12px;
+    }
+
+    // Info messages ("Nothing to display" and the like): a soft blue note.
+    .alert-info {
+        border-color: #d5e3f8;
+        border-radius: 12px;
+        background-color: #eef4fd;
+        color: #1e3a5f;
+    }
+
+    // Tabs inside a page (cohorts and other admin pages): an underline, like the tab bar.
+    .nav-tabs {
+        gap: 4px;
+        border-bottom: 1px solid $salek-line;
+
+        .nav-link {
+            margin-bottom: -1px;
+            padding: 8px 14px;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            background: transparent;
+            color: $salek-text;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+
+            &.active {
+                border-bottom-color: var(--bs-primary);
+                color: $salek-ink;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+// Assignment grading page on phones: the tools above the table wrap onto more lines (they
+// stayed on one line and pushed the page sideways), and the table scrolls sideways inside its
+// box at its natural width (it was squeezed until the statuses broke word by word, and still
+// ran out of the page).
+body.path-mod-assign #region-main {
+    .tertiary-navigation > .d-flex {
+        @include media-breakpoint-down(md) {
+            flex-wrap: wrap;
+            gap: 8px 12px;
+        }
+    }
+
+    .gradingtable {
+        @include media-breakpoint-down(md) {
+            overflow-x: auto;
+
+            > table {
+                width: max-content;
+                min-width: 100%;
+            }
+
+            // Moodle makes the header row sticky under the navbar; inside the scrolling box it
+            // stuck that far down the table, over the first student.
+            > table > thead > tr {
+                position: static;
+            }
+        }
+    }
+}
+
+// Assignment grading table.
+body.path-mod-assign #region-main .gradingtable {
+    // The header "Select" word next to the select-all box: the box is enough (the word stays
+    // for screen readers in Moodle's hidden label).
+    thead th.c0 > span[aria-hidden="true"] {
+        display: none;
+    }
+
+    // The name column keeps "First name / Last name" on one line.
+    thead th.username {
+        white-space: nowrap;
+    }
+
+    // Status and grade cells: their ⋮ menu centred beside the content (it sat at the top).
+    td:is(.status, .grade) > .d-flex {
+        align-items: center;
+    }
+
+    // Empty cells show a quiet dash, as the date columns already do.
+    td.cell:empty::before {
+        content: "-";
+    }
+
+    // Statuses as pills, the notes about time as small coloured text.
+    .submissioninfo {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    :is(.submissionstatus, .submissionstatusnew, .submissionstatusdraft, .submissionstatussubmitted,
+            .submissionstatusreopened, .submissiongraded, .submissionnotgraded) {
+        padding: 3px 10px;
+        border-radius: 999px;
+        background-color: #f1f4f8;
+        color: #475569;
+        font-size: .75rem;
+        font-weight: 500;
+    }
+
+    .submissionstatussubmitted,
+    .submissiongraded {
+        background-color: #e8f7ee;
+        color: #0f6b37;
+    }
+
+    .submissionstatusdraft,
+    .submissionstatusreopened {
+        background-color: #fff4da;
+        color: #8a5a00;
+    }
+
+    :is(.overduesubmission, .latesubmission) {
+        color: #b42318;
+        font-size: .75rem;
+        white-space: nowrap;
+    }
+
+    .earlysubmission {
+        color: #0f6b37;
+        font-size: .75rem;
+    }
+}
+
+// The dialogue is wider when it shows the question bank, which now has more columns.
+#page-mod-quiz-edit .modal-dialog:has(.questionbankwindow) {
+    @include media-breakpoint-up(lg) {
+        max-width: min(1140px, calc(100vw - 48px));
+    }
+}
+
+// Sort button of question bank header cells (theme template core_question/column_header),
+// wherever the question bank list appears (also the quiz dialogue).
+.question-bank-table .sorters-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #94a3b8;
+
+    .icon {
+        margin: 0;
+        font-size: .75rem;
+    }
+
+    &:hover,
+    &[aria-expanded="true"] {
+        background-color: #dfe5ee;
+        color: #0f172a;
+    }
+}
+
+// Quiz results table: the quiz's own CSS (two ids) draws cell lines and small padding; the
+// row lines and spacing of the other tables instead, and the "Overall average" row on the
+// light footer band (in place of Moodle's divider row).
+#page-mod-quiz-report #region-main table#attempts {
+    margin: 0;
+
+    .header,
+    .cell {
+        padding: 10px 12px;
+    }
+
+    td {
+        border-inline-width: 0;
+    }
+
+    tbody > tr:has(> td > .tabledivider) {
+        display: none;
+
+        + tr > * {
+            background-color: $salek-band-bg;
+            font-weight: 600;
+        }
+    }
+}
+
+// Assignment grading: the "Quick grading / Actions" row closer to the bar above and the table.
+body.path-mod-assign #region-main {
+    .tertiary-navigation.pt-0 > .d-flex {
+        align-items: center;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .gradingtable.py-3 {
+        padding-top: 12px !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// Sticky footer of list pages ("Show 10" on assignment grading, the grader report): a hairline
+// and a soft shadow on top, the label and its list on one line.
+#sticky-footer.stickyfooter {
+    border-top-color: $salek-line !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: 0 -8px 20px -16px rgb(15 23 42 / 35%);
+
+    label:has(> select) {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: $salek-text;
+        font-size: .875rem;
+
+        > select {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}

@@ -139,6 +139,18 @@ if (!empty($primarymenu['bottombar']) && !empty($primarymenu['bottombar']['drawe
     $extraclasses[] = 'theme-boost-union-bottombar';
 }
 
+// Pages of the participants menu (enrolment, groups, permissions) and the pages they open share one
+// design (post.scss, sections 25-26): mark them with one class.
+if (preg_match('/^(enrol-|group-|admin-roles-(permissions|check|assign|override)$)/', $PAGE->pagetype)) {
+    $extraclasses[] = 'salek-participants-page';
+}
+
+// The course settings page (the first page of the course's Settings tab): the title on a dotted
+// card above the form (post.scss, section 28). (Activity settings keep the common page header.)
+if ($PAGE->pagetype === 'course-edit') {
+    $extraclasses[] = 'salek-settings-page';
+}
+
 // Include the extra classes for the course index modification.
 require_once(__DIR__ . '/includes/courseindex.php');
 
@@ -181,6 +193,58 @@ $isgraderreport = strpos($PAGE->pagetype, 'grade-report-grader') === 0;
 if ($isquestionbank || $isgraderreport) {
     $PAGE->requires->js_call_amd('theme_boost_union/questionbankscroll', 'init');
 }
+
+// Question bank filters: the number of questions of a chosen category as a badge in its chip.
+if ($isquestionbank) {
+    $PAGE->requires->js_call_amd('theme_boost_union/questionbankchips', 'init');
+}
+
+// Managing course categories and courses: labels for the dropdowns of its bulk actions.
+if ($PAGE->pagetype === 'course-management') {
+    $PAGE->requires->js_call_amd('theme_boost_union/coursemanagement', 'init');
+}
+
+// Front page: a bar to search, sort and view its course cards.
+if ($PAGE->pagetype === 'site-index') {
+    $strings = [];
+    foreach (['cards', 'count', 'defaultorder', 'list', 'nameaz', 'newest', 'none', 'oldest', 'search', 'sort'] as $key) {
+        $strings[$key] = get_string('salekcourses' . $key, 'theme_boost_union');
+    }
+    $PAGE->requires->js_call_amd('theme_boost_union/frontpagecourses', 'init', [$strings]);
+}
+
+// Course page: section and activity counts, activity meta line.
+if (strpos($PAGE->pagetype, 'course-view-') === 0) {
+    $PAGE->requires->js_call_amd('theme_boost_union/coursepage', 'init');
+}
+
+// Every page: a "Nothing to display" row in empty list tables.
+$PAGE->requires->js_call_amd('theme_boost_union/emptytables', 'init');
+
+// Every page: Moodle's reactions to a dropdown's change (filter conditions…) also with the theme's
+// dropdown lists.
+$PAGE->requires->js_call_amd('theme_boost_union/selectchange', 'init');
+
+// Every page: filter cards shown once Moodle has built their rows (no flash of an empty row).
+$PAGE->requires->js_call_amd('theme_boost_union/filtersready', 'init');
+
+// The calendar page and the Dashboard: the month calendar with a side panel for today.
+if ($PAGE->pagetype === 'calendar-view' || $PAGE->pagetype === 'my-index') {
+    $PAGE->requires->js_call_amd('theme_boost_union/calendarpanel', 'init', [[
+        'calendar' => get_string('calendar', 'calendar'),
+        'today' => get_string('today', 'calendar'),
+        'events' => get_string('events', 'calendar'),
+        'nothing' => get_string('nothingtodisplay'),
+    ]]);
+}
+
+// Every page: Moodle's user selectors (checking permissions, assigning roles, enrolling, group members)
+// drawn as cards or rows with checkboxes. The words come with the page, so they are drawn without
+// waiting for the server.
+$PAGE->requires->js_call_amd('theme_boost_union/userpicker', 'init', ['#chooseusersubmit', [
+    'selected' => get_string('selected', 'form'),
+    'none' => get_string('noselection', 'form'),
+]]);
 
 // Include the template content for the course related hints.
 require_once(__DIR__ . '/includes/courserelatedhints.php');

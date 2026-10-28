@@ -352,6 +352,23 @@ Within this setting, you can upload files which are used as homescreen icon as s
 
 In this tab there are the following settings:
 
+##### Hierarchical breadcrumb trails
+
+When enabled, breadcrumbs retain the course and other linked parent pages supplied by Moodle,
+even when those pages also appear in primary or secondary navigation. Global landing pages,
+duplicate links and unlinked grouping labels are omitted. The current page is not a link;
+trails with fewer than two remaining items are hidden.
+
+If Moodle omits the course from its breadcrumb, the course node is recovered from native
+navigation. When the current item is also missing, the active secondary-navigation item is
+used only if its destination matches the current page. No page-specific URL or title mappings
+are used.
+
+Course category visibility and activity section handling continue to use their existing settings.
+The option does not construct URLs or change permissions, breadcrumb spacing or navigation bar
+placement. It is disabled by default, preserving standard Boost Union behaviour. Enable it under
+**Feel > Navigation > Hierarchical breadcrumb trails**.
+
 ##### Primary navigation
 
 ###### Hide nodes in primary navigation

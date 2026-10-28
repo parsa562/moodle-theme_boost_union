@@ -1,0 +1,459 @@
+// Salek: Message drawer and the messages page.
+
+/* Salek: message drawer visual design.
+ * Scoped only to Moodle's messaging drawer rendered via core/drawer.
+ * Does not affect blocks, course index, or primary drawers.
+ */
+
+[data-region="right-hand-drawer"].drawer:has([data-region="message-drawer"]) {
+    background-color: $salek-message-surface !important;
+    border-left: 1px solid $salek-message-border;
+    z-index: 1052;
+
+    &:not(.hidden) {
+        box-shadow: $salek-message-drawer-shadow;
+    }
+
+    @include media-breakpoint-up(md) {
+        top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        height: 100vh !important; /* stylelint-disable-line declaration-no-important */
+        max-height: 100vh;
+    }
+}
+
+[data-region="right-hand-drawer"] [data-region="message-drawer"].message-app {
+    height: 100%;
+    background-color: $salek-message-surface;
+    color: $salek-message-title;
+}
+
+[data-region="right-hand-drawer"] [data-region="header-container"] > [data-region^="view-"] {
+    background: $salek-message-panel;
+    border-bottom: 1px solid $salek-message-border;
+    padding-inline: 12px;
+}
+
+[data-region="right-hand-drawer"] .closewidget {
+    background: #f8fafc;
+    border-bottom: 1px solid $salek-message-border-soft;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+}
+
+[data-region="right-hand-drawer"] .closewidget .btn-link,
+[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link,
+[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"] {
+    border-radius: 8px;
+}
+
+[data-region="right-hand-drawer"] .closewidget .btn-link:hover,
+[data-region="right-hand-drawer"] .closewidget .btn-link:focus,
+[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link:hover,
+[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link:focus,
+[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"]:hover,
+[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"]:focus {
+    background-color: #f1f5f9;
+    text-decoration: none;
+}
+
+[data-region="right-hand-drawer"] [data-region="body-container"] > [data-region^="view-"] {
+    background-color: $salek-message-surface;
+}
+
+[data-region="right-hand-drawer"] [data-region="footer-container"] > [data-region^="view-"] {
+    background: $salek-message-panel;
+    border-top: 1px solid $salek-message-border;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-conversation"] textarea {
+    border: 1px solid $salek-message-border;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background-color: $salek-message-panel;
+}
+
+[data-region="right-hand-drawer"] .simplesearchform {
+    background: $salek-message-panel;
+    border: 1px solid $salek-message-border;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 8px 0 10px;
+}
+
+[data-region="right-hand-drawer"] .simplesearchform:focus-within {
+    border-color: #cbd5e1;
+    box-shadow: 0 0 0 2px rgb(15 23 42 / 8%);
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview-search-input"],
+[data-region="right-hand-drawer"] [data-region="view-search"] [data-region="search-input"] {
+    border: 0;
+    min-height: 38px;
+    box-shadow: none;
+    background: $salek-message-panel;
+    color: $salek-message-title;
+    font-size: 13.5px;
+}
+
+[data-region="right-hand-drawer"] .simplesearchform .btn-submit {
+    border: 0;
+    background: $salek-message-panel;
+    color: $salek-message-muted;
+    padding-inline: 10px;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .section,
+[data-region="right-hand-drawer"] [data-region="view-overview-favourites"],
+[data-region="right-hand-drawer"] [data-region="view-overview-group-messages"],
+[data-region="right-hand-drawer"] [data-region="view-overview-messages"] {
+    background: $salek-message-panel;
+    border: 1px solid $salek-message-border-soft !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: $salek-message-card-shadow;
+    margin: 0 12px 12px;
+    overflow: hidden;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] [data-region="toggle"] {
+    background: $salek-message-panel;
+    border-bottom: 1px solid $salek-message-border-soft;
+    padding: 0;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle {
+    color: $salek-message-title;
+    padding: 12px 14px;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle .fw-bold {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] [data-region="section-total-count-container"] {
+    color: $salek-message-muted;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle:hover,
+[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle:focus {
+    background: #f8fafc;
+    color: $salek-message-title;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item,
+[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item,
+[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item,
+[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item {
+    background-color: $salek-message-panel;
+    border-top-color: $salek-message-border-soft;
+    border-bottom-color: $salek-message-border-soft;
+    border-radius: 8px;
+    margin: 2px 8px;
+    padding: 10px 12px;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item:hover,
+[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item:hover,
+[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item:hover,
+[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item:hover,
+[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item:focus,
+[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item:focus,
+[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item:focus,
+[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item:focus {
+    background-color: #f1f5f9;
+    color: $salek-message-title;
+}
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .text-muted,
+[data-region="right-hand-drawer"] [data-region="view-search"] .text-muted,
+[data-region="right-hand-drawer"] [data-region="view-settings"] .text-muted {
+    color: $salek-message-muted !important; /* stylelint-disable-line declaration-no-important */
+}
+/* Salek: message drawer first card and footer spacing. */
+
+[data-region="right-hand-drawer"] [data-region="view-overview"] .section:first-of-type,
+[data-region="right-hand-drawer"] [data-region="view-overview-favourites"]:first-of-type {
+    margin-top: 12px !important;
+}
+
+[data-region="right-hand-drawer"] [data-region="footer-container"] a,
+[data-region="right-hand-drawer"] [data-region="footer-container"] .btn-link {
+    display: inline-block !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+/* Salek: message index page ("See all") visual alignment.
+ * Scoped to the full messages page only.
+ */
+#page-message-index [data-region="message-index"].message-app.main,
+#page-message-index .message-app.main {
+    background-color: $salek-message-surface !important;
+    border: 1px solid $salek-message-border !important;
+    border-radius: 14px;
+    box-shadow: $salek-message-card-shadow;
+    overflow: hidden;
+}
+
+#page-message-index [data-region="message-index"].message-app.main > .container-fluid,
+#page-message-index .message-app.main > .container-fluid {
+    padding: 0;
+}
+
+#page-message-index [data-region="message-index"] .conversationcontainer .border-end,
+#page-message-index .message-app.main .conversationcontainer .border-end {
+    border-inline-end: 1px solid $salek-message-border !important; /* stylelint-disable-line declaration-no-important */
+}
+
+#page-message-index [data-region="message-index"] .panel-header-container > [data-region^="view-"],
+#page-message-index [data-region="message-index"] [data-region="header-container"] > [data-region^="view-"],
+#page-message-index .message-app.main .panel-header-container > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="header-container"] > [data-region^="view-"] {
+    background: $salek-message-panel;
+    border-bottom: 1px solid $salek-message-border;
+    padding-inline: 12px;
+}
+
+#page-message-index [data-region="message-index"] [data-region="body-container"] > [data-region^="view-"],
+#page-message-index [data-region="message-index"] [data-region="panel-body-container"] > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="body-container"] > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="panel-body-container"] > [data-region^="view-"] {
+    background-color: $salek-message-surface;
+}
+
+#page-message-index [data-region="message-index"] [data-region="footer-container"] > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="footer-container"] > [data-region^="view-"] {
+    background: $salek-message-panel;
+    border-top: 1px solid $salek-message-border;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#page-message-index [data-region="message-index"] .simplesearchform,
+#page-message-index .message-app.main .simplesearchform {
+    background: $salek-message-panel;
+    border: 1px solid $salek-message-border;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 8px 0 10px;
+}
+
+#page-message-index [data-region="message-index"] .simplesearchform:focus-within,
+#page-message-index .message-app.main .simplesearchform:focus-within {
+    border-color: #cbd5e1;
+    box-shadow: 0 0 0 2px rgb(15 23 42 / 8%);
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview-search-input"],
+#page-message-index [data-region="message-index"] [data-region="view-search"] [data-region="search-input"],
+#page-message-index .message-app.main [data-region="view-overview-search-input"],
+#page-message-index .message-app.main [data-region="view-search"] [data-region="search-input"] {
+    border: 0;
+    min-height: 38px;
+    box-shadow: none;
+    background: $salek-message-panel;
+    color: $salek-message-title;
+    font-size: 13.5px;
+}
+
+#page-message-index [data-region="message-index"] .simplesearchform .btn-submit,
+#page-message-index .message-app.main .simplesearchform .btn-submit {
+    border: 0;
+    background: $salek-message-panel;
+    color: $salek-message-muted;
+    padding-inline: 10px;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .section,
+#page-message-index [data-region="message-index"] [data-region="view-overview-favourites"],
+#page-message-index [data-region="message-index"] [data-region="view-overview-group-messages"],
+#page-message-index [data-region="message-index"] [data-region="view-overview-messages"],
+#page-message-index .message-app.main [data-region="view-overview"] .section,
+#page-message-index .message-app.main [data-region="view-overview-favourites"],
+#page-message-index .message-app.main [data-region="view-overview-group-messages"],
+#page-message-index .message-app.main [data-region="view-overview-messages"] {
+    background: $salek-message-panel;
+    border: 1px solid $salek-message-border-soft !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: $salek-message-card-shadow;
+    margin: 0 12px 12px;
+    overflow: hidden;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] [data-region="toggle"],
+#page-message-index .message-app.main [data-region="view-overview"] [data-region="toggle"] {
+    background: $salek-message-panel;
+    border-bottom: 1px solid $salek-message-border-soft;
+    padding: 0;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle,
+#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle {
+    color: $salek-message-title;
+    padding: 12px 14px;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle .fw-bold,
+#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle .fw-bold {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] [data-region="section-total-count-container"],
+#page-message-index .message-app.main [data-region="view-overview"] [data-region="section-total-count-container"] {
+    color: $salek-message-muted;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle:hover,
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle:focus,
+#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle:hover,
+#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle:focus {
+    background: #f8fafc;
+    color: $salek-message-title;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .section:first-of-type,
+#page-message-index [data-region="message-index"] [data-region="view-overview-favourites"]:first-of-type,
+#page-message-index .message-app.main [data-region="view-overview"] .section:first-of-type,
+#page-message-index .message-app.main [data-region="view-overview-favourites"]:first-of-type {
+    margin-top: 12px;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .list-group-item,
+#page-message-index [data-region="message-index"] [data-region="view-search"] .list-group-item,
+#page-message-index [data-region="message-index"] [data-region="view-contacts"] .list-group-item,
+#page-message-index [data-region="message-index"] [data-region="view-contact"] .list-group-item,
+#page-message-index .message-app.main [data-region="view-overview"] .list-group-item,
+#page-message-index .message-app.main [data-region="view-search"] .list-group-item,
+#page-message-index .message-app.main [data-region="view-contacts"] .list-group-item,
+#page-message-index .message-app.main [data-region="view-contact"] .list-group-item {
+    background-color: $salek-message-panel;
+    border-top-color: $salek-message-border-soft;
+    border-bottom-color: $salek-message-border-soft;
+    border-radius: 8px;
+    margin: 2px 8px;
+    padding: 10px 12px;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .list-group-item:hover,
+#page-message-index [data-region="message-index"] [data-region="view-search"] .list-group-item:hover,
+#page-message-index [data-region="message-index"] [data-region="view-contacts"] .list-group-item:hover,
+#page-message-index [data-region="message-index"] [data-region="view-contact"] .list-group-item:hover,
+#page-message-index .message-app.main [data-region="view-overview"] .list-group-item:hover,
+#page-message-index .message-app.main [data-region="view-search"] .list-group-item:hover,
+#page-message-index .message-app.main [data-region="view-contacts"] .list-group-item:hover,
+#page-message-index .message-app.main [data-region="view-contact"] .list-group-item:hover {
+    background-color: #f1f5f9;
+    color: $salek-message-title;
+}
+
+#page-message-index [data-region="message-index"] [data-region="view-overview"] .text-muted,
+#page-message-index [data-region="message-index"] [data-region="view-search"] .text-muted,
+#page-message-index [data-region="message-index"] [data-region="view-settings"] .text-muted,
+#page-message-index .message-app.main [data-region="view-overview"] .text-muted,
+#page-message-index .message-app.main [data-region="view-search"] .text-muted,
+#page-message-index .message-app.main [data-region="view-settings"] .text-muted {
+    color: $salek-message-muted !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* ==================================================
+   Salek: Message app full page redesign ("See all")
+   Scoped only to full messaging page
+   ================================================== */
+
+/* Reset main content padding only on full message page */
+@media (min-width: 768px) {
+    #page-message-index div[role="main"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+/* Main messaging widget background */
+#page-message-index .message-app.main {
+    background-color: #f6f8fa !important;
+}
+
+/* Remove divider colors */
+#page-message-index .message-app.main .border-end,
+#page-message-index .message-app.main .border-bottom,
+#page-message-index .message-app.main .border-top {
+    border-color: transparent !important;
+}
+
+/* Left panel background */
+#page-message-index .message-app.main .conversationcontainer {
+    background: transparent !important;
+}
+
+/* Search/header background */
+#page-message-index .message-app.main .panel-header-container .previous .d-flex.align-items-center {
+    background: #ffffff !important;
+}
+
+/* Left panel cards background */
+#page-message-index .message-app.main .conversationcontainer .section.card {
+    background: #ffffff !important;
+}
+
+#page-message-index .message-app.main .conversationcontainer .card-header {
+    background: transparent !important;
+}
+
+/* Right panel header background */
+#page-message-index .message-app.main .header-container {
+    background: #ffffff !important;
+}
+
+/* Message body container */
+#page-message-index .message-app.main .body-container {
+    background: #ffffff !important;
+}
+
+/* Active panels / views background */
+#page-message-index [data-region="message-index"] [data-region="body-container"] > [data-region^="view-"],
+#page-message-index [data-region="message-index"] [data-region="panel-body-container"] > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="body-container"] > [data-region^="view-"],
+#page-message-index .message-app.main [data-region="panel-body-container"] > [data-region^="view-"] {
+    background-color: #f6f6f6 !important;
+}
+
+/* Tabs track background */
+#page-message-index .message-app.main .nav-pills {
+    background: #e8e8e8 !important;
+    border-radius: 9999px !important;
+    padding: 4px !important;
+}
+
+/* Inactive tabs text color */
+#page-message-index .message-app.main .nav-pills .nav-link {
+    color: #64748b !important;
+    border-radius: 9999px !important;
+}
+
+/* Active tab: White background + dark readable text */
+#page-message-index .message-app.main .nav-pills .nav-link.active {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+}
+
+/* Layout spacing for aligned flex rows */
+#page-message-index .message-app.main .d-flex.align-items-center {
+    padding: .6rem;
+    padding-bottom: .3rem;
+}
+
+/* Accessible focus state for buttons and links */
+#page-message-index .message-app.main button:focus,
+#page-message-index .message-app.main .btn:focus,
+#page-message-index .message-app.main .btn-link:focus,
+#page-message-index .message-app.main a:focus {
+    background-color: #eef5ff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 0 3px rgba(19,109,221,.18) !important;
+    outline: none !important;
+}

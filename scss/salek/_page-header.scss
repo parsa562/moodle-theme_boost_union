@@ -1,0 +1,696 @@
+// Salek: the page header of every page: the title (the page selector of the tertiary navigation,
+// a lone list of reports, or the page's first heading), the page's main button at the end, a
+// short explanation under the title, 24px to the content. Pages with a dotted hero card (the
+// first page of a course tab) build on it in their own parts.
+
+@include salek-page-content {
+    // A heading as the title (forms, confirmations, lists without a page selector): as high as
+    // the page selector, without extra space above it.
+    div[role="main"] > #maincontent + h2,
+    div[role="main"] > #maincontent + h3,
+    div[role="main"] > .tertiary-navigation:not(:has(.tertiary-navigation-selector)) + h2,
+    div[role="main"] > h2:first-child,
+    div[role="main"] > #addmembersform > h3[class~="main"]:first-child,
+    div[role="main"] > #addadmisform > h3[class~="main"]:first-child {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        margin: 0 0 $salek-page-header-gap;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    // Actions embedded in a heading or grouped beside it share the same title row.
+    div[role="main"] > :is(h2, h3):has([class~="btn"]:not(.btn-link, .btn-icon)),
+    div[role="main"] > .badges-heading,
+    div[role="main"] > [class~="d-flex"]:has(> H2, > H3):has([class~="btn"]:not(.btn-link, .btn-icon)) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 16px;
+
+        > :is(h2, h3) {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+
+            @include media-breakpoint-down(md) {
+                flex-basis: 100%;
+            }
+        }
+
+        > :is(.float-end, .float-start, .singlebutton, .btn-group, .tertiary-navigation, [class~="d-flex"]),
+        > [class~="btn"]:not(.btn-link, .btn-icon) {
+            flex: 0 1 auto;
+            order: 1;
+            min-width: 0;
+            margin: 0;
+            margin-inline-start: auto;
+
+            & ~ :is(.singlebutton, .btn-group, [class~="btn"]) {
+                margin-inline-start: 0;
+            }
+
+            @include media-breakpoint-down(md) {
+                margin-inline-start: 0;
+            }
+        }
+
+        > :is(.float-end, .float-start, .btn-group, .tertiary-navigation, [class~="d-flex"]) {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+        }
+
+        [class~="btn"]:not(.btn-link, .btn-icon, .dropdown-item):not(.input-group *):not(.simplesearchform *):not(.tertiary-navigation-selector *) {
+            @include salek-title-action;
+        }
+    }
+
+    div[role="main"] > :is(h2, h3):has([class~="btn"]:not(.btn-link, .btn-icon)) {
+        @include media-breakpoint-down(md) {
+            > :is(.float-end, .float-start, .singlebutton, .btn-group, [class~="d-flex"]) {
+                flex-basis: 100%;
+            }
+        }
+    }
+
+    // The tertiary navigation (inside the content, or above it on activity pages) with a page
+    // selector or a single list: the selector as the title, the tools next to it, the main
+    // button at the end. (Toolbars without a selector, like assignment grading with its search,
+    // filters and dividers, keep Moodle's layout.)
+    .tertiary-navigation:has(.tertiary-navigation-selector, > .navitem:only-child, > [class~="d-flex"] > .navitem:only-child) {
+        margin: 0 0 $salek-page-header-gap;
+        padding: 0;
+        border-bottom: 0; // Moodle's line under report headers (.full-width-bottom-border): the 24px gap separates.
+
+        .navitem-divider {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Report pages: the navigation is itself the row of items.
+        &[class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+        }
+
+        // Keep action items together at the end of the title row.
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+            padding: 0;
+
+            // Optional tool groups can contain only template whitespace; do not reserve a flex slot.
+            > [class~="d-flex"]:not(:has(> *)) {
+                display: contents !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // (On phones the button goes under the title, at the start.)
+            > .navitem:not(:first-child):has(.singlebutton, [class~="btn"], .dropdown-toggle):not(:has(.tertiary-navigation-selector)) {
+                @include media-breakpoint-up(md) {
+                    margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                & ~ .navitem:has(.singlebutton, [class~="btn"], .dropdown-toggle):not(:has(.tertiary-navigation-selector)),
+                & ~ [class~="d-flex"] {
+                    margin-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            &:has(.tertiary-navigation-selector) {
+                @include media-breakpoint-down(md) {
+                    flex-basis: 100%;
+                }
+            }
+        }
+
+        // An explanation right under the title belongs to it.
+        &:has(+ :is(p, .otherusersdesc)) {
+            margin-bottom: 12px;
+        }
+    }
+
+    // Above the content (activity pages): in line with the content, inset like it.
+    > .tertiary-navigation:has(.tertiary-navigation-selector, > .navitem:only-child) {
+        padding-inline: $salek-space-inset-sm;
+
+        @include media-breakpoint-up(md) {
+            padding-inline: $salek-space-inset;
+        }
+    }
+
+    // In every tertiary navigation: the page selector and the page's main button.
+    .tertiary-navigation {
+        .tertiary-navigation-selector .dropdown-toggle {
+            @include salek-page-selector;
+        }
+
+        // Secondary choices in a title band are fields, not page titles or primary actions.
+        &:has(.tertiary-navigation-selector) .select-menu:not(.tertiary-navigation-selector *, .dropdown-menu *) > [class~="btn"].dropdown-toggle[role="combobox"] {
+            @include salek-title-action;
+            @include salek-button-soft;
+            --bs-btn-bg: var(--salek-field, #{$salek-field-bg});
+            --bs-btn-hover-bg: var(--salek-field-hover, #{$salek-field-bg-hover});
+            --bs-btn-active-bg: var(--salek-field-hover, #{$salek-field-bg-hover});
+            --bs-btn-disabled-bg: #f6f8fa;
+            max-width: 100%;
+
+            &::after {
+                flex-shrink: 0;
+                margin: 0;
+            }
+
+            &:focus-visible {
+                border-color: var(--bs-primary);
+                background-color: #fff;
+                outline: 3px solid rgba(var(--bs-primary-rgb), .35);
+                outline-offset: 2px;
+            }
+        }
+
+        .singlebutton [class~="btn-primary"] {
+            @include salek-page-action;
+        }
+
+        // Its other buttons ("Back" when assigning roles, "Import entries" in a glossary): soft
+        // grey, as high as the main one, without its "+".
+        .singlebutton [class~="btn-secondary"] {
+            @include salek-title-action;
+            @include salek-button-soft;
+            padding-inline: 20px;
+            box-shadow: none;
+        }
+
+        // Moodle includes a caret element for named action-menu triggers, not icon-only menus.
+        &:has(.tertiary-navigation-selector) .action-menu-trigger > .dropdown > [class~="btn"].dropdown-toggle:has(> .caret):not(.dropdown-menu *) {
+            @include salek-title-action;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+
+            &:not([class*="btn-"]) {
+                @include salek-button-soft;
+            }
+
+            > .caret {
+                display: none;
+            }
+
+            &::after {
+                flex-shrink: 0;
+                margin: 0;
+            }
+        }
+
+        // Mode switches stay connected, with shared action sizing and only the outer corners rounded.
+        .btn-group[role="group"]:has(> [aria-pressed]):not(.dropdown-menu *) {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            min-width: 0;
+            max-width: 100%;
+            gap: 0;
+            border-radius: $salek-button-radius;
+
+            > [class~="btn"][aria-pressed] {
+                @include salek-title-action;
+                flex: 1 1 auto;
+                align-self: stretch;
+                min-width: 0;
+
+                &:not(:first-child) {
+                    border-start-start-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+                    border-end-start-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                &:not(:last-child) {
+                    border-start-end-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+                    border-end-end-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+        }
+
+        // A menu of more actions ("…": export, print): the same soft button, square, with
+        // three dots instead of Moodle's "..." and arrow.
+        .navitem > .dropdown > button[class~="btn-secondary"] {
+            @include salek-button-soft;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: $salek-control-height;
+            height: $salek-control-height;
+            padding: 0;
+            border-radius: $salek-button-radius;
+            font-size: 0;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-more, 18px);
+            }
+
+            &::after {
+                display: none;
+            }
+        }
+
+        // Rows of tools (an activity's buttons, then its search): apart; the buttons of a group
+        // inside a row ("Import entries" and "…") too.
+        > [class~="d-flex"] + [class~="d-flex"] {
+            margin-top: 16px;
+        }
+
+        > [class~="d-flex"] > [class~="d-flex"] {
+            gap: 8px;
+        }
+    }
+
+    // A lone secondary button before the title ("Back" to the roles when assigning one): at the
+    // end of the title's row, with an arrow back (md and up; on phones it stays above the title).
+    $salek-back-nav: '.tertiary-navigation:not(#action_bar):has(> .singlebutton:only-child [class~="btn-secondary"])';
+
+    @include media-breakpoint-up(md) {
+        // (The button found without :has() inside :has(), which browsers do not allow.)
+        div[role="main"]:has(> .tertiary-navigation:not(#action_bar) > .singlebutton:only-child [class~="btn-secondary"]) {
+            position: relative;
+        }
+
+        div[role="main"] > #{$salek-back-nav}:has(+ H2) {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            inset-inline-end: $salek-space-inset; // (The sheet's padding is on the main area.)
+            margin: 0;
+        }
+
+        div[role="main"] > #{$salek-back-nav} + h2 {
+            padding-inline-end: calc(#{$salek-space-inset} + 160px);
+        }
+    }
+
+    div[role="main"] > #{$salek-back-nav} [class~="btn-secondary"] {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-chevron, 14px);
+            /*rtl:ignore*/
+            transform: scaleX(-1);
+        }
+
+        [dir="rtl"] &::before {
+            /*rtl:ignore*/
+            transform: none;
+        }
+    }
+
+    // A title with what it applies to under it ("Permissions in course: …", checking permissions):
+    // the two together, a line across the sheet under them (to the sheet's edges: its padding is
+    // 24px, 16px on phones).
+    div[role="main"] > .tertiary-navigation:has(.tertiary-navigation-selector) + h2 {
+        @include salek-title-line;
+        margin-top: calc(4px - #{$salek-page-header-gap}); // 4px under the title row (its 24px margin).
+        color: $salek-text;
+        font-size: .9375rem;
+        font-weight: 500;
+    }
+
+    // (The permissions table's box adds its own space above it: the 24px under the line are enough.)
+    div[role="main"] > .tertiary-navigation:has(.tertiary-navigation-selector) + h2 + [class~="box"] {
+        padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    div[role="main"] > .tertiary-navigation + :is(p, .otherusersdesc) {
+        max-width: 75ch;
+        margin: 0 0 $salek-page-header-gap;
+        color: $salek-text;
+        font-size: .875rem;
+        line-height: 1.8;
+    }
+}
+
+// The title area of every page on the white sheet, closed by a line across the sheet: the title
+// heading, or the title row of the tertiary navigation, or the explanation under it. (Pages with
+// their own header keep it: the dotted card of the first page of a course tab, settings pages.)
+$salek-sheet-page: "body:not(.pagelayout-login):not(.pagelayout-frontpage)" +
+    ":where(:not(#page-course-view-participants)):where(:not(#page-grade-report-grader-index))" +
+    ":where(:not(#page-course-overview)):where(:not(#page-question-edit)):where(:not(.salek-settings-page))";
+
+#{$salek-sheet-page} #region-main div[role="main"] {
+    > #maincontent + h2,
+    > #maincontent + h3,
+    > .tertiary-navigation:not(:has(.tertiary-navigation-selector)) + h2,
+    > h2:first-child,
+    > #addmembersform > h3[class~="main"]:first-child,
+    > #addadmisform > h3[class~="main"]:first-child,
+    > [class~="d-flex"]:has(> H2, > H3):has([class~="btn"]:not(.btn-link, .btn-icon)),
+    > .badges-heading {
+        @include salek-title-line;
+    }
+
+    > .tertiary-navigation + :is(p, .otherusersdesc) {
+        @include salek-title-line;
+    }
+
+    // Some forms render their introduction as a centred box rather than a heading or paragraph.
+    // Only a text box between the page selector and its form belongs to the title band.
+    > .tertiary-navigation:has(.tertiary-navigation-selector) + [class~="box"].centerpara:has(+ form.mform):not(:has(form, fieldset, table, input, select, textarea, button, [role="button"], [role="combobox"])) {
+        @include salek-title-line;
+        margin-top: calc(4px - #{$salek-page-header-gap});
+        padding-block: 0 20px !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text;
+        font-size: .9375rem;
+        font-weight: 500;
+        text-align: start;
+    }
+
+    > .tertiary-navigation:has(.tertiary-navigation-selector):has(+ [class~="box"].centerpara + form.mform):not(:has(+ [class~="box"].centerpara :is(form, fieldset, table, input, select, textarea, button, [role="button"], [role="combobox"]))) {
+        margin-inline: 0;
+        padding: 0;
+        border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // A form of sections right under the title: its first section starts at the line (there was
+    // an empty strip between the two). (Moodle puts an empty .clearer between them on some pages.)
+    > #maincontent + h2 + form.mform:has(> fieldset.collapsible),
+    > #maincontent + h3 + form.mform:has(> fieldset.collapsible),
+    > h2:first-child + form.mform:has(> fieldset.collapsible),
+    > .tertiary-navigation + form.mform:has(> fieldset.collapsible),
+    > .tertiary-navigation + h2 + form.mform:has(> fieldset.collapsible),
+    > .tertiary-navigation + h2 + .clearer + form.mform:has(> fieldset.collapsible),
+    > .tertiary-navigation:has(.tertiary-navigation-selector) + [class~="box"].centerpara:not(:has(form, fieldset, table, input, select, textarea, button, [role="button"], [role="combobox"])) + form.mform:has(> fieldset.collapsible) {
+        margin-top: calc(-1 * #{$salek-page-header-gap});
+
+        // The page header already owns this boundary; the first form section must not draw it again.
+        > fieldset:first-of-type > [class~="d-flex"]:has(> .ftoggler) {
+            border-top: 0;
+        }
+
+        @include media-breakpoint-down(md) {
+            // On phones "Expand all" occupies its own row before the first section.
+            &:has(> .collapsible-actions) > fieldset:first-of-type > [class~="d-flex"]:has(> .ftoggler) {
+                border-top: 1px solid $salek-form-section-line;
+            }
+        }
+    }
+
+    // A selector followed by H3 is already the page title; H3 starts the content.
+    // A title row with nothing of the header after it. (!important: Moodle's .border-bottom.
+    // H2, H3 in capitals: the compiler rewrites h2 and h3 into broken copies inside :has(), which
+    // made browsers drop the rule; browsers read tag names in any case.)
+    > .tertiary-navigation:has(.tertiary-navigation-selector .dropdown-toggle):has(+ H3),
+    > .tertiary-navigation:has(.tertiary-navigation-selector, > .navitem:only-child, > [class~="d-flex"] > .navitem:only-child):not(:has(+ H2)):not(:has(+ H3)):not(:has(+ p)):not(:has(+ .otherusersdesc)) {
+        @include salek-title-line;
+        width: auto !important; /* stylelint-disable-line declaration-no-important */ // Moodle's .full-width-bottom-border sets one.
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// Detached actions belong to the selector's header band, even when Moodle renders them
+// after the table. Form footers and content toolbars are deliberately not promoted.
+#{$salek-sheet-page} #region-main div[role="main"]:has(> .tertiary-navigation .tertiary-navigation-selector):has(> .buttons [class~="btn"], > .singlebutton [class~="btn"], > div.urlselect select[name="jump"], > [class~="box"] > div.urlselect select[name="jump"]) {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 16px;
+
+    > *,
+    > [class~="box"]:has(> div.urlselect select[name="jump"]) > * {
+        flex: 0 0 100%;
+        order: 3;
+        min-width: 0;
+    }
+
+    > #maincontent {
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+    }
+
+    > [class~="box"]:has(> div.urlselect select[name="jump"]) {
+        display: contents;
+    }
+
+    > .tertiary-navigation {
+        flex: 1 1 0;
+        order: 0;
+        margin: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0;
+        border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        .tertiary-navigation-selector .dropdown-toggle {
+            // Include the selector's negative leading margin in its available width.
+            max-width: calc(100% + 10px);
+            text-align: start;
+            white-space: normal;
+
+            &::after {
+                flex-shrink: 0;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            flex-basis: 100%;
+            margin-bottom: 12px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > .buttons,
+    > .singlebutton,
+    > div.urlselect:has(select[name="jump"]),
+    > [class~="box"] > div.urlselect:has(select[name="jump"]) {
+        display: flex;
+        flex: 0 1 auto;
+        flex-wrap: wrap;
+        align-items: center;
+        order: 1;
+        max-width: 100%;
+        gap: 8px;
+        margin: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+
+        [class~="btn"]:not(.btn-link, .btn-icon, .dropdown-item) {
+            @include salek-title-action;
+        }
+    }
+
+    &::before {
+        content: "";
+        flex: 0 0 calc(100% + 2 * #{$salek-space-inset});
+        order: 2;
+        height: 1px;
+        // The action rows reserve 8px for wrapping; another 12px makes the 20px line inset.
+        margin: 12px calc(-1 * #{$salek-space-inset}) $salek-page-header-gap;
+        background-color: $salek-line;
+
+        @include media-breakpoint-down(md) {
+            flex-basis: calc(100% + 2 * #{$salek-space-inset-sm});
+            margin-inline: calc(-1 * #{$salek-space-inset-sm});
+        }
+    }
+
+    // A jump-select is an action: keep its native form and options, with its label on top.
+    > div.urlselect:has(select[name="jump"]),
+    > [class~="box"] > div.urlselect:has(select[name="jump"]) {
+        form {
+            display: grid !important; /* stylelint-disable-line declaration-no-important */
+            grid-template-columns: minmax(0, 1fr);
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        label,
+        select {
+            grid-row: 1;
+            grid-column: 1;
+            min-width: 0;
+        }
+
+        label {
+            @include salek-title-action;
+            z-index: 1;
+            padding-inline: 14px 40px;
+            color: #fff;
+            pointer-events: none;
+
+            &::before {
+                content: "";
+                flex-shrink: 0;
+                width: 22px;
+                height: 22px;
+                border-radius: 7px;
+                background: $salek-icon-plus-white center / 14px no-repeat, rgb(255 255 255 / 18%);
+            }
+        }
+
+        select {
+            width: 100%;
+            min-height: $salek-control-height;
+            height: 100%;
+            border-color: var(--bs-primary);
+            border-radius: $salek-button-radius;
+            background-color: var(--bs-primary);
+            background-image: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>"));
+            background-repeat: no-repeat;
+            background-size: 14px 14px;
+            /*rtl:ignore*/
+            background-position: right 12px center;
+            box-shadow: 0 6px 16px -8px var(--bs-primary);
+            color: transparent;
+            font-size: .875rem;
+            cursor: pointer;
+
+            &:is([dir="rtl"] *) {
+                /*rtl:ignore*/
+                background-position: left 12px center;
+            }
+
+            &:hover {
+                filter: brightness(.92);
+            }
+
+            &:focus-visible {
+                outline: 3px solid rgba(var(--bs-primary-rgb), .35);
+                outline-offset: 2px;
+            }
+
+            option {
+                color: $salek-text-strong;
+            }
+        }
+    }
+}
+
+// Breadcrumb and search-only rows share one height; only the breadcrumb sits below the centre.
+// Enhanced course headers keep their own layout.
+#page-header:where(:has(#page-navbar .breadcrumb), :has(.header-actions-container .simplesearchform)):where(:not(:has(#bucourseheader))) > .w-100 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 64px;
+    gap: 8px 12px;
+    padding-block: 8px;
+
+    > [class~="d-flex"]:first-child {
+        flex: 1 1 0;
+        min-width: 0;
+
+        &:has(.breadcrumb) {
+            transform: translateY(8px);
+        }
+    }
+}
+
+// On phones the search sits above the breadcrumb rather than squeezing its text.
+#page-header:has(.header-actions-container .simplesearchform) > .w-100 {
+    > [class~="d-flex"]:first-child:has(.breadcrumb) {
+        @include media-breakpoint-down(md) {
+            flex-basis: 100%;
+            order: 1;
+        }
+    }
+
+    > [class~="d-flex"] + [class~="d-flex"] {
+        flex: none;
+        margin-inline-start: auto;
+    }
+}
+
+// Report pages whose tertiary navigation is a single list of reports ("Grades", "Responses",
+// "Statistics" on quiz results, and other activity reports): the list reads as the page title,
+// like the page selector: large text, no frame, the arrow in a round button.
+body:not(.pagelayout-login) #region-main > .tertiary-navigation:has(> .navitem:only-child > .urlselect) {
+
+    // (Chrome and Edge 135+ fit the list to the chosen report, section 12; older browsers make it
+    // as wide as the longest report name.)
+    select.urlselect {
+        max-width: 100%;
+        min-height: 46px;
+        margin-inline-start: -10px;
+        padding: 6px 10px;
+        padding-inline-end: 56px;
+        border: 0;
+        border-radius: 14px;
+        background: escape-svg($form-select-indicator) right 19px center / 14px no-repeat,
+            radial-gradient(circle closest-side, #fff calc(100% - 1.5px), #c3ccd9 calc(100% - 1px), #c3ccd9 100%, transparent 100%) right 10px center / 32px 32px no-repeat;
+        box-shadow: none;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            background-color: rgb(255 255 255 / 70%);
+        }
+
+        // The opened list in the normal text size, where the browser draws it (customisable
+        // selects, section 12). Older browsers size the closed list by its options' text, so
+        // there they keep the title size (a smaller size cut the title off).
+        @supports (appearance: base-select) {
+            option {
+                font-size: .9375rem;
+                font-weight: 400;
+            }
+        }
+    }
+
+    &:is([dir="rtl"] *) select.urlselect {
+        /*rtl:ignore*/
+        background-position: left 19px center, left 10px center;
+    }
+}
+
+// The breadcrumb above the tabs, on every page: small and grey, so the page title stays the
+// strongest line; the current page a little darker; small chevrons instead of "/", pointing
+// along the reading direction.
+#page-header .breadcrumb {
+    align-items: center;
+    margin-block: 0;
+    padding-inline-start: 15px !important; /* stylelint-disable-line declaration-no-important */
+    font-size: .8125rem;
+
+    .breadcrumb-item {
+        display: inline-flex;
+        align-items: center;
+        padding-inline-start: 0;
+        color: $salek-text-muted;
+
+        a {
+            color: #616c7e;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        &:last-child {
+            font-weight: 500;
+        }
+
+        + .breadcrumb-item::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            margin-inline: 6px;
+            padding: 0;
+            background-color: #a3aebf;
+            mask: $salek-icon-chevron center / contain no-repeat;
+        }
+    }
+
+    [dir="rtl"] & .breadcrumb-item + .breadcrumb-item::before {
+        transform: scaleX(-1);
+    }
+}

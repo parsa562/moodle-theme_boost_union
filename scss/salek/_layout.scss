@@ -1,0 +1,554 @@
+// Salek: Focus style, the boxed navbar, Dashboard widths, the drawers (blocks, course index).
+
+/* Salek: softer global focus style for interactive elements.
+   Only focus that the browser does not mark as :focus-visible (typically after
+   a mouse click or touch) loses its ring. Keyboard focus keeps Moodle's
+   accessible focus styles, and buttons keep their own colours while focused. */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+[tabindex]:not([tabindex="-1"]):focus:not(:focus-visible) {
+    outline: none !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* Moodle core highlights plain links on every :focus. Remove that highlight
+   for non-keyboard focus only, so a clicked link does not stay highlighted. */
+.aalink,
+#page-footer a:not([class]),
+.arrow_link,
+a:not([class]),
+.activityinstance > a {
+    &:focus:not(:focus-visible) {
+        background-color: transparent;
+    }
+}
+
+/* Salek: keep the login card on the left in LTR mode from tablet upward.
+ * Below 768px, keep the normal centered mobile layout.
+ */
+@include media-breakpoint-up(md) {
+    html[dir="ltr"] body.pagelayout-login .login-container,
+    html[dir="ltr"] body.pagelayout-login .loginform {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+}
+
+/* Salek: boxed desktop navbar styling. */
+@include media-breakpoint-up(lg) {
+    .navbar.fixed-top:not(.boost-union-menubar) {
+        top: 16px;
+
+        min-height: 75px;
+        height: auto;
+
+        padding: 0;
+
+        border-radius: $salek-navbar-radius;
+        border: 1px solid rgb(0 0 0 / 5%);
+
+        background: #fff;
+        box-shadow: 0 8px 28px rgb(15 23 42 / 8%);
+
+        overflow: visible;
+        z-index: 1022;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) > .container-fluid,
+    .navbar.fixed-top:not(.boost-union-menubar) > .container {
+        min-height: 75px;
+        padding-inline-start: 1.5rem;
+        padding-inline-end: .75rem;
+
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand {
+        display: flex;
+        align-items: center;
+
+        margin-inline-start: 1rem;
+        margin-inline-end: 1.25rem;
+
+        padding: 0;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand img,
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand .logo {
+        max-height: 52px;
+        width: auto;
+
+        object-fit: contain;
+    }
+}
+
+/* Tablet: keep the boxed navbar, but use a more compact layout. */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .navbar.fixed-top:not(.boost-union-menubar) {
+        top: 14px;
+
+        left: 50%;
+        right: auto;
+
+        /* Follow Boost's real visible-content width:
+           3rem page gutter + 0.5rem inner inset on each side. */
+        width: calc(100% - #{$spacer * 7});
+        max-width: none;
+
+        margin: 0;
+        transform: translateX(-50%);
+
+        min-height: 75px;
+        height: auto;
+
+        padding: 0;
+
+        border-radius: $salek-navbar-radius;
+        border: 1px solid rgb(0 0 0 / 5%);
+
+        background: #fff;
+        box-shadow: 0 6px 22px rgb(15 23 42 / 8%);
+
+        overflow: visible;
+        z-index: 1022;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) > .container-fluid,
+    .navbar.fixed-top:not(.boost-union-menubar) > .container {
+        width: 100%;
+        min-height: 75px;
+
+        padding-inline-start: 1.5rem;
+        padding-inline-end: .65rem;
+
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand {
+        margin-inline-start: 1rem;
+        margin-inline-end: 1rem;
+        padding: 0;
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand img,
+    .navbar.fixed-top:not(.boost-union-menubar) .navbar-brand .logo {
+        max-height: 45px;
+        width: auto;
+    }
+
+    .salek-navbar-scroll-mask {
+        display: block;
+
+        position: fixed;
+
+        top: 0;
+        left: 50%;
+
+        /* Same tablet width as the navbar, plus 6px in total. */
+        width: calc(100% - #{$spacer * 7} + 6px);
+        max-width: none;
+
+        height: 95px;
+
+        transform: translateX(-50%);
+
+        background: #f5f6f8;
+
+        border-radius: 0 0 ($salek-navbar-radius + 1px) ($salek-navbar-radius + 1px);
+
+        pointer-events: none;
+        z-index: 1021;
+    }
+}
+
+/* Mobile: return to a simple full-width navbar. */
+@media (max-width: 767.98px) {
+    .navbar.fixed-top:not(.boost-union-menubar) {
+        top: 0;
+
+        left: 0;
+        right: 0;
+
+        width: 100%;
+        max-width: none;
+
+        min-height: 58px;
+
+        margin: 0;
+        transform: none;
+
+        border-radius: 0; // (Full width, against the screen's edges: no rounded corners.)
+    }
+
+    .salek-navbar-scroll-mask {
+        display: none;
+    }
+}
+
+/* Salek: prevent scrolled page content from showing above or behind
+   the rounded desktop navbar. The mask follows the navbar geometry. */
+@include media-breakpoint-up(lg) {
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        .salek-navbar-scroll-mask {
+            display: block;
+            position: fixed;
+
+            top: 0;
+
+            /*
+             * Regular desktop:
+             * follow the navbar's 3.5rem page margins and extend
+             * the mask by 3px on each physical side.
+             */
+            left: -3px;
+            right: -3px;
+
+            width: auto;
+            max-width: none;
+
+            margin-inline: $spacer * 3.5;
+
+            transform: none;
+
+            height: 97px;
+
+            background: #f5f6f8;
+            border-radius: 0 0 ($salek-navbar-radius + 1px) ($salek-navbar-radius + 1px);
+
+            pointer-events: none;
+            z-index: 1021;
+        }
+
+        .navbar.fixed-top:not(.boost-union-menubar) {
+            z-index: 1022;
+        }
+
+        /*
+         * Wide desktop:
+         * once the navbar reaches its configured maximum width,
+         * center the mask and keep it 6px wider in total.
+         */
+        @media (min-width: calc(#{$bu-navbar-content-maxwidth} + #{$spacer * 7})) {
+            .salek-navbar-scroll-mask {
+                left: 50%;
+                right: auto;
+
+                width: calc(#{$bu-navbar-content-maxwidth} - #{$spacer} + 6px);
+                max-width: calc(#{$bu-navbar-content-maxwidth} - #{$spacer} + 6px);
+
+                margin-inline: 0;
+
+                transform: translateX(-50%);
+            }
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .salek-navbar-scroll-mask {
+        display: none;
+    }
+}
+
+/* Salek: center the boxed navbar on wide desktop screens
+   while preserving the configured navbar width. */
+@include media-breakpoint-up(lg) {
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        @media (min-width: calc(#{$bu-navbar-content-maxwidth} + #{$spacer * 7})) {
+            .navbar.fixed-top:not(.boost-union-menubar) {
+                left: 50%;
+                right: auto;
+
+                width: calc(#{$bu-navbar-content-maxwidth} - #{$spacer});
+                max-width: calc(#{$bu-navbar-content-maxwidth} - #{$spacer});
+
+                margin-inline: 0;
+
+                transform: translateX(-50%);
+            }
+        }
+    }
+}
+
+/* Salek: keep boxed navbar positioning stable in RTL. */
+/* rtl:begin:ignore */
+
+/* Tablet: navbar and mask are explicitly centered. */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    html[dir="rtl"] .navbar.fixed-top:not(.boost-union-menubar),
+    html[dir="rtl"] .salek-navbar-scroll-mask {
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* Regular desktop: keep the natural full available width. */
+@include media-breakpoint-up(lg) {
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        @media (max-width: calc(#{$bu-navbar-content-maxwidth} + #{$spacer * 7} - 0.02px)) {
+            html[dir="rtl"] .navbar.fixed-top:not(.boost-union-menubar) {
+                left: 0 !important;
+                right: 0 !important;
+                width: auto !important;
+                margin-inline: $spacer * 3.5 !important;
+                transform: none !important;
+            }
+        }
+    }
+}
+
+/* Wide desktop: navbar and mask use the centered capped-width layout. */
+@include media-breakpoint-up(lg) {
+    @if variable-exists(bu-navbar-content-maxwidth) {
+        @media (min-width: calc(#{$bu-navbar-content-maxwidth} + #{$spacer * 7})) {
+            html[dir="rtl"] .navbar.fixed-top:not(.boost-union-menubar),
+            html[dir="rtl"] .salek-navbar-scroll-mask {
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+    }
+}
+
+/* rtl:end:ignore */
+
+/* Salek: make primary navbar links fill the navbar height.
+   Keep the MoreMenu list free to grow when items wrap so Moodle can
+   detect the overflow and move excess items into the More dropdown. */
+@include media-breakpoint-up(md) {
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation,
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation > .moremenu,
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .navbar-nav,
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .nav-item {
+        align-self: stretch !important; /* stylelint-disable-line declaration-no-important */
+        height: 100% !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .navbar-nav {
+        min-height: max-content !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .nav-link {
+        height: 100% !important; /* stylelint-disable-line declaration-no-important */
+        display: flex !important; /* stylelint-disable-line declaration-no-important */
+        align-items: center !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Salek: align Dashboard content with the normal page width. */
+@include media-breakpoint-up(md) {
+    body.pagelayout-mydashboard #page.drawers div[role="main"] {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* Salek: prevent the Dashboard calendar card body from extending
+   beyond the normal content width at the tablet breakpoint. */
+@include media-breakpoint-only(md) {
+    #page-my-index .block_calendar_month .card-body {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* Salek: let the Dashboard calendar navigation use the full block width.
+   Boost normally limits .maincalendar .controls to 98% with auto side margins. */
+#page-my-index .block_calendar_month .maincalendar .controls {
+    width: 100%;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+
+/* Salek: full-height desktop drawers and unified navbar positioning.
+   On desktop, the navbar keeps one positioning model at all widths.
+   It follows Moodle's drawer state and uses Moodle's native drawer widths. */
+@include media-breakpoint-up(lg) {
+
+    /* Let desktop drawers use the full viewport height. */
+    .drawer-left,
+    .drawer-right {
+        top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        height: 100vh !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .hasstickyfooter {
+        .drawer-left,
+        .drawer-right {
+            top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    /*
+     * One positioning model for the desktop navbar.
+     *
+     * Normal visible page edge:
+     * 3rem #page padding + .5rem .main-inner padding = 3.5rem.
+     *
+     * max-width remains controlled by the existing
+     * $bu-navbar-content-maxwidth rule.
+     */
+    #page-wrapper .navbar.fixed-top:not(.boost-union-menubar) {
+        left: auto !important; /* stylelint-disable-line declaration-no-important */
+        right: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        inset-inline-start: $spacer * 3.5 !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: $spacer * 3.5 !important; /* stylelint-disable-line declaration-no-important */
+
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline: auto !important; /* stylelint-disable-line declaration-no-important */
+        transform: none !important; /* stylelint-disable-line declaration-no-important */
+
+        transition:
+            inset-inline-start .2s ease,
+            inset-inline-end .2s ease !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Keep the scroll mask 3px wider than the navbar on each side. */
+    #page-wrapper .salek-navbar-scroll-mask {
+        left: auto !important; /* stylelint-disable-line declaration-no-important */
+        right: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        inset-inline-start: calc(#{$spacer * 3.5} - 3px) !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: calc(#{$spacer * 3.5} - 3px) !important; /* stylelint-disable-line declaration-no-important */
+
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline: auto !important; /* stylelint-disable-line declaration-no-important */
+        transform: none !important; /* stylelint-disable-line declaration-no-important */
+
+        transition:
+            inset-inline-start .2s ease,
+            inset-inline-end .2s ease !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /*
+     * Moodle's end/right drawer.
+     * Drawer side = drawer width + 1rem page padding + .5rem inner padding.
+     */
+    #page-wrapper:has(#page.drawers.show-drawer-right) {
+        .navbar.fixed-top:not(.boost-union-menubar) {
+            inset-inline-end: calc(#{$drawer-right-width} + #{$spacer * 1.5}) !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .salek-navbar-scroll-mask {
+            inset-inline-end: calc(#{$drawer-right-width} + #{$spacer * 1.5} - 3px) !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    /* Moodle's start/left drawer. */
+    #page-wrapper:has(#page.drawers.show-drawer-left) {
+        .navbar.fixed-top:not(.boost-union-menubar) {
+            inset-inline-start: calc(#{$drawer-left-width} + #{$spacer * 1.5}) !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .salek-navbar-scroll-mask {
+            inset-inline-start: calc(#{$drawer-left-width} + #{$spacer * 1.5} - 3px) !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+/* Salek: keep the closed blocks drawer inside the viewport.
+ * Moodle normally hides this drawer using a negative physical offset.
+ * Keeping it anchored to the logical end and clipping it prevents
+ * horizontal overflow in Chromium device emulation while preserving
+ * the drawer open/close animation.
+ */
+#theme_boost-drawers-blocks {
+    left: auto !important; /* stylelint-disable-line declaration-no-important */
+    right: auto !important; /* stylelint-disable-line declaration-no-important */
+    inset-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
+    transform: none !important; /* stylelint-disable-line declaration-no-important */
+
+    visibility: hidden !important; /* stylelint-disable-line declaration-no-important */
+    clip-path: inset(0 0 0 100%);
+
+    transition:
+        clip-path .2s ease,
+        visibility .2s ease !important; /* stylelint-disable-line declaration-no-important */
+}
+
+html[dir="rtl"] #theme_boost-drawers-blocks {
+    clip-path: inset(0 100% 0 0);
+}
+
+#theme_boost-drawers-blocks.show,
+html[dir="rtl"] #theme_boost-drawers-blocks.show {
+    visibility: visible !important; /* stylelint-disable-line declaration-no-important */
+    clip-path: inset(-30px -30px -30px -30px);
+    box-shadow: 0px 0px 18px 1px rgb(15 23 42 / 13%) !important;
+}
+
+/* Salek: blocks drawer visual design.
+ * Scoped only to the blocks drawer.
+ * Does not affect other Moodle drawers or blocks.
+ */
+
+#theme_boost-drawers-blocks {
+    background-color: #fcfcfc !important;
+    border-left: 1px solid #e2e8f0 !important;
+}
+
+#theme_boost-drawers-blocks.show {
+    box-shadow: 0px 0px 18px 1px rgb(15 23 42 / 13%) !important;
+}
+
+#theme_boost-drawers-blocks .drawercontent {
+    padding: 16px !important;
+}
+
+#theme_boost-drawers-blocks .block.card {
+    background-color: #ffffff !important;
+    border: 1px solid #eef2f6 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 6%) !important;
+    margin-bottom: 12px !important;
+}
+
+#theme_boost-drawers-blocks .block.card .card-body {
+    padding: 12px 14px !important;
+}
+
+#theme_boost-drawers-blocks .card-title {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+}
+
+#theme_boost-drawers-blocks .add_block_button .block-add {
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+}
+
+/* Salek: style add block button inside blocks drawer only. */
+#theme_boost-drawers-blocks .add_block_button .block-add {
+    background-color: #1877f2 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgb(24 119 242 / 25%) !important;
+}
+
+/* Salek: buttons inside blocks drawer cards. */
+#theme_boost-drawers-blocks .card-body .btn {
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+}
+
+#theme_boost-drawers-blocks .card-body .btn + .btn {
+    margin-inline-start: 8px !important;
+}

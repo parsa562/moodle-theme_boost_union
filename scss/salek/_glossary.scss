@@ -1,0 +1,59 @@
+// Salek: a glossary's main page.
+
+body#page-mod-glossary-view #region-main div[role="main"] {
+    // Moodle's empty control box and line breaks only made gaps.
+    > .glossarycontrol:empty,
+    > br {
+        display: none;
+    }
+
+    // The index of letters: small rounded links ("|" between them hidden), the chosen one in
+    // the brand colour; its explanation above them as a quiet label.
+    .entrybox {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 $salek-page-header-gap;
+        font-size: 0; // The "|" between the letters.
+
+        > br {
+            display: none;
+        }
+
+        > .glossaryexplain {
+            flex-basis: 100%;
+            margin-bottom: 4px;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 500;
+        }
+
+        > a,
+        > b {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid $salek-control-border;
+            border-radius: 9px;
+            background-color: #fff;
+            color: $salek-text;
+            font-size: .8125rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        > a:hover {
+            background-color: $salek-soft;
+            color: $salek-text-strong;
+        }
+
+        > b {
+            border-color: var(--bs-primary);
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+    }
+}

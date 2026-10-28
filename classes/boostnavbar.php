@@ -40,15 +40,26 @@ class boostnavbar extends \theme_boost\boostnavbar {
     protected function prepare_nodes_for_boost(): void {
         global $PAGE;
 
-        // Remove the navbar nodes that already exist in the primary navigation menu.
-        $this->remove_items_that_exist_in_navigation($PAGE->primarynav);
+        $hierarchical = get_config('theme_boost_union', 'hierarchicalbreadcrumbs') == THEME_BOOST_UNION_SETTING_SELECT_YES;
+
+        if ($hierarchical) {
+            $this->remove_duplicate_items();
+            // These are global landing pages, not parents of the current course or administration page.
+            foreach (['home', 'myhome', 'mycourses', 'courses'] as $key) {
+                $this->remove($key);
+            }
+            $this->restore_course_context();
+        } else {
+            // Remove the navbar nodes that already exist in the primary navigation menu.
+            $this->remove_items_that_exist_in_navigation($PAGE->primarynav);
+        }
 
         // Defines whether section items with an action should be removed by default.
         $removesections = true;
 
         if ($this->page->context->contextlevel == CONTEXT_COURSECAT) {
             // Remove the 'Permissions' navbar node in the Check permissions page.
-            if ($this->page->pagetype === 'admin-roles-check') {
+            if (!$hierarchical && $this->page->pagetype === 'admin-roles-check') {
                 $this->remove('permissions');
             }
         }
@@ -72,6 +83,10 @@ class boostnavbar extends \theme_boost\boostnavbar {
                         null,
                         $category->id
                     );
+                    if ($hierarchical) {
+                        // The inherited factory returns navigation_node without breadcrumb last-item flags.
+                        $categorynode = new \breadcrumb_navigation_node($categorynode);
+                    }
                     if (!$category->visible) {
                         $categorynode->hidden = true;
                     }
@@ -109,34 +124,36 @@ class boostnavbar extends \theme_boost\boostnavbar {
                     break;
             }
             // Remove the course breadcrumb node.
-            if (!str_starts_with($this->page->pagetype, 'course-view-section-')) {
+            if (!$hierarchical && !str_starts_with($this->page->pagetype, 'course-view-section-')) {
                 $this->remove($this->page->course->id, \breadcrumb_navigation_node::TYPE_COURSE);
             }
-            // Remove the navbar nodes that already exist in the secondary navigation menu.
-            $this->remove_items_that_exist_in_navigation($PAGE->secondarynav);
+            if (!$hierarchical) {
+                // Remove the navbar nodes that already exist in the secondary navigation menu.
+                $this->remove_items_that_exist_in_navigation($PAGE->secondarynav);
 
-            switch ($this->page->pagetype) {
-                case 'group-groupings':
-                case 'group-grouping':
-                case 'group-overview':
-                case 'group-assign':
-                    // Remove the 'Groups' navbar node in the Groupings, Grouping, group Overview and Assign pages.
-                    $this->remove('groups');
-                    // PhpCS complains here: "There must be a comment when fall-through is intentional in a non-empty case body."
-                    // However, this code is copied as-is from theme/boost/classes/boostnavbar.php.
-                    // So we leave a comment here to make phpcs happy.
-                case 'backup-backup':
-                case 'backup-restorefile':
-                case 'backup-copy':
-                case 'course-reset':
-                    // Remove the 'Import' navbar node in the Backup, Restore, Copy course and Reset pages.
-                    $this->remove('import');
-                    // PhpCS complains here: "There must be a comment when fall-through is intentional in a non-empty case body."
-                    // However, this code is copied as-is from theme/boost/classes/boostnavbar.php.
-                    // So we leave a comment here to make phpcs happy.
-                case 'course-user':
-                    $this->remove('mygrades');
-                    $this->remove('grades');
+                switch ($this->page->pagetype) {
+                    case 'group-groupings':
+                    case 'group-grouping':
+                    case 'group-overview':
+                    case 'group-assign':
+                        // Remove the 'Groups' navbar node in the Groupings, Grouping, group Overview and Assign pages.
+                        $this->remove('groups');
+                        // PhpCS complains here: "There must be a comment when fall-through is intentional in a non-empty case body."
+                        // However, this code is copied as-is from theme/boost/classes/boostnavbar.php.
+                        // So we leave a comment here to make phpcs happy.
+                    case 'backup-backup':
+                    case 'backup-restorefile':
+                    case 'backup-copy':
+                    case 'course-reset':
+                        // Remove the 'Import' navbar node in the Backup, Restore, Copy course and Reset pages.
+                        $this->remove('import');
+                        // PhpCS complains here: "There must be a comment when fall-through is intentional in a non-empty case body."
+                        // However, this code is copied as-is from theme/boost/classes/boostnavbar.php.
+                        // So we leave a comment here to make phpcs happy.
+                    case 'course-user':
+                        $this->remove('mygrades');
+                        $this->remove('grades');
+                }
             }
         }
 
@@ -165,7 +182,7 @@ class boostnavbar extends \theme_boost\boostnavbar {
             }
         }
 
-        if ($this->page->context->contextlevel == CONTEXT_SYSTEM) {
+        if (!$hierarchical && $this->page->context->contextlevel == CONTEXT_SYSTEM) {
             // Remove the navbar nodes that already exist in the secondary navigation menu.
             $this->remove_items_that_exist_in_navigation($PAGE->secondarynav);
         }
@@ -178,11 +195,28 @@ class boostnavbar extends \theme_boost\boostnavbar {
             $mycoursesnode->text = get_string('mycourses');
         }
 
-        $this->remove_no_link_items($removesections);
+        if ($hierarchical) {
+            $lastitem = end($this->items);
+            if ($lastitem instanceof \breadcrumb_navigation_node && $lastitem->has_action()) {
+                // Different labels can point to the current page rather than to a real parent.
+                [, $lastaction] = $this->get_node_text_and_action($lastitem);
+                foreach ($this->items as $key => $item) {
+                    [, $action] = $this->get_node_text_and_action($item);
+                    if ($item !== $lastitem && $action === $lastaction) {
+                        unset($this->items[$key]);
+                    }
+                }
+                $this->items = array_values($this->items);
+            }
+            parent::remove_no_link_items($removesections);
+        } else {
+            $this->remove_no_link_items($removesections);
+        }
 
         // Don't display the navbar if there is only one item. Apparently this is bad UX design.
         // Except, leave it in when in course context and categorybreadcrumbs are desired.
         if (
+            $hierarchical ||
             !(get_config('theme_boost_union', 'categorybreadcrumbs') == THEME_BOOST_UNION_SETTING_SELECT_YES &&
                 $this->page->context->contextlevel == CONTEXT_COURSE)
         ) {
@@ -195,11 +229,80 @@ class boostnavbar extends \theme_boost\boostnavbar {
         // Make sure that the last item is not a link. Not sure if this is always a good idea.
         // Except, leave it when categorybreadcrumbs are desired and if we are on a course page.
         if (
+            $hierarchical ||
             !(get_config('theme_boost_union', 'categorybreadcrumbs') == THEME_BOOST_UNION_SETTING_SELECT_YES &&
                 $this->page->context->contextlevel == CONTEXT_COURSE)
         ) {
             $this->remove_last_item_action();
         }
+    }
+
+    /**
+     * Restore course context omitted from the native breadcrumb but available in navigation.
+     */
+    protected function restore_course_context(): void {
+        if (
+            !in_array($this->page->context->contextlevel, [CONTEXT_COURSE, CONTEXT_MODULE]) ||
+            $this->page->course->id == SITEID
+        ) {
+            return;
+        }
+
+        // The course is already in the breadcrumb as a course node, or as another node type that
+        // leads to the course page (as on a question bank's pages).
+        $navcourse = $this->page->navigation->find($this->page->course->id, \navigation_node::TYPE_COURSE);
+        $navcourseaction = null;
+        if ($navcourse && $navcourse->has_action()) {
+            [, $navcourseaction] = $this->get_node_text_and_action($navcourse);
+        }
+        $coursenode = null;
+        foreach ($this->items as $item) {
+            if (
+                ($item->type == \navigation_node::TYPE_COURSE && $item->key == $this->page->course->id) ||
+                ($navcourseaction !== null && $this->get_node_text_and_action($item)[1] === $navcourseaction)
+            ) {
+                $coursenode = $item;
+                break;
+            }
+        }
+        if ($coursenode === null) {
+            $coursenode = $navcourse;
+            if (!$coursenode || !$coursenode->display || !$coursenode->has_action()) {
+                return;
+            }
+            $position = 0;
+            foreach ($this->items as $key => $item) {
+                if ($item->type == \navigation_node::TYPE_CATEGORY) {
+                    $position = $key + 1;
+                }
+            }
+            array_splice($this->items, $position, 0, [new \breadcrumb_navigation_node($coursenode)]);
+        }
+
+        $lastitem = end($this->items);
+        $lastitem->set_last(true);
+        if ($lastitem->type != \navigation_node::TYPE_COURSE || !$coursenode->has_action()) {
+            return;
+        }
+
+        $active = $this->page->secondarynav->find_active_node();
+        if (!$active || !$active->display || !$active->has_action()) {
+            return;
+        }
+        $action = $active->action instanceof \action_link ? $active->action->url : $active->action;
+        if (!$action instanceof \moodle_url || !$action->compare($this->page->url, URL_MATCH_PARAMS)) {
+            return;
+        }
+        [, $courseaction] = $this->get_node_text_and_action($coursenode);
+        [, $activeaction] = $this->get_node_text_and_action($active);
+        if ($activeaction === $courseaction) {
+            return;
+        }
+
+        $lastitem->set_last(false);
+        $current = new \breadcrumb_navigation_node($active);
+        $current->set_last(true);
+        $this->items[] = $current;
     }
 
     /**

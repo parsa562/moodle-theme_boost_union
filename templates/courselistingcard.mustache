@@ -39,7 +39,8 @@
 }}
 <div class="card course-card mx-2 mb-3" role="listitem"
     data-region="course-content"
-    data-course-id="{{{id}}}">
+    data-course-id="{{{id}}}"
+    data-startdate="{{startdate}}">
     {{#showcourseimage}}
     <a href="{{viewurl}}" tabindex="-1">
         <div class="card-img-top" style='background-image: url("{{{courseimage}}}");'>
@@ -68,16 +69,7 @@
                     </span>
                     {{{fullname}}}
                 </a>
-                <div class="course-card-category text-muted muted d-flex flex-wrap">
-                    {{#showcoursecategory}}
-                        <span class="visually-hidden">
-                            {{#str}}aria:coursecategory, core_course{{/str}}
-                        </span>
-                        <span class="categoryname text-truncate">
-                            {{{coursecategory}}}
-                        </span>
-                    {{/showcoursecategory}}
-                </div>
+                {{! (No category on the cards: the site's categories are for its own organisation.) }}
 
                 {{#hassummary}}
                     <div class="course-card-summary" data-course-summary>
@@ -145,56 +137,58 @@
     {{/showdetailsbar}}
 
 
-    {{#showcoursecontacts}}
-        {{#hascontacts}}
-            <div class="course-card-teacher-footer">
-                <div class="course-card-contacts d-flex align-items-center">
+    {{! The card's footer: the first teacher with their name, the others behind "+N" (a list that
+        opens on it, their names also as its tooltip), and a round arrow to the course. }}
+    <div class="course-card-teacher-footer">
+        {{#showcoursecontacts}}
+            {{#hascontacts}}
+                <div class="course-card-contacts">
                     {{#displaycontacts}}
                         {{#canviewuserdetails}}
                             <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}" class="course-card-contact" tabindex="-1">
                         {{/canviewuserdetails}}
-
-                        <img src="{{{userpicture}}}"
-                             class="course-card-contact-avatar rounded-circle"
-                             alt="{{contactname}}"
-                             title="{{contactname}}">
-
+                        {{^canviewuserdetails}}
+                            <span class="course-card-contact">
+                        {{/canviewuserdetails}}
+                        <img src="{{{userpicture}}}" class="course-card-contact-avatar rounded-circle" alt="">
+                        <span class="course-card-contact-name">{{contactname}}</span>
                         {{#canviewuserdetails}}
                             </a>
+                        {{/canviewuserdetails}}
+                        {{^canviewuserdetails}}
+                            </span>
                         {{/canviewuserdetails}}
                     {{/displaycontacts}}
 
                     {{#hasadditionalcontacts}}
                         <span class="course-card-contact-extra" data-course-contact-extra>
+                            <button type="button" class="course-card-contact-more" aria-expanded="false"
+                                    title="{{remainingcontactnames}}">+{{additionalcontactcount}}</button>
                             <span class="course-card-contact-extra-list" aria-hidden="true">
                                 {{#remainingcontacts}}
                                     {{#canviewuserdetails}}
-                                        <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}"
-                                           class="course-card-contact" tabindex="-1">
+                                        <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}" class="course-card-contact" tabindex="-1">
                                     {{/canviewuserdetails}}
-
-                                    <img src="{{{userpicture}}}"
-                                         class="course-card-contact-avatar rounded-circle"
-                                         alt="{{contactname}}"
-                                         title="{{contactname}}">
-
+                                    {{^canviewuserdetails}}
+                                        <span class="course-card-contact">
+                                    {{/canviewuserdetails}}
+                                    <img src="{{{userpicture}}}" class="course-card-contact-avatar rounded-circle" alt="">
+                                    <span class="course-card-contact-name">{{contactname}}</span>
                                     {{#canviewuserdetails}}
                                         </a>
                                     {{/canviewuserdetails}}
+                                    {{^canviewuserdetails}}
+                                        </span>
+                                    {{/canviewuserdetails}}
                                 {{/remainingcontacts}}
                             </span>
-
-                            <button type="button"
-                                    class="course-card-contact-more"
-                                    aria-expanded="false">
-                                +{{additionalcontactcount}}
-                            </button>
                         </span>
                     {{/hasadditionalcontacts}}
                 </div>
-            </div>
-        {{/hascontacts}}
-    {{/showcoursecontacts}}
+            {{/hascontacts}}
+        {{/showcoursecontacts}}
+        <a href="{{viewurl}}" class="course-card-go" tabindex="-1" aria-hidden="true"></a>
+    </div>
 
 </div>
 
@@ -213,10 +207,25 @@
         const button = extra.querySelector('.course-card-contact-more');
         const list = extra.querySelector('.course-card-contact-extra-list');
 
-        button.addEventListener('click', () => {
-            const open = extra.classList.toggle('is-open');
+        const show = (open) => {
+            extra.classList.toggle('is-open', open);
             button.setAttribute('aria-expanded', open ? 'true' : 'false');
             list.setAttribute('aria-hidden', open ? 'false' : 'true');
+        };
+        button.addEventListener('click', () => {
+            show(!extra.classList.contains('is-open'));
+        });
+        // Closed again by a click anywhere else, or by Escape.
+        document.addEventListener('click', (e) => {
+            if (extra.classList.contains('is-open') && !extra.contains(e.target)) {
+                show(false);
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && extra.classList.contains('is-open')) {
+                show(false);
+                button.focus();
+            }
         });
     }
 

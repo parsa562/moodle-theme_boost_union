@@ -1,0 +1,96 @@
+// Salek: Page spacing system: white sheet pages and canvas pages.
+
+/* ==========================================================================
+   Salek: page spacing system.
+
+   Moodle pages come in two shapes:
+   - Sheet pages: #region-main is one white box (course, activities, My courses,
+     participants, reports, admin pages). The content inset belongs to the sheet.
+   - Canvas pages: #region-main is transparent and the content is separate
+     white cards on the page background (Dashboard, profile, preferences,
+     calendar). The inset belongs to each card.
+   Both shapes use the same inset, so content sits equally far from its box edge.
+
+   The canvas page list must match the admin SCSS that makes #region-main
+   transparent on these pages (Boost Union > Look > Raw initial SCSS).
+   The front page keeps its own hero and course listing layout and is excluded.
+   ========================================================================== */
+
+/* Sheet pages: inset inside the white #region-main.
+   Overrides Moodle's 15px on div[role="main"] and the admin SCSS 1.2rem/1rem on #region-main.
+   .main-inner stacks a top margin and a top padding (24px + 24px on desktop); keep one gap. */
+body:not(.pagelayout-frontpage) #page.drawers {
+    .main-inner {
+        padding-top: $salek-space-inset-sm;
+    }
+
+    div[role="main"] {
+        padding-inline: $salek-space-inset-sm;
+    }
+
+    #region-main {
+        padding-top: $salek-space-inset-sm;
+        padding-bottom: $salek-space-inset-sm;
+    }
+
+    @include media-breakpoint-up(md) {
+        .main-inner {
+            padding-top: 0;
+        }
+
+        div[role="main"] {
+            padding-inline: $salek-space-inset;
+        }
+
+        #region-main {
+            padding-top: $salek-space-inset;
+            padding-bottom: $salek-space-inset;
+        }
+    }
+}
+
+/* Canvas pages: no sheet inset, the cards carry it. */
+@include salek-canvas-pages {
+    #page.drawers div[role="main"] {
+        padding-inline: 0;
+    }
+
+    #page.drawers #region-main {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    /* The cards on the page background: Dashboard blocks (the calendar too: calendar part),
+       profile sections, preference groups. */
+    #block-region-content > section.block.card,
+    section.node_category.card,
+    #region-main .col-md-4 > .card {
+        border-radius: $salek-card-radius;
+        box-shadow: $salek-card-shadow;
+        margin-bottom: $salek-space-stack !important; /* stylelint-disable-line declaration-no-important */
+
+        > .card-body {
+            padding: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+
+            @include media-breakpoint-up(md) {
+                padding: $salek-space-inset !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+/* Page header: the admin SCSS hides .page-header-headings outside course pages,
+   but its .page-context-header wrapper keeps 16px of padding and margin. Remove the
+   wrapper too when the hidden heading is all it contains. */
+body:not(.pagelayout-course) .page-context-header:has(> .page-header-headings:only-child) {
+    display: none !important; /* stylelint-disable-line declaration-no-important */ // It carries .d-flex.
+}
+
+/* Phones: Boost Union adds the 40px smart menu bar height to the page offset whenever
+   smart menus exist. Without a menu bar that is empty space under the navbar. */
+@include media-breakpoint-down(md) {
+    /* Same selector shape as Boost Union's rule, so this one is more specific. */
+    body.theme-boost-union-smartmenu:not(:has(.boost-union-menubar)) .navbar.fixed-top ~ #page.drawers {
+        margin-top: $navbar-height;
+    }
+}

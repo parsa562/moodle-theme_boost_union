@@ -1,0 +1,39 @@
+// Salek: enrolment table and row actions. The detached header uses the shared page-header layout.
+
+// (Only with the methods list: the same address also shows the "Delete" confirmation.)
+body#page-enrol-instances #region-main div[role="main"]:has(> [class~="box"] > [class~="table-responsive"]) {
+    [class~="table-responsive"] {
+        margin: 0;
+    }
+
+    table.generaltable {
+        th,
+        td {
+            white-space: nowrap;
+        }
+
+        th {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        td {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .875rem;
+        }
+
+        td.c0 {
+            font-weight: 500;
+        }
+
+        td.c0 .dimmed_text {
+            color: $salek-text-muted;
+            font-weight: 400;
+        }
+
+        // Row actions: small outline buttons with stroke icons.
+        .action-icon {
+            @include salek-row-action;
+        }
+    }
+
+}

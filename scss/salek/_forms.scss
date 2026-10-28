@@ -1,0 +1,398 @@
+// Salek: Forms in the page content.
+
+/* 27. Forms in the page content, on every page (course and activity settings, enrolment
+       methods, groups, profiles, …), adapted from the course settings mockup to the white
+       sheet: each section title on a light band across the sheet with the round open/close
+       button of the course page, the fields in rows with a hairline between them, a red dot
+       for required fields, small round help buttons, the form buttons on a light band at the
+       end. The fields keep the site's field style (section 5). */
+
+// Only the page's own form (a direct child of the content, or of Moodle's box around it, as on
+// the grader report's preferences), not the small forms inside dropdowns and lists (report
+// filters, bulk actions).
+body:not(.pagelayout-login) #region-main div[role="main"] > form.mform,
+body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > form.mform {
+    --salek-sheet-pad: #{$salek-sheet-pad};
+    margin-top: $salek-page-header-gap; // After the title (its 12px margin collapses into this) or other content.
+
+    @include media-breakpoint-down(md) {
+        --salek-sheet-pad: 16px;
+    }
+
+    // "Expand all": a small outline button at the end of the first section's band (on phones
+    // on a row of its own above it, where the band has no room).
+    > .collapsible-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0 0 12px;
+
+        @include media-breakpoint-up(md) {
+            position: absolute;
+            z-index: 1;
+            top: 10px; // (56px band - 36px button) / 2.
+            inset-inline-end: 0;
+            margin: 0;
+        }
+
+        .collapseexpand {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 0 14px !important; /* stylelint-disable-line declaration-no-important */
+            border: 1px solid $salek-control-border;
+            // Moodle's link focus styles otherwise force a 4px radius.
+            border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+            background-color: #fff;
+            color: var(--bs-primary);
+            font-size: .8125rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                border-color: var(--bs-primary);
+            }
+        }
+    }
+
+    // Sections (Boost draws a line under each section; the bands separate them instead).
+    > fieldset {
+        margin: 0;
+        border: 0;
+    }
+
+    // Section titles: white rows with a hairline above; an open section's title on a light
+    // tint of the brand colour, like an open section on the course page.
+    > fieldset > [class~="d-flex"]:has(> .ftoggler) {
+        @include salek-sheet-bleed;
+        min-height: 56px;
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-block: 12px;
+        border-top: 1px solid $salek-form-section-line;
+        background-color: #fff;
+
+        &:has(.fheader[aria-expanded="true"]) {
+            background-color: rgba(var(--bs-primary-rgb), .06);
+        }
+
+        h3 {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .icons-collapse-expand {
+            @include salek-round-toggle;
+            margin-inline-end: 12px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // An open section: its rows start 8px below the band.
+    > fieldset > .fcontainer {
+        padding-top: 8px;
+    }
+
+    > fieldset:last-of-type > .fcontainer {
+        padding-bottom: 8px;
+    }
+
+    // The last section, when closed: a hairline under it too (before the buttons' band, the
+    // band's own line is enough).
+    > fieldset:last-of-type:not(:has(+ .fitem[data-groupname="buttonar"])) > [class~="d-flex"]:has(.fheader[aria-expanded="false"]) {
+        border-bottom: 1px solid $salek-form-section-line;
+    }
+
+    // A field after the sections (e.g. "Send content change notification"): the band below
+    // draws the line.
+    > .fitem:has(+ .fitem[data-groupname="buttonar"]) {
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Rows: one field each, a hairline between them (Moodle's 16px gap below each row instead).
+    // The line stops at the content edges (the row is 12px wider on each side), so the lines
+    // inside a section read differently from the full-width lines between sections.
+    > .fitem:not([data-groupname="buttonar"]),
+    > fieldset > .fcontainer > .fitem {
+        margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-block: 12px;
+        background: linear-gradient($salek-form-row-line, $salek-form-row-line) center bottom / calc(100% - 24px) 1px no-repeat;
+
+        &:last-child {
+            background: none;
+        }
+    }
+
+    // Parts inside a row (date and time lists, groups of fields): 8px apart, also when they
+    // wrap, instead of each part's own 16px below it.
+    .fitem .fitem {
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .felement .fdate_time_selector,
+    .felement .fdate_selector,
+    .felement > fieldset > [class~="d-flex"] {
+        gap: 8px;
+    }
+
+    // The label column: labels in line with the section's toggle and the page title (Boost
+    // indents them 40px in collapsible sections), the help button right after the label
+    // (Boost pushes it to the column's end).
+    .col-form-label {
+        align-items: flex-start;
+        padding-inline-start: calc(var(--bs-gutter-x) * .5);
+        color: #1e293b;
+        font-size: .8125rem;
+        font-weight: 600;
+
+        > label,
+        > p {
+            margin: 0;
+        }
+
+        > .form-label-addon {
+            margin-inline-start: 0;
+        }
+    }
+
+    // Required: a red dot before the label (the red exclamation icon is hidden).
+    .col-form-label:has(> .form-label-addon > .text-danger)::before {
+        content: "";
+        flex: none;
+        width: 6px;
+        height: 6px;
+        margin-top: 9px;
+        margin-inline-end: 8px;
+        border-radius: 50%;
+        background-color: #dc2626;
+    }
+
+    .form-label-addon > .text-danger {
+        display: none;
+    }
+
+    // Help (beside labels, checkboxes and section titles): a small round button with a
+    // question mark.
+    a[data-bs-toggle="popover"]:has(> .fa-circle-question) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        margin: 2px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 50%;
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+
+        .icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-question, 12px);
+        }
+
+        &:hover,
+        &:focus-visible {
+            background-color: rgba(var(--bs-primary-rgb), .18);
+        }
+    }
+
+    &:is([dir="rtl"] *) a[data-bs-toggle="popover"]:has(> .fa-circle-question)::before {
+        transform: scaleX(-1); // The Persian question mark (؟) faces the other way.
+    }
+
+    // Read-only values in line with their labels, which have 7px above the text.
+    .felement[data-fieldtype="static"] {
+        padding-top: 7px;
+    }
+
+    // "Enable" beside a date or a duration: a filled piece like the fields next to it.
+    .fdate_time_selector .form-check,
+    .fdate_selector .form-check,
+    .felement > fieldset > [class~="d-flex"] > label.form-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: $salek-control-height;
+        margin: 0;
+        padding: 0 14px;
+        border: 0;
+        border-radius: $salek-field-radius;
+        background-color: $salek-field-bg;
+
+        .form-check-input {
+            float: none;
+            margin: 0;
+        }
+    }
+
+    // The form buttons: on a light band across the sheet at the end, as high as the fields.
+    > .fitem[data-groupname="buttonar"] {
+        @include salek-sheet-bleed;
+        // A Bootstrap row: its columns add 12px, so the buttons stay under the fields.
+        padding-inline: calc(var(--salek-sheet-pad) - 12px);
+        margin-top: 0;
+
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-block: 16px;
+        border-top: 1px solid $salek-form-section-line;
+        border-bottom: 0;
+        background-color: $salek-subtle;
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            font-size: .875rem;
+        }
+
+        // Cancel: white with a frame, as the soft grey button disappears on the band.
+        [class~="btn-secondary"] {
+            --bs-btn-bg: #fff;
+            --bs-btn-hover-bg: #{$salek-soft};
+            border: 1px solid $salek-control-border;
+        }
+
+        .felement > [class~="w-100"] > [class~="d-flex"] {
+            gap: 8px;
+        }
+    }
+
+    // "Required" note: on the buttons' band, in the empty label column (under the buttons on
+    // phones), shortened to "• Required" in Persian and English (the note is hidden from
+    // screen readers; the fields themselves say they are required).
+    // Moodle pads forms 15px on phones; the sheet's own 16px is enough (the bands reach its
+    // edges and the fields get the width).
+    & {
+        position: relative;
+
+        @include media-breakpoint-down(md) {
+            padding-inline: 0;
+        }
+    }
+
+    > .fdescription.required {
+        display: flex;
+        align-items: center;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+
+        .icon {
+            display: none;
+        }
+
+        &::before {
+            content: "";
+            flex: none;
+            width: 6px;
+            height: 6px;
+            margin-inline-end: 8px;
+            border-radius: 50%;
+            background-color: #dc2626;
+        }
+
+        &:lang(fa),
+        &:lang(en) {
+            font-size: 0;
+
+            &::after {
+                font-size: .8125rem;
+            }
+        }
+
+        &:lang(fa)::after {
+            content: "الزامی";
+        }
+
+        &:lang(en)::after {
+            content: "Required";
+        }
+
+    }
+
+    // Only when the buttons' band is there: some forms (grade import…) have their buttons in a
+    // bar at the bottom of the window; there the note is a line at the end of the form.
+    > .fitem[data-groupname="buttonar"] ~ .fdescription.required {
+        @include media-breakpoint-up(md) {
+            position: absolute;
+            inset-block-end: 0;
+            inset-inline-start: 0;
+            width: 25%;
+            height: calc(32px + #{$salek-control-height}); // The band: 16px + the buttons + 16px.
+        }
+
+        @include media-breakpoint-down(md) {
+            @include salek-sheet-bleed;
+            padding-bottom: 16px;
+            background-color: $salek-subtle;
+        }
+    }
+
+    > .fdescription.required:not(.fitem[data-groupname="buttonar"] ~ *) {
+        padding-top: 16px;
+    }
+}
+
+// Section 27, continued: when the form ends the page with its buttons' band, the band reaches
+// the bottom of the white sheet (instead of a 24px white strip under it), with the sheet's
+// rounded corners. (Forms without that band, like report options, keep the sheet's padding.)
+body:not(.pagelayout-login) #region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> .fitem[data-groupname="buttonar"]) {
+    margin-bottom: -24px;
+
+    @include media-breakpoint-up(md) {
+        > .fitem[data-groupname="buttonar"] {
+            border-end-start-radius: $salek-radius;
+            border-end-end-radius: $salek-radius;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        margin-bottom: -16px;
+
+        > .fdescription.required {
+            border-end-start-radius: $salek-radius;
+            border-end-end-radius: $salek-radius;
+        }
+    }
+}
+
+// Moodle's box around a page's form: no space of its own (the form keeps the gap under the title).
+body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox:has(> form.mform) {
+    padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+}
+
+// A form that starts the page (no title above it: bulk user actions, creating a group): its first
+// section's band at the top edge of the sheet (no white strip and no line above it).
+// (Also after an empty element: the group picture's place when creating a group.)
+body:not(.pagelayout-login) #region-main div[role="main"] > #maincontent:first-child + form.mform,
+body:not(.pagelayout-login) #region-main div[role="main"] > #maincontent:first-child + :empty + form.mform {
+    margin-top: calc(-1 * var(--salek-sheet-pad));
+
+    > fieldset:first-of-type > [class~="d-flex"]:has(.ftoggler) {
+        border-top-color: transparent;
+        border-start-start-radius: $salek-radius;
+        border-start-end-radius: $salek-radius;
+    }
+}
+
+// Forms one after the other (bulk user actions: the filter, the users, the action): no gap and
+// no double line between them.
+body:not(.pagelayout-login) #region-main div[role="main"] > form.mform + form.mform {
+    margin-top: 0;
+
+    > fieldset:first-of-type > [class~="d-flex"]:has(.ftoggler) {
+        border-top-color: transparent;
+    }
+}
+
+// The page's last form without the buttons' band (its buttons in the bar at the bottom of the
+// window: grade export and import), its last section closed: that section's band at the bottom
+// edge of the sheet (no line under it and no white strip).
+body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:last-child > fieldset.collapsed:last-of-type:not(:has(~ .fitem)):not(:has(~ .fdescription)) {
+    margin-bottom: calc(-1 * var(--salek-sheet-pad)) !important; /* stylelint-disable-line declaration-no-important */
+
+    > [class~="d-flex"]:has(.ftoggler) {
+        border-bottom-color: transparent;
+        border-end-start-radius: $salek-radius;
+        border-end-end-radius: $salek-radius;
+    }
+}

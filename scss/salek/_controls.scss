@@ -1,0 +1,740 @@
+// Salek: Buttons, fields, the Latin font, dropdown menus, selects, tabs, filter panel, autocomplete, course edit mode.
+
+/* 4. Buttons: Moodle's size; secondary buttons soft grey without a dark outline.
+      Button and utility classes are written as [class~="..."]: Boost Union @extends
+      some of them, and Sass would otherwise copy these rules for every extending selector. */
+@include salek-content-scope {
+    [class~="btn-secondary"],
+    [class~="btn-outline-secondary"]:not(.dropdown-toggle),
+    [class~="btn-outline-dark"],
+    [class~="btn-subtle-body"] {
+        @include salek-button-soft; // (Moodle sets a dark border-color directly on .btn-outline-secondary.)
+    }
+
+    [class~="btn-subtle-body"] {
+        --bs-btn-bg: #{$salek-soft-strong};
+    }
+}
+
+/* Latin text in the site font (Josefin Sans) sits high in its line: its capitals are 0.735em
+   tall, but the font reserves 0.75em above the baseline and 0.25em below, so their centre is
+   0.12em (2px in a button, 3.5px in a page title) above the centre of every button, tab and
+   pill. On English pages the text uses the same font file under another name, with the space
+   above and below the baseline set so the capitals are centred; line heights stay the same
+   (0.8675 + 0.1325 = 1em). Persian pages keep the original font: there the Persian letters,
+   which share the line, are centred as they are. The font list repeats the site's own (theme
+   settings, "Raw SCSS"), with the renamed font first; the file is the one uploaded there. */
+@font-face {
+    font-family: "Salek Josefin Sans LTR";
+    src: url("/pluginfile.php/1/theme_boost_union/customfonts/0/josefin-sans-latin.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 200 700;
+    font-display: swap;
+    unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    ascent-override: 86.75%;
+    descent-override: 13.25%;
+    line-gap-override: 0%;
+}
+
+html[dir="ltr"] body {
+    font-family: "Salek Josefin Sans LTR", "Josefin Sans", "SQ-066B-066C", "Markazi Text", sans-serif !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* 5. Fields, selects, search boxes and filter dropdowns: filled soft grey shapes without a
+      border, rounded; white with a blue ring while in use, a light red with a red edge when
+      something is wrong, lighter when disabled. The arrow of a dropdown in a small white chip.
+      (The same few controls on every page: the "Softer form controls" design.) */
+@include salek-content-scope {
+    .form-control,
+    .form-select,
+    [class~="btn-outline-secondary"].dropdown-toggle {
+        border-color: transparent;
+        border-radius: $salek-field-radius;
+        background-color: var(--salek-field, #{$salek-field-bg});
+        box-shadow: none;
+        color: #1e293b;
+        font-size: .875rem;
+    }
+
+    .form-control:not(textarea),
+    .form-select,
+    [class~="btn-outline-secondary"].dropdown-toggle {
+        min-height: $salek-control-height;
+    }
+
+    .form-control::placeholder {
+        color: #8a94a6;
+    }
+
+    .form-select {
+        --bs-form-select-bg-img: #{$salek-select-chip};
+        padding-inline-end: calc(var(--salek-chip-size, 30px) + 16px);
+        background-position: right var(--salek-chip-inset, 7px) center;
+        background-size: var(--salek-chip-size, 30px) var(--salek-chip-size, 30px);
+    }
+
+    .form-control:hover,
+    .form-select:hover,
+    [class~="btn-outline-secondary"].dropdown-toggle:hover {
+        border-color: transparent;
+        background-color: var(--salek-field-hover, #{$salek-field-bg-hover});
+    }
+
+    .form-control:focus,
+    .form-select:focus,
+    .form-control:focus:hover,
+    .form-select:focus:hover {
+        border-color: var(--bs-primary);
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #f1aeb5;
+        background-color: #fff5f5;
+    }
+
+    .form-control:disabled,
+    .form-select:disabled,
+    .form-control[readonly] {
+        border-color: transparent;
+        background-color: #f6f8fa;
+        color: #8a94a6;
+        opacity: 1;
+    }
+
+    [class~="btn-outline-secondary"].dropdown-toggle {
+        --bs-btn-color: #{$salek-text-strong};
+        --bs-btn-bg: var(--salek-field, #{$salek-field-bg});
+        --bs-btn-hover-color: #{$salek-ink};
+        --bs-btn-hover-bg: var(--salek-field-hover, #{$salek-field-bg-hover});
+        --bs-btn-active-color: #{$salek-ink};
+        --bs-btn-active-bg: var(--salek-field-hover, #{$salek-field-bg-hover});
+        border-radius: $salek-field-radius;
+    }
+
+    // Labels attached to a field (a unit like "%", input groups): a small chip of the field.
+    .input-group > .input-group-text {
+        min-height: $salek-control-height;
+        border-color: transparent;
+        background-color: $salek-field-bg;
+        color: $salek-text;
+    }
+
+    // Lists that show several lines (groups and their members, roles…): a framed white list with
+    // roomy rounded lines, the chosen ones tinted in the brand colour. (The colour is also drawn
+    // as an image: Chrome paints its own blue over a plain background colour.)
+    // (The lines' height comes from the list's line height, not from padding on each line: a
+    // list drawn empty, like "Selected users" next to "All users", is then as high as a full one.)
+    select[multiple],
+    select[size]:not([size="1"]) {
+        padding: 6px;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: #fff;
+        background-image: none;
+        font-size: .875rem;
+        line-height: 2;
+        vertical-align: top;
+
+        optgroup {
+            color: $salek-text-muted;
+            font-weight: 600;
+        }
+
+        option {
+            padding: 0 10px;
+            border-radius: 8px;
+            color: #1e293b;
+            font-weight: 400;
+        }
+
+        option:checked {
+            background: linear-gradient(rgba(var(--bs-primary-rgb), .12), rgba(var(--bs-primary-rgb), .12));
+            color: var(--bs-primary);
+            font-weight: 500;
+        }
+    }
+
+    // Answer fields inside quiz questions keep Moodle's look and size.
+    .que .form-control {
+        min-height: 0;
+        font-size: .9375rem;
+        border-color: $salek-field-border;
+        border-radius: 6px;
+        background-color: #fff;
+        box-shadow: none;
+    }
+
+    // Checkboxes: the theme's rounded box, filled in the brand colour when ticked; radio buttons
+    // and switches in the brand colour too.
+    // (Every checkbox of the content: forms, site administration settings, lists; not the answers
+    // of quiz questions, switches, or checkboxes Moodle hides behind a drawn control.)
+    input[type="checkbox"]:not([role="switch"]):not(.que *):not(.form-switch *):not(.custom-control-input):not(.btn-check):not([class~="visually-hidden"]):not([class~="sr-only"]) {
+        @include salek-checkbox;
+    }
+
+    // (Bootstrap places the box in the label's margin; the theme's box sits beside it instead.)
+    .form-check:has(> .form-check-input[type="checkbox"]:not([role="switch"])) {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-inline-start: 0;
+
+        &[class~="form-check-inline"] {
+            display: inline-flex;
+        }
+
+        > .form-check-input {
+            float: none;
+            margin: 0;
+        }
+    }
+
+    .form-check-input[type="radio"] {
+        accent-color: var(--bs-primary);
+    }
+
+    .form-switch .form-check-input {
+        width: 40px;
+        height: 22px;
+        border: 0;
+        background-color: #d5dbe4;
+        box-shadow: none;
+        cursor: pointer;
+
+        &:checked {
+            background-color: var(--bs-primary);
+        }
+    }
+}
+
+/* Buttons: rounded like the fields; the buttons with text (the page's and the forms' actions:
+   "Save changes", "Cancel", "Continue") as high as the fields, the text medium-bold. (Not the
+   small buttons of tables and open lists, or those attached to a field.) */
+@include salek-content-scope {
+    [class~="btn"]:not(.btn-link):not(.btn-icon):not(.input-group > *) {
+        border-radius: $salek-button-radius;
+    }
+
+    [class~="btn-primary"]:not([class~="btn-sm"]):not(table *):not(.dropdown-menu *):not(.input-group *),
+    [class~="btn-secondary"]:not([class~="btn-sm"]):not(table *):not(.dropdown-menu *):not(.input-group *) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: $salek-control-height;
+        font-weight: 600;
+
+        &:not(.dropdown-toggle) {
+            padding-inline: 20px;
+        }
+    }
+
+    input[class~="btn-primary"]:not([class~="btn-sm"]):not(table *),
+    input[class~="btn-secondary"]:not([class~="btn-sm"]):not(table *) {
+        line-height: 1.2;
+    }
+}
+
+// Fields on the grey page itself (above the tabs): white, so they stand out (the design's rule:
+// grey on white, white on grey).
+#page-header {
+    --salek-field: #fff;
+    --salek-field-hover: #fff;
+}
+
+// A row of filters and a search (the dashboard's timeline): one grey bar, the filters white
+// pills on it, the search the rest of the bar, no line under it.
+.block_timeline [data-region="timeline"] > [class~="px-2"] {
+    // (Moodle's line under the bar: the space separates.)
+    > [class~="border-bottom"] {
+        border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > [class~="d-flex"] {
+        --salek-field: #fff;
+        --salek-field-hover: #fff;
+        align-items: center;
+        gap: 6px !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: 16px;
+        padding: 5px;
+        border-radius: 17px; // The pieces' 12px plus the 5px around them.
+        background-color: $salek-field-bg;
+
+        > * {
+            display: flex;
+            align-items: center;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .dropdown,
+        .btn-group {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (!important: the buttons' 44px height and 15px corners of the content area are heavier.)
+        // The arrow centred beside the text.
+        .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            min-height: 36px !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
+            font-size: .875rem;
+            font-weight: 500;
+        }
+
+        // The search: the rest of the bar, on the bar's own grey.
+        > :last-child:has(input[type="text"]) {
+            --salek-field: transparent;
+            --salek-field-hover: transparent;
+            flex: 1 1 200px;
+
+            // (!important: the fields' 44px height of the content area is heavier.)
+            // (The search form's frame carries the corners and the ring in use.)
+            .input-group {
+                border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            input[type="text"] {
+                height: 34px;
+                min-height: 34px !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+/* 6. Open dropdown lists (filters, action menus, the tab bar's "More"): rounded panel with
+      a soft shadow, rounded items with a light hover and a tinted current item. Native
+      <select> option lists are drawn by the browser and cannot be styled. */
+
+@include salek-content-scope {
+    @include salek-dropdown-menu;
+}
+
+.secondary-navigation {
+    @include salek-dropdown-menu;
+}
+
+/* 7. Long separator lines stay, as light hairlines. */
+
+.block_myoverview .block-myoverview.block-cards {
+    border-top-color: $salek-line;
+}
+
+#page-admin-search #region-main hr {
+    border-top-color: $salek-line;
+    opacity: 1;
+}
+
+// Grouped settings links (core/settings_link_page), not forms, tables or tab labels.
+#region-main .tab-content > .tab-pane[id^="link"] > .container-fluid {
+    > .row > :is(.col, .col-sm-9) > ul.list-unstyled {
+        line-height: 1.9;
+    }
+
+    > hr {
+        margin-bottom: 1.9rem;
+    }
+}
+
+/* 8. Slightly more line spacing for reading text (Persian script needs it most). */
+body:not(.pagelayout-frontpage) #page.drawers #region-main {
+    line-height: 1.65;
+
+    table {
+        line-height: 1.5;
+    }
+}
+
+/* 10. Secondary navigation (tabs under the header): Moodle reserves 3px below each tab
+       for the active underline but none above, so the text sat 1.5px high; reserve the
+       same above. (Latin text is centred by the font settings, see the note before
+       section 5.) */
+.secondary-navigation .moremenu .nav-link {
+    border-top: 3px solid transparent;
+}
+
+// The current tab's line: straight across the tab, as under the navbar's current item (which
+// keeps Moodle's line), drawn inside the tab (its bottom border bent round the bar's rounded
+// corner under the first tab; there it starts clear of that corner).
+.secondary-navigation .moremenu .nav-link.active {
+    position: relative;
+    border-bottom-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+
+    &::before {
+        content: "";
+        position: absolute;
+        bottom: -3px; // (On the tab's 3px bottom border, where Moodle's line was.)
+        inset-inline: 0;
+        height: 3px;
+        background-color: var(--bs-primary);
+    }
+}
+
+.secondary-navigation .moremenu .nav-item:first-child > .nav-link.active::before {
+    inset-inline-start: $salek-secondary-navbar-radius;
+}
+
+/* 11. The same open-list design outside the content area: the navbar's "More", user and
+       language menus, the course index options menu and the phone bottom bar's "More".
+       The navbar selector repeats the weight of the earlier navbar menu rules. */
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation,
+.navbar.fixed-top:not(.boost-union-menubar) .usermenu,
+.navbar.fixed-top:not(.boost-union-menubar) .langmenu,
+#courseindexdrawercontrols,
+.bottom-navigation {
+    @include salek-dropdown-menu;
+}
+
+/* 12. Native <select> lists: browsers with customisable selects (Chrome and Edge 135+)
+       open them like the dropdown lists above; other browsers keep their own list.
+       Like the filter dropdowns, the closed select then fits its current option.
+       Lists inside quiz questions and multi-line selects stay native. */
+@supports (appearance: base-select) {
+    @include salek-content-scope {
+        select.form-select:not([multiple], [size]:not([size="1"])),
+        select.custom-select:not([multiple], [size]:not([size="1"])) {
+            &:not(.que select) {
+                appearance: base-select;
+                // The text is laid out inside the select: centre it vertically, also in short pills.
+                display: inline-flex;
+                align-items: center;
+                color: $salek-ink;
+
+                // Bootstrap's arrow (background image) stays; drop the browser's second one.
+                // A base-select draws ::before/::after too, so the caret of selects that
+                // also carry .dropdown-toggle (question bank "Show question text") would show.
+                &::picker-icon,
+                &::before,
+                &::after {
+                    display: none;
+                }
+
+                &::picker(select) {
+                    appearance: base-select;
+                    margin-block: 4px;
+                    padding: 6px;
+                    border: 1px solid $salek-line;
+                    border-radius: 10px;
+                    background-color: #fff;
+                    box-shadow: $salek-menu-shadow;
+                    max-block-size: min(22rem, 60vh);
+                }
+
+                option {
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    color: $salek-ink;
+
+                    &::checkmark {
+                        display: none;
+                    }
+
+                    &:hover,
+                    &:focus-visible {
+                        background-color: $salek-soft;
+                        outline: 0;
+                    }
+
+                    &:checked {
+                        background-color: rgba(var(--bs-primary-rgb), .1);
+                        color: var(--bs-primary);
+                    }
+
+                    &:disabled {
+                        color: #94a3b8;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 13. Filter panel (core "datafilter": question bank, participants and other lists).
+       One quiet box: the rows inside lose their own boxes, conditions are separated by
+       a hairline carrying the join word, and the action row sits under a hairline.
+       Moodle's utility classes here are !important, so the overrides are as well. */
+@include salek-content-scope {
+    .filter-group[data-filterverb] {
+        --bs-border-color: #{$salek-line}; // The .border utility reads its colour from this variable.
+        margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 12px 16px !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: $salek-radius;
+        background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+
+        [data-filterregion="filtermatch"] {
+            margin-bottom: 8px;
+        }
+
+        // A condition row: no box of its own.
+        [data-filterregion="filter"] fieldset > div:not([data-filterregion]) {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 4px 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // The join word ("and", "or") between conditions, on a hairline.
+        [data-filterregion="filter"]:not(:last-child) [data-filterregion="joinadverb"] {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+            letter-spacing: .04em;
+
+            &::after {
+                content: "";
+                flex: 1;
+                border-top: 1px solid $salek-line;
+            }
+        }
+
+        // Remove-condition button: a small round ghost button instead of a black disc.
+        button[data-filteraction="remove"] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            color: #94a3b8 !important; /* stylelint-disable-line declaration-no-important */
+            font-size: 1rem;
+
+            &:hover,
+            &:focus-visible {
+                background-color: $salek-soft;
+                color: #475569 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */
+            accent-color: var(--bs-primary);
+        }
+
+        [data-filterregion="actions"] {
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid $salek-line;
+
+            [class~="btn"] {
+                margin-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // "Add condition": a light primary text button.
+            [data-filteraction="add"] {
+                display: inline-flex;
+                align-items: center;
+                margin-inline-start: -12px; // Line the icon up with the conditions above.
+                color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+                text-decoration: none;
+
+                .icon {
+                    margin: 0;
+                    color: inherit;
+                }
+
+                span {
+                    padding-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                &:hover,
+                &:focus-visible {
+                    background-color: rgba(var(--bs-primary-rgb), .08);
+                }
+            }
+
+            // "Show all": a quiet text button next to Clear and Apply.
+            [data-filteraction="showall"] {
+                --bs-btn-bg: transparent;
+                --bs-btn-border-color: transparent;
+                --bs-btn-hover-bg: #{$salek-soft};
+                --bs-btn-hover-border-color: transparent;
+                --bs-btn-color: #334155;
+            }
+        }
+    }
+}
+
+/* 14. Autocomplete fields (filter values, tags, user pickers): the same arrow as selects,
+       chips in the light primary tint, and the suggestion list drawn like a dropdown list. */
+@include salek-content-scope {
+    .form-autocomplete-input .form-control {
+        padding-inline-end: 46px;
+    }
+
+    // Moodle draws a text triangle (▼); show the dropdowns' arrow chip instead.
+    .form-autocomplete-downarrow {
+        top: 50%;
+        width: 30px;
+        height: 30px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        transform: translateY(-50%);
+        background: $salek-select-chip no-repeat center / 30px 30px;
+        font-size: 0;
+        margin-inline-end: 7px;
+
+        .loading-icon {
+            font-size: 1rem;
+        }
+    }
+
+    .form-autocomplete-selection [role="option"][data-value] {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background-color: rgba(var(--bs-primary-rgb), .1) !important; /* stylelint-disable-line declaration-no-important */
+        color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+        font-size: .875rem !important; /* stylelint-disable-line declaration-no-important */
+        font-weight: 500;
+        line-height: 1.4;
+
+        &:hover {
+            background-color: rgba(var(--bs-primary-rgb), .16) !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Moodle marks the chip the keyboard is on with a wide focus ring; a thin line is enough.
+        &[data-active-selection="true"] {
+            box-shadow: inset 0 0 0 1px var(--bs-primary);
+        }
+    }
+
+    .form-autocomplete-suggestions {
+        padding: 6px;
+        border: 1px solid $salek-line;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: $salek-menu-shadow;
+
+        li {
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: $salek-ink;
+
+            &:hover,
+            &:focus {
+                background-color: $salek-soft;
+                color: $salek-ink;
+            }
+
+            &[aria-selected="true"] {
+                background-color: rgba(var(--bs-primary-rgb), .1);
+                color: var(--bs-primary);
+            }
+
+            // The tint marks the keyboard position; no extra ring around it.
+            box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+            // Group titles ("Question bank: …"): small and quiet.
+            &.suggestions-heading {
+                padding: 10px 12px 4px;
+                background: transparent;
+                color: #94a3b8;
+                font-size: .75rem;
+                font-weight: 600;
+            }
+        }
+    }
+
+    // Grouped value lists (question categories) start with an empty "nothing chosen" option;
+    // it showed as an empty highlighted box at the top.
+    .form-autocomplete-suggestions:has(.suggestions-heading) > li[data-value=""]:first-child:not(.suggestions-heading) {
+        display: none !important; /* stylelint-disable-line declaration-no-important */ // Moodle's JS sets display inline.
+    }
+}
+
+// Moodle's search forms in the content and the page header (a glossary's search, the site
+// administration search, …): one filled field with the magnifier button inside it, as high as
+// the buttons; a checkbox next to it ("Search full text") on the same line.
+#region-main .simplesearchform,
+#page-header .simplesearchform {
+    gap: 8px 16px;
+
+    .input-group {
+        flex-wrap: nowrap;
+        width: auto;
+        min-width: min(320px, 100%);
+        border: 1px solid transparent;
+        border-radius: $salek-field-radius;
+        background-color: var(--salek-field, #{$salek-field-bg});
+        overflow: hidden;
+
+        &:focus-within {
+            border-color: var(--bs-primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+        }
+
+        > input[type="text"] {
+            min-height: $salek-control-height;
+            border: 0;
+            border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        > button {
+            border: 0;
+            border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background-color: transparent;
+            color: $salek-text-muted;
+        }
+    }
+
+    [class~="ms-2"],
+    [class~="mt-1"] {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+
+        .form-check-input {
+            @include salek-checkbox;
+            float: none;
+            margin: 0;
+        }
+
+        .form-check-label {
+            color: $salek-text;
+            font-size: .875rem;
+        }
+    }
+}
+
+@keyframes salek-filters-wait {
+    from {
+        visibility: hidden;
+    }
+}
+
+
+/* 13. Moodle's open/close buttons of collapsible parts on every page (default activity
+       completion, reports, …): the theme's round toggle, as on the course page and in forms.
+       (Light rule: the pages that draw them otherwise, like lessons on the course page, win.) */
+:where(#region-main) [class~="btn-icon"].icons-collapse-expand,
+:where(.modal-dialog) [class~="btn-icon"].icons-collapse-expand {
+    @include salek-round-toggle;
+}

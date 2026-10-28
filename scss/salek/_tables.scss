@@ -1,0 +1,176 @@
+// Salek: All other list tables.
+
+/* 23. All other list tables (Moodle's .generaltable and .flexible tables: reports, logs,
+       quiz results, assignment grading, enrolment methods, "Report builder" lists, …) in the
+       design of the participants table (section 18): a light frame with rounded corners, a
+       tinted header, row lines, a faint hover, coloured initials, the theme's checkboxes and
+       round page links. The tables with their own design keep it (the :where() keeps these
+       rules light, so the page-specific rules win). */
+
+@include salek-content-scope {
+    table:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded})) {
+        @include salek-table-base;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #dfe5ee;
+        border-radius: 16px; // (Rounder, with the site's cards and boxes.)
+
+        // Header cells (some tables put an empty td among them: it gets the same look).
+        > thead > tr > :is(th, td) {
+            @include salek-table-head-cell;
+            padding: 12px 14px;
+        }
+
+        // Rounded corners: the corner cells follow the frame.
+        > thead > tr:first-child > :first-child {
+            border-start-start-radius: 15px;
+        }
+
+        > thead > tr:first-child > :last-child {
+            border-start-end-radius: 15px;
+        }
+
+        // (And the last row's, so a row lit up under the mouse keeps the corners.)
+        > tbody:last-child > tr:last-child > :first-child {
+            border-end-start-radius: 15px;
+        }
+
+        > tbody:last-child > tr:last-child > :last-child {
+            border-end-end-radius: 15px;
+        }
+
+        > tbody > tr {
+            @include salek-table-row;
+
+            > * {
+                border-inline-width: 0; // Row lines only (quiz results drew cell lines too).
+            }
+        }
+
+        // Moodle adds empty filler rows and empty divider rows to some tables (quiz results);
+        // they showed as blank lines. (Not a row holding an empty cell that spans the rows
+        // below: the gradebook setup's indent of a category's items, which keeps its columns.)
+        > tbody > tr:is(.emptyrow, :has(> :only-child:empty:not([rowspan]))) {
+            display: none;
+        }
+
+        > tbody > tr > [rowspan]:empty {
+            padding: 0;
+            border-bottom: 0;
+        }
+
+        // Names with initials: a round avatar in a few soft colours, taking turns.
+        .userinitials,
+        .userpicture {
+            border-radius: 50%;
+        }
+
+        .userinitials {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        @each $i, $bg, $fg in (1, #fff4da, #8a5a00), (2, #e3edfb, #1859c9), (3, #f1ecfe, #6236c9),
+                (4, #e4f6f1, #0b7261), (5, #fdedf3, #ae2161), (6, #eef2f7, #475569) {
+            > tbody > tr:nth-child(6n + #{$i}) .userinitials {
+                background-color: $bg;
+                color: $fg;
+            }
+        }
+
+        // (Not the on/off switches: they keep their own look.)
+        input[type="checkbox"]:not([role="switch"]):not(.form-switch *) {
+            @include salek-checkbox;
+        }
+    }
+
+    // Page links under the lists: small rounded buttons, the current one in the brand colour.
+    // (Letter filters, .initialbar, keep Moodle's compact look.)
+    nav.pagination,
+    .paging {
+        .pagination {
+            gap: 4px;
+        }
+    }
+
+    :not(.initialbargroups) > .pagination .page-link {
+        min-width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 9px !important; /* stylelint-disable-line declaration-no-important */
+        background: transparent;
+        color: $salek-text;
+        text-align: center;
+
+        &:hover {
+            background-color: $salek-soft;
+        }
+    }
+
+    :not(.initialbargroups) > .pagination .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+
+    // "Report builder" lists: the Filters button outlined with its funnel, its panel like the
+    // other open lists, and a little space between the toolbar and the table.
+    .reportbuilder-wrapper {
+        #dropdownFiltersButton {
+            --bs-btn-bg: #fff;
+            --bs-btn-hover-bg: #{$salek-soft};
+            --bs-btn-active-bg: #{$salek-soft};
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid $salek-control-border;
+            border-radius: $salek-button-radius;
+            color: $salek-text;
+
+            .icon {
+                margin: 0;
+                color: var(--bs-primary);
+            }
+
+            &[aria-expanded="true"] {
+                border-color: var(--bs-primary);
+            }
+        }
+
+        .filters-dropdown {
+            min-width: 340px;
+            padding: 12px;
+            border: 1px solid $salek-line;
+            border-radius: 14px;
+            box-shadow: $salek-menu-shadow;
+        }
+    }
+}
+
+// Gradebook setup: the table on the sheet like the other tables (no grey box around it, as wide
+// as the content), right under the title's line.
+body:not(.pagelayout-login) #region-main .gradetreebox {
+    margin-top: 0;
+    padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+
+    .gradetree-wrapper {
+        padding: 0;
+        background-color: transparent;
+    }
+}
+
+// Phones and tablets: a table wider than the screen (site administration lists, reports) scrolls
+// sideways in its own place, instead of widening the whole page. (Only below desktop widths:
+// there a table's menus could be cut by the scrolling box.)
+@include media-breakpoint-down(lg) {
+    @include salek-content-scope {
+        :has(> table.generaltable),
+        :has(> table.flexible) {
+            min-width: 0;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    }
+}
