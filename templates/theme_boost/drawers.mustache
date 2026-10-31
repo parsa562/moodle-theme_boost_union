@@ -66,6 +66,7 @@
         before the blocks in the contentupper region.
     * Added smartmenu js to support third level submenus.
     * Added blockregions JS to support vertical alignment of outside regions. Included alignmentspacers for the outside left and right regions.
+    * Wrapped the header region together with spacers for the outside-left and outside-right regions to align it with the main content.
 }}
 {{> theme_boost/head }}
 
@@ -82,6 +83,7 @@
             {{$drawerheadercontent}}
                 {{> theme_boost/courseindexdrawercontrols}}
             {{/drawerheadercontent}}
+            {{$drawerheading}}{{> theme_boost/courseindexdrawerheading}}{{/drawerheading}}
             {{$drawerclasses}}drawer drawer-left {{#courseindexopen}}show{{/courseindexopen}}{{/drawerclasses}}
             {{$drawercontent}}
                 {{{courseindex}}}
@@ -90,6 +92,10 @@
             {{$drawerstate}}show-drawer-left{{/drawerstate}}
             {{$tooltipplacement}}right{{/tooltipplacement}}
             {{$closebuttontext}}{{#str}}closecourseindex, core{{/str}}{{/closebuttontext}}
+            {{$closebuttonicon}}
+                <span class="dir-rtl-hide">{{#pix}} e/sidebar_left, core {{/pix}}</span>
+                <span class="dir-ltr-hide">{{#pix}} e/sidebar_right, core {{/pix}}</span>
+            {{/closebuttonicon}}
         {{/ theme_boost/drawer}}
     {{/courseindex}}
     {{#hasblocks}}
@@ -108,6 +114,10 @@
             {{$tooltipplacement}}left{{/tooltipplacement}}
             {{$drawercloseonresize}}1{{/drawercloseonresize}}
             {{$closebuttontext}}{{#str}}closeblockdrawer, core{{/str}}{{/closebuttontext}}
+            {{$closebuttonicon}}
+                <span class="dir-rtl-hide">{{#pix}} e/sidebar_right, core {{/pix}}</span>
+                <span class="dir-ltr-hide">{{#pix}} e/sidebar_left, core {{/pix}}</span>
+            {{/closebuttonicon}}
         {{/ theme_boost/drawer}}
     {{/hasblocks}}
 
@@ -145,10 +155,20 @@
         {{/regions.outsidetop.hasblocks}}
 
         {{#regions.header.hasblocks}}
-            <section id="theme-block-region-header" class="theme-block-region" aria-label="{{#str}}blocks{{/str}}">
-                {{{ regions.header.addblockbutton }}}
-                {{{ regions.header.regionhtml }}}
-            </section>
+            <div class="theme-block-region-header-wrapper {{{maininnerwrapperclass}}} {{{outsideregionsplacement}}}">
+                {{#regions.outsideleft.hasblocks}}
+                    <div class="theme-block-region-outside-left-spacer"></div>
+                {{/regions.outsideleft.hasblocks}}
+                <div class="theme-boost-union-header-main-inner">
+                    <section id="theme-block-region-header" class="theme-block-region" aria-label="{{#str}}blocks{{/str}}">
+                        {{{ regions.header.addblockbutton }}}
+                        {{{ regions.header.regionhtml }}}
+                    </section>
+                </div>
+                {{#regions.outsideright.hasblocks}}
+                    <div class="theme-block-region-outside-right-spacer"></div>
+                {{/regions.outsideright.hasblocks}}
+            </div>
         {{/regions.header.hasblocks}}
 
         <div class="main-inner-wrapper {{{maininnerwrapperclass}}} {{{outsideregionsplacement}}}">
@@ -165,7 +185,7 @@
                 {{#courseindex}}
                     <div class="drawer-toggler drawer-left-toggle open-nav d-print-none">
                         <button
-                            class="btn icon-no-margin"
+                            class="btn btn-icon icon-size-3"
                             data-toggler="drawers"
                             data-action="toggle"
                             data-target="theme_boost-drawers-courseindex"
@@ -174,14 +194,15 @@
                             title="{{#str}}opendrawerindex, core{{/str}}"
                         >
                             <span class="visually-hidden">{{#str}}opendrawerindex, core{{/str}}</span>
-                            {{#pix}} t/index_drawer, moodle {{/pix}}
+                            <span class="dir-rtl-hide">{{#pix}} e/sidebar_left, core {{/pix}}</span>
+                            <span class="dir-ltr-hide">{{#pix}} e/sidebar_right, core {{/pix}}</span>
                         </button>
                     </div>
                 {{/courseindex}}
                 {{#hasblocks}}
                     <div class="drawer-toggler drawer-right-toggle ms-auto d-print-none">
                         <button
-                            class="btn icon-no-margin"
+                            class="btn btn-icon icon-size-3"
                             data-toggler="drawers"
                             data-action="toggle"
                             data-target="theme_boost-drawers-blocks"
@@ -190,8 +211,8 @@
                             title="{{#str}}opendrawerblocks, core{{/str}}"
                         >
                             <span class="visually-hidden">{{#str}}opendrawerblocks, core{{/str}}</span>
-                            <span class="dir-rtl-hide">{{#pix}}t/blocks_drawer, core{{/pix}}</span>
-                            <span class="dir-ltr-hide">{{#pix}}t/blocks_drawer_rtl, core{{/pix}}</span>
+                            <span class="dir-rtl-hide">{{#pix}} e/sidebar_right, core {{/pix}}</span>
+                            <span class="dir-ltr-hide">{{#pix}} e/sidebar_left, core {{/pix}}</span>
                         </button>
                     </div>
                 {{/hasblocks}}
@@ -231,7 +252,7 @@
                         {{#overflow}}
                             <div class="container-fluid tertiary-navigation">
                                 <div class="navitem">
-                                    {{> core/url_select}}
+                                    {{> core/tertiary_navigation_selector}}
                                 </div>
                             </div>
                         {{/overflow}}
@@ -323,7 +344,19 @@ M.util.js_pending('theme_boost/loader');
 require(['theme_boost/loader', 'theme_boost/drawer'{{#regions.offcanvas.hasblocks}},'theme_boost_union/offcanvas'{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, 'theme_boost_union/smartmenu'{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, 'theme_boost_union/smartmenu_starred_cacheinvalidation'{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, 'theme_boost_union/blockregions'{{/blockregionsdata.includeblockregionsamd}}], function(Loader, Drawer{{#regions.offcanvas.hasblocks}},OffCanvas{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, SmartMenu{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, SmartMenuStarredCacheInvalidation{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, BlockRegions{{/blockregionsdata.includeblockregionsamd}}) {
     Drawer.init();
     M.util.js_complete('theme_boost/loader');
-    {{! All init method calls are placed on one line to avoid a ESLint warning about too many empty lines, see Github issue #1107. }}
-    {{#regions.offcanvas.hasblocks}}OffCanvas.init();{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}SmartMenu.init();{{/includesmartmenu}}{{#includestarredcacheinvalidation}}SmartMenuStarredCacheInvalidation.init();{{/includestarredcacheinvalidation}}{{#blockregionsdata.outsideregions.verticaloffset}}BlockRegions.OutsideRegionsVerticalAlignment();{{/blockregionsdata.outsideregions.verticaloffset}}
+    {{! All section tags are placed on lines of their own as such standalone lines are removed completely during rendering.
+        This avoids ESLint warnings about too many empty lines or trailing spaces, see Github issues #1107 and #1413. }}
+    {{#regions.offcanvas.hasblocks}}
+    OffCanvas.init();
+    {{/regions.offcanvas.hasblocks}}
+    {{#includesmartmenu}}
+    SmartMenu.init();
+    {{/includesmartmenu}}
+    {{#includestarredcacheinvalidation}}
+    SmartMenuStarredCacheInvalidation.init();
+    {{/includestarredcacheinvalidation}}
+    {{#blockregionsdata.outsideregions.verticaloffset}}
+    BlockRegions.OutsideRegionsVerticalAlignment();
+    {{/blockregionsdata.outsideregions.verticaloffset}}
 });
 {{/js}}

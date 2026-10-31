@@ -25,9 +25,9 @@
 use theme_boost_union\coursesettings;
 
 /**
- * Get all activity purposes which are available in the current Moodle version.
- * This function returns all activity purposes, but excludes MOD_PURPOSE_INTERFACE for Moodle 5.2+
- * where this constant has been removed.
+ * Get all activity purposes which are supported by Boost Union.
+ * This function is the single source of truth for the activity purposes which Boost Union offers in its settings and for which
+ * it composes SCSS code.
  *
  * @param bool $includeother Whether to include MOD_PURPOSE_OTHER in the returned array.
  * @return array Array of activity purpose constants.
@@ -39,10 +39,6 @@ function theme_boost_union_get_activity_purposes($includeother = false) {
             MOD_PURPOSE_COMMUNICATION,
             MOD_PURPOSE_CONTENT,
             MOD_PURPOSE_INTERACTIVECONTENT];
-    // Add MOD_PURPOSE_INTERFACE only if it exists (removed in Moodle 5.2+).
-    if (defined('MOD_PURPOSE_INTERFACE')) {
-        $purposes[] = MOD_PURPOSE_INTERFACE;
-    }
     // Add MOD_PURPOSE_OTHER if requested.
     if ($includeother) {
         $purposes[] = MOD_PURPOSE_OTHER;
@@ -446,10 +442,12 @@ function theme_boost_union_get_staticpage_link($page) {
  */
 function theme_boost_union_get_staticpage_pagetitle($page) {
     // Get the configured page title.
-    $pagetitleconfig = format_string(
-        get_config('theme_boost_union', $page . 'pagetitle'),
-        true,
-        ['context' => \context_system::instance()]
+    $pagetitleconfig = clean_string(
+        format_string(
+            get_config('theme_boost_union', $page . 'pagetitle'),
+            true,
+            ['context' => \context_system::instance()]
+        )
     );
 
     // If there is a string configured.
@@ -757,12 +755,15 @@ function theme_boost_union_get_loginbackgroundimage_files() {
         $fs = get_file_storage();
 
         // Get all files from filearea.
+        // The files are sorted by itemid, filepath and filename. As all files in this filearea share the same itemid,
+        // sorting by itemid alone would result in an undefined order which could differ between database queries
+        // and which would break the mapping between the image classes, the image files and the image texts.
         $files = $fs->get_area_files(
             $systemcontext->id,
             'theme_boost_union',
             'loginbackgroundimage',
             false,
-            'itemid',
+            'itemid, filepath, filename',
             false
         );
     }
@@ -814,15 +815,18 @@ function theme_boost_union_get_urloftilebackgroundimage($tileno) {
         // Just pick the first file - we are sure that there is just one file.
         $file = reset($files);
 
-        // Build and return the image URL.
-        return core\url::make_pluginfile_url(
-            $file->get_contextid(),
-            $file->get_component(),
-            $file->get_filearea(),
-            $file->get_itemid(),
-            $file->get_filepath(),
-            $file->get_filename()
-        );
+        // If a file was found.
+        if ($file) {
+            // Build and return the image URL.
+            return core\url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
+        }
     }
 
     // As no image was found, return null.
@@ -872,15 +876,18 @@ function theme_boost_union_get_urlofslidebackgroundimage($slideno) {
         // Just pick the first file - we are sure that there is just one file.
         $file = reset($files);
 
-        // Build and return the image URL.
-        return core\url::make_pluginfile_url(
-            $file->get_contextid(),
-            $file->get_component(),
-            $file->get_filearea(),
-            $file->get_itemid(),
-            $file->get_filepath(),
-            $file->get_filename()
-        );
+        // If a file was found.
+        if ($file) {
+            // Build and return the image URL.
+            return core\url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
+        }
     }
 
     // As no image was found, return null.
@@ -944,6 +951,9 @@ function theme_boost_union_get_loginbackgroundimage_scss() {
     // Get all files from filearea.
     $files = theme_boost_union_get_loginbackgroundimage_files();
 
+    // Get the login page arrangement setting to generate only the necessary CSS.
+    $loginarrangement = get_config('theme_boost_union', 'loginarrangement');
+
     // Add URL of uploaded images to equivalent class.
     foreach ($files as $file) {
         $count++;
@@ -956,10 +966,24 @@ function theme_boost_union_get_loginbackgroundimage_scss() {
             $file->get_filepath(),
             $file->get_filename()
         );
-        // Add this url to the body class loginbackgroundimage[n] as a background image.
-        $scss .= 'body.pagelayout-login.loginbackgroundimage' . $count . ' {';
-        $scss .= 'background-image: url("' . $url . '");';
-        $scss .= '}';
+        // Differentiate between side-by-side and legacy layout.
+        switch ($loginarrangement) {
+            case THEME_BOOST_UNION_SETTING_LOGINARRANGEMENT_LEGACY:
+                // Legacy arrangement:
+                // Set the background image on the body element.
+                $scss .= 'body.pagelayout-login.loginbackgroundimage' . $count . ' {';
+                $scss .= 'background-image: url("' . $url . '");';
+                $scss .= '}';
+                break;
+
+            default:
+                // Side-by-side arrangement:
+                // Set the background image on the left (decorative) panel.
+                $scss .= 'body.pagelayout-login.loginbackgroundimage' . $count . ' #page .login-layout-left {';
+                $scss .= 'background-image: url("' . $url . '");';
+                $scss .= '}';
+                break;
+        }
     }
 
     return $scss;
@@ -1014,14 +1038,14 @@ function theme_boost_union_get_loginbackgroundimage_text() {
         $systemcontext = \context_system::instance();
 
         // Fetch only the single file record at position $number using the same ordering as
-        // theme_boost_union_get_loginbackgroundimage_files() (i.e., sorted by itemid).
+        // theme_boost_union_get_loginbackgroundimage_files() (i.e., sorted by itemid, filepath and filename).
         $sql = "SELECT f.filename
                   FROM {files} f
                  WHERE f.contextid = :contextid
                        AND f.component = :component
                        AND f.filearea = :filearea
                        AND f.filename != :dot
-                 ORDER BY f.itemid";
+                 ORDER BY f.itemid, f.filepath, f.filename";
         $params = [
             'contextid' => $systemcontext->id,
             'component' => 'theme_boost_union',
@@ -1863,6 +1887,10 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
     // Get installed activity modules.
     $installedactivities = get_module_types_names();
 
+    // Get the activity purposes which are supported by Boost Union (including the 'other' purpose as an activity can be
+    // configured to be not branded at all).
+    $supportedpurposes = theme_boost_union_get_activity_purposes(true);
+
     // Iterate over all existing activities.
     foreach ($installedactivities as $modname => $modinfo) {
         // Get default purpose of activity module.
@@ -1874,21 +1902,17 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
             $defaultpurpose = MOD_PURPOSE_OTHER;
         }
 
-        // Compose selectors for blocks.
-        $blocksscss = [];
-        // If the admin wanted us to tint the timeline block as well.
-        if (get_config('theme_boost_union', 'timelinetintenabled') == THEME_BOOST_UNION_SETTING_SELECT_YES) {
-            $blocksscss[] = '.block_timeline .theme-boost-union-mod_' . $modname . '.activityiconcontainer img';
-        }
-        // If the admin wanted us to tint the upcoming events block as well.
-        if (get_config('theme_boost_union', 'upcomingeventstintenabled') == THEME_BOOST_UNION_SETTING_SELECT_YES) {
-            $blocksscss[] = '.block_calendar_upcoming .theme-boost-union-mod_' . $modname . '.activityiconcontainer img';
-        }
-        $blocksscss = implode(', ', $blocksscss);
-
         // If the activity purpose setting is set and differs from the activity's default purpose.
         $activitypurpose = get_config('theme_boost_union', 'activitypurpose' . $modname);
         if ($activitypurpose && $activitypurpose != $defaultpurpose) {
+            // If the configured purpose is not supported (anymore) by Boost Union, we must not compose any SCSS code for it.
+            // Otherwise, the $activity-icon-colors SCSS map would not hold a color for this purpose and the recolor-icon-important
+            // mixin would be called with a null color which would break the whole SCSS compilation.
+            if (!in_array($activitypurpose, $supportedpurposes)) {
+                // Skip this activity.
+                continue;
+            }
+
             // Add CSS to modify the activity purpose color in the activity chooser and the activity icon.
             $scss .= '.activity.modtype_' . $modname . ' .activityiconcontainer.courseicon img,';
             // If the activity is mod_lti, we have to check the whole class name for the activity chooser as Moodle
@@ -1900,11 +1924,7 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
             }
             $scss .= '#page-header .modicon_' . $modname . '.activityiconcontainer img,';
             $scss .= '#page-course-overview #' . $modname . '_overview_title .activityiconcontainer img';
-            // Add CSS for the configured blocks.
-            if (strlen($blocksscss) > 0) {
-                $scss .= ', ' . $blocksscss;
-            }
-            $scss .= ' {';
+            $scss .= '{';
             // If the purpose is now different than 'other', change the filter to the new color (and force it with important).
             if ($activitypurpose != MOD_PURPOSE_OTHER) {
                 $scss .= '@include recolor-icon-important(map-get($activity-icon-colors, "' . $activitypurpose . '"), 1);';
@@ -1914,20 +1934,6 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
                 $scss .= 'filter: none !important;';
             }
             $scss .= '}';
-
-            // Otherwise, if the purpose is unchanged.
-        } else {
-            // Add CSS for the configured blocks.
-            if (strlen($blocksscss) > 0) {
-                $scss .= $blocksscss . '{ ';
-
-                // If the purpose is now different than 'other', set the filter to tint the icon.
-                if ($activitypurpose != MOD_PURPOSE_OTHER) {
-                    $scss .= '@include recolor-icon-important(map-get($activity-icon-colors, "' . $defaultpurpose . '"), 1);';
-                }
-
-                $scss .= '}';
-            }
         }
     }
     return $scss;
@@ -2193,6 +2199,19 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
 
     // Set styles based on the navbartint setting (only effective for colored navbar variants).
     $navbarcolorsetting = get_config('theme_boost_union', 'navbarcolor');
+
+    // If we are on MWP.
+    if (\theme_boost_union\local\mwp::extension_present() == true) {
+        // Call the BU MWP class method only if the class and method exist.
+        if (
+            class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_navbarcolor')
+        ) {
+            // Get the potentially branding-overridden value for navbarcolor.
+            $navbarcolorsetting = \local_boost_union_mwp\local\branding::get_overridden_navbarcolor($navbarcolorsetting);
+        }
+    }
+
     // If a flavour applies.
     if ($flavourid != null) {
         $navbarcolorflavour = theme_boost_union_get_flavour_config_item_for_flavourid($flavourid, 'look_navbarcolor');
@@ -2206,6 +2225,19 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
     ) {
         // Resolve the effective tint: flavour overrides global setting.
         $navbartintsetting = get_config('theme_boost_union', 'navbartint');
+
+        // If we are on MWP.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                    method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_navbartint')
+            ) {
+                // Get the potentially branding-overridden value for navbartint.
+                $navbartintsetting = \local_boost_union_mwp\local\branding::get_overridden_navbartint($navbartintsetting);
+            }
+        }
+
         // If a flavour applies.
         if ($flavourid != null) {
             $navbartintflavour = theme_boost_union_get_flavour_config_item_for_flavourid($flavourid, 'look_navbartint');
@@ -2218,9 +2250,12 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
             $navbartintsetting = get_config('theme_boost_union', 'brandcolor');
         }
         // If a color is now available (either tint or brand color), override the navbar background.
+        // The color is set into the --bu-navbar-bg custom property as well which the elements that have to match the
+        // navbar background (e.g. the expanded search form) consume in scss/boost_union/post.scss.
         if (!empty($navbartintsetting)) {
             $scss .= '.navbar.bg-primary {
-                background-color: ' . $navbartintsetting . ' !important;
+                --bu-navbar-bg: ' . $navbartintsetting . ';
+                background-color: var(--bu-navbar-bg) !important;
             }' . PHP_EOL;
         }
     }
@@ -2317,8 +2352,14 @@ function theme_boost_union_touchicons_for_ios_checkin() {
     // Create cache for touch icon files.
     $cache = cache::make('theme_boost_union', 'touchiconsios');
 
-    // Purge the existing cache values as we will refill the cache now.
-    $cache->purge();
+    // Note:
+    // We deliberately do not purge the cache here before refilling it.
+    // This function always rewrites the complete set of cache values ('filelist' and 'checkedin') with $cache->set()
+    // further down, and these are the only keys which this cache ever holds. A purge is therefore redundant.
+    // What's more, purging here is actively harmful when the cache is backed by a file store with asynchronous
+    // deletion enabled: purge() would only queue a deletion task for cron which, when it eventually runs, wipes the
+    // whole store - including the values which were set() right after the purge. This leaves the cache empty again,
+    // triggers the on-the-fly refill on the next page load and thus creates an endless purge / refill loop.
 
     // Get list of possible touch icons for iOS.
     $touchiconsios = theme_boost_union_get_touchicons_for_ios();
@@ -2554,7 +2595,7 @@ function theme_boost_union_get_navbar_starredcoursespopover() {
         if ($course->visible || $canviewhiddencourses) {
             $coursesfortemplate[] = [
                 'url' => new \core\url('/course/view.php', ['id' => $course->id]),
-                'fullname' => $course->fullname,
+                'fullname' => clean_string(format_string($course->fullname, true, ['context' => $context])),
                 'visible' => $course->visible == 1,
             ];
         }
@@ -2994,11 +3035,9 @@ function theme_boost_union_is_not_active_alert() {
         get_string('warningboostunioninactive', 'theme_boost_union', [
             'url' => $notificationurl->out(),
         ]),
-        core\output\notification::NOTIFY_WARNING
+        core\output\notification::NOTIFY_WARNING,
+        false
     );
-
-    // Do not show a close button.
-    $notification->set_show_closebutton(false);
 
     // Return the HTML for the alert.
     return $OUTPUT->render($notification);
@@ -3032,11 +3071,9 @@ function theme_boost_union_recommendations_alert() {
             'theme_boost_union',
             ['url' => $notificationurl->out()]
         ),
-        core\output\notification::NOTIFY_INFO
+        core\output\notification::NOTIFY_INFO,
+        false
     );
-
-    // Do not show a close button.
-    $notification->set_show_closebutton(false);
 
     // Return the HTML for the alert.
     return $OUTPUT->render($notification);
@@ -3171,14 +3208,71 @@ function theme_boost_union_build_fa_icon_map() {
  * Helper function to build a notification about possible setting overrides.
  *
  * @param int $mwp If 0, the notification will make clear that the setting override is relevant for Moodle LMS only.
+ *                 If 1, the notification will make clear that the setting override is relevant for MWP as well.
+ *                 If 2, the notification will make clear that the setting override is relevant for MWP only.
  * @param bool $supplement If yes, the 'supplement' version of the string is used instead of the 'override' version.
  * @return string The HTML for the notification.
  */
 function theme_boost_union_render_setting_override_notification(int $mwp = 0, bool $supplement = false): string {
     global $OUTPUT, $PAGE;
 
+    // If we are on MWP.
+    if (\theme_boost_union\local\mwp::extension_present() == true) {
+        $ismwpinstance = true;
+
+        // Otherwise.
+    } else {
+        $ismwpinstance = false;
+    }
+
+    // Early return for mode 2 on Moodle LMS.
+    if ($mwp == 2 && !$ismwpinstance) {
+        return '';
+    }
+
     // Determine language string and URL placeholders based on mwp mode.
     switch ($mwp) {
+        case 2:
+            // Pick the notification details for MWP.
+            if ($supplement) {
+                $langstring = get_string('settingsupplementmwp', 'theme_boost_union');
+            } else {
+                $langstring = get_string('settingoverridemwp', 'theme_boost_union');
+            }
+
+            // Pick the modal details for MWP.
+            $modaltitle = get_string('settingoverridenotificationtitle', 'theme_boost_union');
+            $modalbody = get_string('settingoverridemodalmwp', 'theme_boost_union');
+
+            // Flag the possible actions.
+            $flavoursaction = false;
+            $mwpaction = true;
+
+            break;
+        case 1:
+            // If we are on MWP.
+            if ($ismwpinstance) {
+                // Pick the notification details for MWP.
+                if ($supplement) {
+                    $langstring = get_string('settingsupplementlmsmwp', 'theme_boost_union');
+                } else {
+                    $langstring = get_string('settingoverridelmsmwp', 'theme_boost_union');
+                }
+
+                // Pick the modal details for MWP.
+                $modaltitle = get_string('settingoverridenotificationtitle', 'theme_boost_union');
+                $modalbody = get_string('settingoverridemodallms', 'theme_boost_union');
+                $modalbody .= '<br /><br />' . get_string('settingoverridemodalmwp', 'theme_boost_union');
+                $modalbody .= '<br /><br />' . get_string('settingoverridemodallmsmwp', 'theme_boost_union');
+
+                // Flag the possible actions.
+                $flavoursaction = true;
+                $mwpaction = true;
+
+                break;
+            }
+
+            // If we are on Moodle LMS, fall through to the next case.
         case 0:
         default:
             // Pick the notification details for Moodle LMS.
@@ -3194,6 +3288,7 @@ function theme_boost_union_render_setting_override_notification(int $mwp = 0, bo
 
             // Flag the possible actions.
             $flavoursaction = true;
+            $mwpaction = false;
 
             break;
     }
@@ -3230,6 +3325,23 @@ function theme_boost_union_render_setting_override_notification(int $mwp = 0, bo
                 'class' => 'action-flavours py-0 ms-0 me-0 pe-0',
                 'title' => get_string('settingoverrideactionflavours', 'theme_boost_union'),
                 'aria-label' => get_string('settingoverrideactionflavours', 'theme_boost_union'),
+            ],
+        ];
+    }
+
+    // Action for MWP.
+    if ($mwpaction == true) {
+        $actions[] = [
+            'url' => new \core\url('/admin/tool/tenant/index.php'),
+            'icon' => new \core\output\pix_icon(
+                'tenants',
+                get_string('settingoverrideactionmwp', 'theme_boost_union'),
+                'theme_boost_union'
+            ),
+            'attributes' => [
+                'class' => 'action-mwp py-0 ms-0 me-0 pe-0 ps-2',
+                'title' => get_string('settingoverrideactionmwp', 'theme_boost_union'),
+                'aria-label' => get_string('settingoverrideactionmwp', 'theme_boost_union'),
             ],
         ];
     }

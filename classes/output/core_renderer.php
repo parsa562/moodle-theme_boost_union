@@ -38,6 +38,27 @@ use core_block\output\block_contents;
 use theme_boost_union\coursesettings;
 use theme_boost_union\util\course;
 
+defined('MOODLE_INTERNAL') || die();
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+
+// Define an intermediate parent class depending on whether the MWP extension is present or not.
+// This is necessary because PHP does not allow a conditional expression in the 'extends' clause.
+//
+// If the MWP extension is present, the intermediate class is defined in local_boost_union_mwp
+// (so that all MWP-specific renderer logic lives there). Otherwise, a plain fallback class is defined here.
+if (\theme_boost_union\local\mwp::extension_present() == true) {
+    // Load the intermediate class from local_boost_union_mwp.
+    // The file declares the same namespace (theme_boost_union\output) so no aliasing is needed.
+    require_once($CFG->dirroot . '/local/boost_union_mwp/classes/output/core_renderer_intermediate.php');
+} else {
+    /**
+     * Intermediate core renderer class based on theme_boost.
+     */
+    class core_renderer_intermediate extends \theme_boost\output\core_renderer {
+    }
+}
+
 /**
  * Extending the core_renderer interface.
  *
@@ -45,7 +66,7 @@ use theme_boost_union\util\course;
  * @copyright  2022 Alexander Bias, lern.link GmbH <alexander.bias@lernlink.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class core_renderer extends \theme_boost\output\core_renderer {
+class core_renderer extends core_renderer_intermediate {
     /**
      * Returns the moodle_url for the favicon.
      *
@@ -61,18 +82,18 @@ class core_renderer extends \theme_boost\output\core_renderer {
     public function favicon() {
         global $CFG;
 
-        // Initialize static variable for the flavour favicon as this function might be called (for whatever reason) multiple times
-        // during a page output.
-        static $hasflavourfavicon, $flavourfaviconurl;
+        // Initialize static variable for the overridden favicon as this function might be called (for whatever reason)
+        // multiple times during a page output.
+        static $hasoverriddenfavicon, $overriddenfaviconurl;
 
-        // If the flavour favicon has already been checked.
-        if ($hasflavourfavicon != null) {
-            // If there is a flavour favicon.
-            if ($hasflavourfavicon == true) {
-                // Directly return the flavour favicon.
-                return $flavourfaviconurl;
+        // If the overridden favicon has already been checked.
+        if ($hasoverriddenfavicon != null) {
+            // If there is an overridden favicon.
+            if ($hasoverriddenfavicon == true) {
+                // Directly return the overridden favicon.
+                return $overriddenfaviconurl;
             }
-            // Otherwise, if there isn't a flavour favicon, this function will continue to run the logic from Moodle core later.
+            // Otherwise, if there isn't an overridden favicon, this function will continue to run the logic from Moodle core later.
 
             // Otherwise.
         } else {
@@ -85,10 +106,10 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 // If the flavour has a favicon set.
                 if ($flavour->look_favicon != null) {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourfavicon = true;
+                    $hasoverriddenfavicon = true;
 
                     // Compose the URL to the flavour's favicon.
-                    $flavourfaviconurl = \core\url::make_pluginfile_url(
+                    $overriddenfaviconurl = \core\url::make_pluginfile_url(
                         context_system::instance()->id,
                         'theme_boost_union',
                         'flavours_look_favicon',
@@ -99,17 +120,34 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     );
 
                     // Return the URL.
-                    return $flavourfaviconurl;
+                    return $overriddenfaviconurl;
 
                     // Otherwise.
                 } else {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourfavicon = false;
+                    $hasoverriddenfavicon = false;
                 }
             }
         }
 
-        // Apparently, there isn't any flavour favicon set. Let's continue with the logic to serve the general favicon.
+        // If we are on MWP.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                    method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_image')
+            ) {
+                // Check if there is a branding favicon set for the current tenant and, if yes,
+                // remember this fact and return it.
+                [$hasoverriddenfavicon, $overriddenfaviconurl] =
+                    \local_boost_union_mwp\local\branding::get_overridden_image('favicon');
+                if ($hasoverriddenfavicon == true) {
+                    return $overriddenfaviconurl;
+                }
+            }
+        }
+
+        // Apparently, there isn't any overridden favicon set. Let's continue with the logic to serve the general favicon.
         $logo = null;
         if (!during_initial_install()) {
             $logo = get_config('theme_boost_union', 'favicon');
@@ -144,18 +182,18 @@ class core_renderer extends \theme_boost\output\core_renderer {
     public function get_logo_url($maxwidth = null, $maxheight = 200) {
         global $CFG;
 
-        // Initialize static variable for the flavour logo as this function might be called (for whatever reason) multiple times
-        // during a page output.
-        static $hasflavourlogo, $flavourlogourl;
+        // Initialize static variable for the overridden logo as this function might be called (for whatever reason)
+        // multiple times during a page output.
+        static $hasoverriddenlogo, $overriddenlogourl;
 
-        // If the flavour logo has already been checked.
-        if ($hasflavourlogo != null) {
-            // If there is a flavour logo.
-            if ($hasflavourlogo == true) {
-                // Directly return the flavour logo.
-                return $flavourlogourl;
+        // If the overridden logo has already been checked.
+        if ($hasoverriddenlogo != null) {
+            // If there is an overridden logo.
+            if ($hasoverriddenlogo == true) {
+                // Directly return the overridden logo.
+                return $overriddenlogourl;
             }
-            // Otherwise, if there isn't a flavour logo, this function will continue to run the logic from Moodle core later.
+            // Otherwise, if there isn't an overridden logo, this function will continue to run the logic from Moodle core later.
 
             // Otherwise.
         } else {
@@ -168,10 +206,10 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 // If the flavour has a logo set.
                 if ($flavour->look_logo != null) {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourlogo = true;
+                    $hasoverriddenlogo = true;
 
                     // Compose the URL to the flavour's logo.
-                    $flavourlogourl = \core\url::make_pluginfile_url(
+                    $overriddenlogourl = \core\url::make_pluginfile_url(
                         context_system::instance()->id,
                         'theme_boost_union',
                         'flavours_look_logo',
@@ -181,17 +219,34 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     );
 
                     // Return the URL.
-                    return $flavourlogourl;
+                    return $overriddenlogourl;
 
                     // Otherwise.
                 } else {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourlogo = false;
+                    $hasoverriddenlogo = false;
                 }
             }
         }
 
-        // Apparently, there isn't any flavour logo set. Let's continue to serve the general logo.
+        // If we are on MWP.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                    method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_image')
+            ) {
+                // Check if there is a branding login logo set for the current tenant and, if yes,
+                // remember this fact and return it.
+                [$hasoverriddenlogo, $overriddenlogourl] =
+                    \local_boost_union_mwp\local\branding::get_overridden_image('loginlogo');
+                if ($hasoverriddenlogo == true) {
+                    return $overriddenlogourl;
+                }
+            }
+        }
+
+        // Apparently, there isn't any overridden logo set. Let's continue to serve the general logo.
         $logo = get_config('theme_boost_union', 'logo');
         if (empty($logo)) {
             return false;
@@ -241,18 +296,18 @@ class core_renderer extends \theme_boost\output\core_renderer {
     public function get_compact_logo_url($maxwidth = 300, $maxheight = 300) {
         global $CFG;
 
-        // Initialize static variable for the flavour logo as this function is called (for whatever reason) multiple times
-        // during a page output.
-        static $hasflavourlogo, $flavourlogourl;
+        // Initialize static variable for the overridden logo as this function is called (for whatever reason)
+        // multiple times during a page output.
+        static $hasoverriddenlogo, $overriddenlogourl;
 
-        // If the flavour logo has already been checked.
-        if ($hasflavourlogo != null) {
-            // If there is a flavour logo.
-            if ($hasflavourlogo == true) {
-                // Directly return the flavour logo.
-                return $flavourlogourl;
+        // If the overridden logo has already been checked.
+        if ($hasoverriddenlogo != null) {
+            // If there is an overridden logo.
+            if ($hasoverriddenlogo == true) {
+                // Directly return the overridden logo.
+                return $overriddenlogourl;
             }
-            // Otherwise, if there isn't a flavour logo, this function will continue to run the logic from Moodle core later.
+            // Otherwise, if there isn't an overridden logo, this function will continue to run the logic from Moodle core later.
 
             // Otherwise.
         } else {
@@ -265,7 +320,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 // If the flavour has a compact logo set.
                 if ($flavour->look_logocompact != null) {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourlogo = true;
+                    $hasoverriddenlogo = true;
 
                     // If the flavour logo is a SVG image, do not add a size to the path.
                     $flavourlogoextension = pathinfo($flavour->look_logocompact, PATHINFO_EXTENSION);
@@ -283,7 +338,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     }
 
                     // Compose the URL to the flavour's compact logo.
-                    $flavourlogourl = \core\url::make_pluginfile_url(
+                    $overriddenlogourl = \core\url::make_pluginfile_url(
                         context_system::instance()->id,
                         'theme_boost_union',
                         'flavours_look_logocompact',
@@ -293,17 +348,34 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     );
 
                     // Return the URL.
-                    return $flavourlogourl;
+                    return $overriddenlogourl;
 
                     // Otherwise.
                 } else {
                     // Remember this fact for subsequent runs of this function.
-                    $hasflavourlogo = false;
+                    $hasoverriddenlogo = false;
                 }
             }
         }
 
-        // Apparently, there isn't any flavour logo set. Let's continue to service the general compact logo.
+        // If we are on MWP.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                    method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_image')
+            ) {
+                // Check if there is a branding header logo set for the current tenant and, if yes,
+                // remember this fact and return it.
+                [$hasoverriddenlogo, $overriddenlogourl] =
+                    \local_boost_union_mwp\local\branding::get_overridden_image('headerlogo');
+                if ($hasoverriddenlogo == true) {
+                    return $overriddenlogourl;
+                }
+            }
+        }
+
+        // Apparently, there isn't any overridden logo set. Let's continue to service the general compact logo.
         $logo = get_config('theme_boost_union', 'logocompact');
         if (empty($logo)) {
             return false;
@@ -473,6 +545,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
         $header->pageheadingbutton = $this->page_heading_button();
         $header->courseheader = $this->course_header();
         $header->headeractions = $this->page->get_header_actions();
+        $header->headerextras = $this->page->get_header_extras();
 
         // Initialize a marker that course header is not enabled.
         $header->courseheaderenabled = false;
@@ -793,13 +866,6 @@ class core_renderer extends \theme_boost\output\core_renderer {
                         $header->showcourseediticon = false;
                     }
 
-                    // Enable iconsbar, if necessary.
-                    if ($header->showcoursepopup || $header->showcoursecontacts || $header->showcourseediticon) {
-                        $header->showiconsbar = true;
-                    } else {
-                        $header->showiconsbar = false;
-                    }
-
                     // Check if the user can view user details, if necessary.
                     if ($header->showcoursecontacts || $header->showcoursepopup) {
                         $header->canviewuserdetails =
@@ -810,6 +876,21 @@ class core_renderer extends \theme_boost\output\core_renderer {
                     if ($header->showcoursecontacts || $header->showcoursepopup) {
                         $header->contacts = $courseutil->get_course_contacts();
                         $header->hascontacts = (count($header->contacts) > 0);
+                    } else {
+                        $header->hascontacts = false;
+                    }
+
+                    // Enable iconsbar, if necessary.
+                    // The course contacts only count if the course really has contacts. Otherwise, the iconsbar would be
+                    // rendered empty and would just pull the course header image upwards.
+                    if (
+                        $header->showcoursepopup ||
+                            ($header->showcoursecontacts && $header->hascontacts) ||
+                            $header->showcourseediticon
+                    ) {
+                        $header->showiconsbar = true;
+                    } else {
+                        $header->showiconsbar = false;
                     }
 
                     // Amend course shortname, if enabled.
@@ -971,6 +1052,10 @@ class core_renderer extends \theme_boost\output\core_renderer {
             true,
             ['context' => context_course::instance(SITEID), 'escape' => false]
         );
+        $context->hasauthinstructions = !empty($CFG->auth_instructions);
+
+        // Get the login page arrangement setting to differentiate based on this setting if needed.
+        $loginpagearrangement = get_config('theme_boost_union', 'loginpagearrangement');
 
         // Shibboleth internal WAYF: If the Boost Union setting is enabled and if Shibboleth authentication is enabled.
         $context->showshibbolethembeddedwayfcode = false;
@@ -1119,6 +1204,14 @@ class core_renderer extends \theme_boost\output\core_renderer {
             } else {
                 $context->localloginbtnclass = 'btn-' . THEME_BOOST_UNION_SETTING_BUTTONCOLOR_PRIMARYFILLED;
             }
+            // Button size (Bootstrap's medium size does not have an own class and does not need to be added).
+            $loginlocalbuttonsizesetting = get_config('theme_boost_union', 'loginlocalbuttonsize');
+            if (
+                $loginlocalbuttonsizesetting !== false &&
+                    $loginlocalbuttonsizesetting !== THEME_BOOST_UNION_SETTING_BUTTONSIZE_MEDIUM
+            ) {
+                $context->localloginbtnclass .= ' btn-' . $loginlocalbuttonsizesetting;
+            }
         }
 
         // IDP login.
@@ -1155,7 +1248,15 @@ class core_renderer extends \theme_boost\output\core_renderer {
             if ($loginidpbuttoncolorsetting !== false) {
                 $context->idploginbtnclass = 'btn-' . $loginidpbuttoncolorsetting;
             } else {
-                $context->idploginbtnclass = 'btn-' . THEME_BOOST_UNION_SETTING_BUTTONCOLOR_SECONDARYOUTLINE;
+                $context->idploginbtnclass = 'btn-' . THEME_BOOST_UNION_SETTING_BUTTONCOLOR_MOODLELIGHTOUTLINE;
+            }
+            // Button size (Bootstrap's medium size does not have an own class and does not need to be added).
+            $loginidpbuttonsizesetting = get_config('theme_boost_union', 'loginidpbuttonsize');
+            if (
+                $loginidpbuttonsizesetting !== false &&
+                    $loginidpbuttonsizesetting !== THEME_BOOST_UNION_SETTING_BUTTONSIZE_MEDIUM
+            ) {
+                $context->idploginbtnclass .= ' btn-' . $loginidpbuttonsizesetting;
             }
         }
 
@@ -1194,6 +1295,14 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 $context->guestloginbtnclass = 'btn-' . $loginguestbuttoncolorsetting;
             } else {
                 $context->guestloginbtnclass = 'btn-' . THEME_BOOST_UNION_SETTING_BUTTONCOLOR_SECONDARYFILLED;
+            }
+            // Button size (Bootstrap's medium size does not have an own class and does not need to be added).
+            $loginguestbuttonsizesetting = get_config('theme_boost_union', 'loginguestbuttonsize');
+            if (
+                $loginguestbuttonsizesetting !== false &&
+                    $loginguestbuttonsizesetting !== THEME_BOOST_UNION_SETTING_BUTTONSIZE_MEDIUM
+            ) {
+                $context->guestloginbtnclass .= ' btn-' . $loginguestbuttonsizesetting;
             }
         }
 
@@ -1235,6 +1344,14 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 $context->selfregistrationloginbtnclass = 'btn-' . $loginselfregistrationbuttoncolorsetting;
             } else {
                 $context->selfregistrationloginbtnclass = 'btn-' . THEME_BOOST_UNION_SETTING_BUTTONCOLOR_SECONDARYFILLED;
+            }
+            // Button size (Bootstrap's medium size does not have an own class and does not need to be added).
+            $loginselfregistrationbuttonsizesetting = get_config('theme_boost_union', 'loginselfregistrationbuttonsize');
+            if (
+                $loginselfregistrationbuttonsizesetting !== false &&
+                    $loginselfregistrationbuttonsizesetting !== THEME_BOOST_UNION_SETTING_BUTTONSIZE_MEDIUM
+            ) {
+                $context->selfregistrationloginbtnclass .= ' btn-' . $loginselfregistrationbuttonsizesetting;
             }
         }
 
@@ -1471,6 +1588,20 @@ class core_renderer extends \theme_boost\output\core_renderer {
             }
         }
 
+        // Determine divider output for each login method in vertical layout.
+        foreach ($loginmethods as $method) {
+            $dividertypesetting = get_config('theme_boost_union', 'login' . $method->name . 'dividertype');
+            $dividertype = ($dividertypesetting !== false)
+                ? $dividertypesetting
+                : THEME_BOOST_UNION_SETTING_LOGINDIVIDERTYPE_LINE;
+            $method->showdividermargin = (!$method->isfirst &&
+                $dividertype === THEME_BOOST_UNION_SETTING_LOGINDIVIDERTYPE_MARGIN);
+            $method->showdividerline = (!$method->isfirst &&
+                $dividertype === THEME_BOOST_UNION_SETTING_LOGINDIVIDERTYPE_LINE);
+            $method->showdividerlinewithor = (!$method->isfirst &&
+                $dividertype === THEME_BOOST_UNION_SETTING_LOGINDIVIDERTYPE_LINEWITHOR);
+        }
+
         // Add the loginmethods to the template context.
         $context->loginmethods = $loginmethods;
 
@@ -1482,6 +1613,16 @@ class core_renderer extends \theme_boost\output\core_renderer {
         $logininstructionsbelow = get_config('theme_boost_union', 'logininstructionsbelow');
         if (!empty($logininstructionsbelow)) {
             $context->logininstructionsbelow = format_text($logininstructionsbelow, FORMAT_HTML);
+        }
+        // Note: both settings are also read in layout/login.php to render the same content
+        // in the left side panel on large screens (upper and lower part respectively).
+        $logininstructionssideupper = get_config('theme_boost_union', 'logininstructionssideupper');
+        if (!empty($logininstructionssideupper)) {
+            $context->logininstructionssideupper = format_text($logininstructionssideupper, FORMAT_HTML);
+        }
+        $logininstructionssidelower = get_config('theme_boost_union', 'logininstructionssidelower');
+        if (!empty($logininstructionssidelower)) {
+            $context->logininstructionssidelower = format_text($logininstructionssidelower, FORMAT_HTML);
         }
 
         // Add login logo extra classes for alignment and margin bottom.
@@ -1516,41 +1657,27 @@ class core_renderer extends \theme_boost\output\core_renderer {
         // Add login page brand context variables.
         $loginpagebrandsetting = get_config('theme_boost_union', 'loginpagebrand');
         $loginpagebrand = ($loginpagebrandsetting !== false)
-            ? $loginpagebrandsetting : THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOOTHERWISEHEADING;
-        // Special case: logo if uploaded, heading otherwise.
-        if ($loginpagebrand === THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOOTHERWISEHEADING) {
-            if (!empty($url)) {
-                $context->loginbrandshowlogo = true;
-                $context->loginbrandshowheading = false;
-            } else {
-                $context->loginbrandshowlogo = false;
-                $context->loginbrandshowheading = true;
-            }
-            $context->loginbrandshowtagline = false;
-
-            // Handle all other cases based on the setting value and the corresponding show* flags.
-        } else {
-            $loginbrandlogooptionvalues = [
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADING,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOTAGLINE,
-            ];
-            $loginbrandheadingoptionvalues = [
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADING,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADINGTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADING,
-            ];
-            $loginbrandtaglineoptionvalues = [
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADINGTAGLINE,
-                THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_TAGLINE,
-            ];
-            $context->loginbrandshowlogo = in_array($loginpagebrand, $loginbrandlogooptionvalues);
-            $context->loginbrandshowheading = in_array($loginpagebrand, $loginbrandheadingoptionvalues);
-            $context->loginbrandshowtagline = in_array($loginpagebrand, $loginbrandtaglineoptionvalues);
-        }
+            ? $loginpagebrandsetting : THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE;
+        $loginbrandlogooptionvalues = [
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADING,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOTAGLINE,
+        ];
+        $loginbrandheadingoptionvalues = [
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADING,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADINGTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADING,
+        ];
+        $loginbrandtaglineoptionvalues = [
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADINGTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_HEADINGTAGLINE,
+            THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_TAGLINE,
+        ];
+        $context->loginbrandshowlogo = in_array($loginpagebrand, $loginbrandlogooptionvalues);
+        $context->loginbrandshowheading = in_array($loginpagebrand, $loginbrandheadingoptionvalues);
+        $context->loginbrandshowtagline = in_array($loginpagebrand, $loginbrandtaglineoptionvalues);
         // Compute common heading and tagline label assets.
         $showwelcomeback = !empty(get_moodle_cookie()) ||
             (!empty($context->error) && $context->error === get_string('sessionerroruser', 'error'));
@@ -1630,9 +1757,25 @@ class core_renderer extends \theme_boost\output\core_renderer {
             }
         }
 
-        // Add JS if the tabs layout is active and enhanced tabs layout behaviour is enabled.
+        // If we are on MWP.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\layouts') &&
+                    method_exists('\\local_boost_union_mwp\\local\\layouts', 'postprocess_login_templatecontext')
+            ) {
+                // Post-process the templatecontext array.
+                $context = \local_boost_union_mwp\local\layouts::postprocess_login_templatecontext($context);
+            }
+        }
+
+        // Add JS if the side-by-site arrangement is not active, if the tabs layout is active
+        // and enhanced tabs layout behaviour is enabled.
         $loginenhancedtabslayout = get_config('theme_boost_union', 'loginenhancedtabslayout');
-        if ($context->loginlayouttabs && $loginenhancedtabslayout == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        if (
+            $loginpagearrangement != THEME_BOOST_UNION_SETTING_LOGINARRANGEMENT_SIDEBYSIDE &&
+            $context->loginlayouttabs && $loginenhancedtabslayout == THEME_BOOST_UNION_SETTING_SELECT_YES
+        ) {
             $this->page->requires->js_call_amd('theme_boost_union/logintabs', 'init');
         }
 
@@ -1894,20 +2037,32 @@ class core_renderer extends \theme_boost\output\core_renderer {
 
         $output = '';
         if ($this->page->pagelayout !== 'embedded' && !empty($CFG->additionalhtmlfooter)) {
-            // The following code is part of Moodle core from Moodle 5.2 on (MDL-88210 / MDL-85498).
-            // It was backported to Boost Union to allow admins to use that feature already on legacy versions.
+            // Get the setting.
+            $additionalhtmlfooterfilterssetting = get_config('theme_boost_union', 'additionalhtmlfooterfilters');
 
-            // The additional HTML footer content needs to also support JS so it supports things like analytics or other tooling.
-            // It is controlled via config so is considered trusted for this.
-            // We use format_text rather than injecting directly, to support features like multi-lang.
-            $formatoptions = [
-                'trusted' => true,
-                'clean' => false,
-                'context' => $this->page->context,
-                'para' => false,
-                'allowid' => true,
-            ];
-            $output .= "\n" . format_text($CFG->additionalhtmlfooter, FORMAT_HTML, $formatoptions);
+            // If the admin has enabled the processing of the additional HTML footer with the Moodle filters.
+            if (
+                isset($additionalhtmlfooterfilterssetting) &&
+                    $additionalhtmlfooterfilterssetting == THEME_BOOST_UNION_SETTING_SELECT_YES
+            ) {
+                // Process the additional HTML footer with format_text to support features like multi-lang.
+                // This code was removed from Moodle core in MDL-89237, but Boost Union still allows the admin to enable it.
+                // The additional HTML footer content needs to also support JS so it supports things like analytics or other
+                // tooling. It is controlled via config so is considered trusted for this.
+                $formatoptions = [
+                    'trusted' => true,
+                    'clean' => false,
+                    'context' => $this->page->context,
+                    'para' => false,
+                    'allowid' => true,
+                ];
+                $output .= "\n" . format_text($CFG->additionalhtmlfooter, FORMAT_HTML, $formatoptions);
+
+                // Otherwise.
+            } else {
+                // Add the additional HTML footer as-is, as Moodle core does.
+                $output .= "\n" . $CFG->additionalhtmlfooter;
+            }
         }
         return $output;
     }
@@ -2124,5 +2279,50 @@ class core_renderer extends \theme_boost\output\core_renderer {
         $attributes += $customattribs;
 
         return html_writer::tag('a', $content, $attributes);
+    }
+
+    /**
+     * Returns the telemetry trace id for the current page.
+     *
+     * In Behat runs, this method can return a fake trace id configured in theme settings
+     * if no real OpenTelemetry trace id is available.
+     *
+     * This renderer function is copied and modified from /lib/classes/output/core_renderer.php
+     *
+     * @return string|null
+     */
+    public function telemetry_traceid(): ?string {
+        // If we are running Behat.
+        if (defined('BEHAT_SITE_RUNNING')) {
+            // Fake a trace ID so that we can be sure that an ID exists.
+            // The real OpenTelemetry trace ID is a 32 character hex string, so the fake ID is built in the same format.
+            // The raw bytes of random_bytes() must not be used directly as the trace ID is output unescaped in the
+            // footer template. A raw "<" byte followed by a letter would open a HTML tag which swallows the
+            // "Telemetry trace" link and makes the footer Behat tests fail sporadically.
+            return bin2hex(random_bytes(16));
+        }
+
+        // Otherwise, return the parent function.
+        return parent::telemetry_traceid();
+    }
+
+    /**
+     * Returns standard navigation between activities in a course.
+     *
+     * This renderer function is copied and modified from /lib/classes/output/core_renderer.php
+     *
+     * @return string the navigation HTML.
+     */
+    public function activity_navigation() {
+        // If the activity navigation should be hidden.
+        // Moodle core would show the navigation in course formats which do not use the course index
+        // or on pages with the 'frametop' layout, regardless of the theme.
+        $activitynavigation = get_config('theme_boost_union', 'activitynavigation');
+        if ($activitynavigation == THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_HIDE) {
+            return '';
+        }
+
+        // Otherwise, return the parent function.
+        return parent::activity_navigation();
     }
 }

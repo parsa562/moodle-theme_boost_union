@@ -28,9 +28,46 @@ defined('MOODLE_INTERNAL') || die();
 // Require flavours library.
 require_once($CFG->dirroot . '/theme/boost_union/flavours/flavourslib.php');
 
+// Add marker to hide the footnote when printing to templatecontext.
+// This is done before any of the early returns below as the footnote container may also be shown by the
+// static pages and accessibility pages includes if they add links to the footnote, even if the footnote text is empty.
+$templatecontext['footnotehideonprint'] =
+        (get_config('theme_boost_union', 'footnotehideonprint') == THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+// Check if the footnote should be shown on this page layout.
+// If no layout is selected, the footnote will not be shown on any layout.
+$footnotelayoutssetting = get_config('theme_boost_union', 'footnotelayouts');
+if (empty($footnotelayoutssetting)) {
+    return;
+}
+// The setting contains a comma separated list of layouts, so we need to split it into an array.
+$footnotelayoutsarray = explode(',', $footnotelayoutssetting);
+// As a fallback, also show the footnote if the active layout file is columns2.php.
+// columns2.php is a legacy layout file which is no longer registered in $THEME->layouts
+// but may still be used by legacy plugins, so $PAGE->pagelayout would never match it
+// in the configured list above.
+$currentlayoutfile = $PAGE->theme->layouts[$PAGE->pagelayout]['file'] ?? '';
+$iscolumns2fallback = ($currentlayoutfile === 'columns2.php');
+// If the current page layout is not in the list of layouts, the footnote will not be shown on this page.
+if (!in_array($PAGE->pagelayout, $footnotelayoutsarray) && !$iscolumns2fallback) {
+    return;
+}
+
 // Get footnote setting.
 $footnotesetting = get_config('theme_boost_union', 'footnote');
 $format = FORMAT_HTML;
+
+// If we are on MWP.
+if (\theme_boost_union\local\mwp::extension_present() == true) {
+    // Call the BU MWP class method only if the class and method exist.
+    if (
+        class_exists('\\local_boost_union_mwp\\local\\branding') &&
+            method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_footertext')
+    ) {
+        // Get the potentially branding-overridden footnote.
+        $footnotesetting = \local_boost_union_mwp\local\branding::get_overridden_footertext($footnotesetting);
+    }
+}
 
 // If any flavour applies to this page and defines a non-empty footnote.
 $flavour = theme_boost_union_get_flavour_which_applies();

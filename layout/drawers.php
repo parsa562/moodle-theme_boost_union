@@ -50,9 +50,13 @@ require_once($CFG->dirroot . '/course/lib.php');
 // Require own locallib.php.
 require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
 
-// Add activity navigation if the feature is enabled.
+// Add activity navigation if the feature is set to 'Show'.
+// Moodle core shows the activity navigation (and the section navigation) as soon as the theme does not use the course index.
+// If the feature is set to 'No change', nothing is done here and Moodle core decides about the activity navigation.
+// If the feature is set to 'Hide', nothing is done here either, but the activity navigation is suppressed
+// in the activity_navigation() function of Boost Union's core_renderer.
 $activitynavigation = get_config('theme_boost_union', 'activitynavigation');
-if ($activitynavigation == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+if ($activitynavigation == THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_SHOW) {
     $PAGE->theme->usescourseindex = false;
 }
 
@@ -120,7 +124,13 @@ if ($PAGE->has_secondary_navigation()) {
     $secondarynavigation = $moremenu->export_for_template($OUTPUT);
     $overflowdata = $PAGE->secondarynav->get_overflow_menu_data();
     if (!is_null($overflowdata)) {
-        $overflow = $overflowdata->export_for_template($OUTPUT);
+        $selectmenu = new \core\output\select_menu(
+            'tertiarynavigation',
+            $overflowdata->urls,
+            $overflowdata->selected,
+        );
+        $selectmenu->set_label($overflowdata->label, $overflowdata->labelattributes);
+        $overflow = $selectmenu->export_for_template($OUTPUT);
     }
 }
 
@@ -154,6 +164,9 @@ if ($PAGE->pagetype === 'course-edit') {
 // Include the extra classes for the course index modification.
 require_once(__DIR__ . '/includes/courseindex.php');
 
+// Include the extra classes for the section appearance modification.
+require_once(__DIR__ . '/includes/sectionappearance.php');
+
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
 // If the settings menu will be included in the header then don't add it here.
 $regionmainsettingsmenu = $buildregionmainsettings ? $OUTPUT->region_main_settings_menu() : false;
@@ -164,8 +177,17 @@ $bodyattributes = $OUTPUT->body_attributes($extraclasses); // In the original la
 $header = $PAGE->activityheader;
 $headercontent = $header->export_for_template($renderer);
 
+$coursefullname = $PAGE->course?->fullname ? format_string(
+    $PAGE->course->fullname,
+    true,
+    ['context' => context_course::instance($PAGE->course->id), 'escape' => false],
+) : '';
+$courseurl = $PAGE->course ? new \core\url('/course/view.php', ['id' => $PAGE->course->id]) : null;
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
+    'coursefullname' => $coursefullname,
+    'courseurl' => $courseurl ? $courseurl->out(false) : null,
     'output' => $OUTPUT,
     'sidepreblocks' => $blockshtml,
     'hasblocks' => $hasblocks,
@@ -295,5 +317,22 @@ if ($PAGE->pagelayout == 'frontpage') {
 // Include the template content for the smart menus.
 require_once(__DIR__ . '/includes/smartmenus.php');
 
-// Render drawers.mustache from theme_boost (which is overridden in theme_boost_union).
-echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);
+// If we are on MWP.
+if (\theme_boost_union\local\mwp::extension_present() == true) {
+    // Call the BU MWP class method only if the class and method exist.
+    if (
+        class_exists('\\local_boost_union_mwp\\local\\layouts') &&
+            method_exists('\\local_boost_union_mwp\\local\\layouts', 'postprocess_drawers_templatecontext')
+    ) {
+        // Post-process the templatecontext array.
+        $templatecontext = \local_boost_union_mwp\local\layouts::postprocess_drawers_templatecontext($templatecontext);
+    }
+
+    // Render drawers.mustache from local_boost_union_mwp.
+    echo $OUTPUT->render_from_template('local_boost_union_mwp/drawers', $templatecontext);
+
+    // Otherwise.
+} else {
+    // Render drawers.mustache from theme_boost (which is overridden in theme_boost_union).
+    echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);
+}

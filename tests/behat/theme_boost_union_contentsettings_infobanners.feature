@@ -19,6 +19,10 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
 
   Scenario: Setting: Information banners - Display info banner 1 on all available pages
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemyhome    | 1     |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
       | config             | value                                        | plugin            |
       | infobanner1enabled | yes                                          | theme_boost_union |
       | infobanner1content | "This is a test content"                     | theme_boost_union |
@@ -39,6 +43,9 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
 
   Scenario: Setting: Information banners - Display info banner 1 only on one available page
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemyhome    | 1     |
+    And the following config values are set as admin:
       | config             | value                    | plugin            |
       | infobanner1enabled | yes                      | theme_boost_union |
       | infobanner1content | "This is a test content" | theme_boost_union |
@@ -193,11 +200,6 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
     And I should not see "This is a test content"
     And I log out
     When I log in as "admin"
-    # Navigating to the content settings may fail with an initialization error of the core_sms\manager for unknown reasons.
-    # Purging the caches before navigating to the content area fixed the Behat failure for the same unknown reasons.
-    # We accept this fix as the error seems not to happen in production.
-    # See https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/734 for details
-    And all Boost Union MUC caches are purged
     And I navigate to "Appearance > Boost Union > Content" in site administration
     And I click on "Info banner" "link" in the "#adminsettings .nav-tabs" "css_element"
     And I click on "Reset visibility of info banner 1" "link"
@@ -267,6 +269,10 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
 
   Scenario: Setting: Information banners - Display info banner with position setting on different pages
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemyhome    | 1     |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
       | config              | value                                        | plugin            |
       | infobanner1enabled  | yes                                          | theme_boost_union |
       | infobanner1content  | "Banner above"                               | theme_boost_union |
@@ -356,6 +362,24 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
     And "Above banner 2" "text" should appear before "Below banner 1" "text"
     And "Above banner 2" "text" should appear before "Below banner 2" "text"
 
+  Scenario Outline: Setting: Information banners - Place info banner on login page depending on login arrangement
+    Given the following config values are set as admin:
+      | config             | value              | plugin            |
+      | loginarrangement   | <loginarrangement> | theme_boost_union |
+      | infobanner1enabled | yes                | theme_boost_union |
+      | infobanner1content | "Arrangement test" | theme_boost_union |
+      | infobanner1pages   | login              | theme_boost_union |
+      | infobanner1mode    | perp               | theme_boost_union |
+    When I am on login page
+    Then I should see "Arrangement test" in the "#themeboostunioninfobanner1" "css_element"
+    And the "class" attribute of "body" "css_element" should contain "theme_boost_union-loginarrangement-<loginarrangement>"
+    And "#themeboostunioninfobanner1" "css_element" should appear before "<anchorelementid>" "css_element" in the "<contextselector>" "css_element"
+
+    Examples:
+      | loginarrangement | anchorelementid  | contextselector  |
+      | sidebyside       | div[role='main'] | .login-container |
+      | legacy           | #page-content    | #page            |
+
   Scenario: Setting: Information banners - Display info banner 1 on a time based setting, don't show it yet as the display time is not reached yet.
     Given the following config values are set as admin:
       | config             | value                       | plugin            |
@@ -394,3 +418,57 @@ Feature: Configuring the theme_boost_union plugin for the "Information banners" 
     When I log in as "teacher1"
     And I follow "Dashboard"
     Then I should not see "This is a test content"
+
+  Scenario: Setting: Information banners - Display info banner 1 on a time based setting, setting the start and end time in the settings form
+    Given the following config values are set as admin:
+      | config             | value | plugin            |
+      | infobanner1enabled | yes   | theme_boost_union |
+      | infobanner1mode    | time  | theme_boost_union |
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Content" in site administration
+    And I click on "Info banner" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Info banner 1 start time" to "##yesterday##"
+    And I set the field "Info banner 1 end time" to "##tomorrow##"
+    And I press "Save changes"
+    And I click on "Info banner" "link" in the "#adminsettings .nav-tabs" "css_element"
+    Then the field "Info banner 1 start time" matches value "##yesterday##"
+    And the field "Info banner 1 end time" matches value "##tomorrow##"
+
+  Scenario Outline: Setting: Information banners - Display info banner 1 on a time based setting which was set in the settings form
+    Given the following config values are set as admin:
+      | config             | value                    | plugin            |
+      | infobanner1enabled | yes                      | theme_boost_union |
+      | infobanner1content | "This is a test content" | theme_boost_union |
+      | infobanner1pages   | mydashboard              | theme_boost_union |
+      | infobanner1mode    | time                     | theme_boost_union |
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Content" in site administration
+    And I click on "Info banner" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Info banner 1 start time" to "<start>"
+    And I set the field "Info banner 1 end time" to "<end>"
+    And I press "Save changes"
+    And I log out
+    When I log in as "teacher1"
+    And I follow "Dashboard"
+    Then I <shouldornot> see "This is a test content"
+
+    Examples:
+      | start          | end            | shouldornot |
+      | ##yesterday##  | ##tomorrow##   | should      |
+      | ##tomorrow##   | ##+2 days##    | should not  |
+      | ##-2 days##    | ##yesterday##  | should not  |
+
+  Scenario: Setting: Information banners - Do not accept an end time of info banner 1 which is before its start time in the settings form
+    Given the following config values are set as admin:
+      | config             | value | plugin            |
+      | infobanner1enabled | yes   | theme_boost_union |
+      | infobanner1mode    | time  | theme_boost_union |
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Content" in site administration
+    And I click on "Info banner" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Info banner 1 start time" to "##tomorrow##"
+    And I set the field "Info banner 1 end time" to "##yesterday##"
+    And I press "Save changes"
+    Then I should see "Some settings were not changed due to an error."
+    And I should see "The end time of info banner 1 must not be before its start time." in the "#admin-infobanner1end" "css_element"
+    And the field "Info banner 1 start time" matches value "##tomorrow##"

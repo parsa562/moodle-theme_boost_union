@@ -19,4 +19,6 @@ jobs:
       moodle-core-branch: ${{ inputs.moodle-core-branch || github.event.client_payload.moodle-core-branch }}
       pr-check-diff-does-not-contain: "theme->settings->"
       behat-suite: "boost_union"
-      mustache-continue-on-error: true
+      behat-slices: 4
+      extra-config: |
+        define('THEME_DESIGNER_CACHE_LIFETIME', 0);

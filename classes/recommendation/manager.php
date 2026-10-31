@@ -173,6 +173,7 @@ class manager {
             recommendation::CATEGORY_THIRDPARTY => get_string('recommendationcategory_thirdparty', 'theme_boost_union'),
             recommendation::CATEGORY_USABILITY => get_string('recommendationcategory_usability', 'theme_boost_union'),
             recommendation::CATEGORY_ACCESSIBILITY => get_string('recommendationcategory_accessibility', 'theme_boost_union'),
+            recommendation::CATEGORY_MWP => get_string('recommendationcategory_mwp', 'theme_boost_union'),
         ];
     }
 
@@ -298,6 +299,26 @@ class manager {
 
         // Otherwise, return the actual recommendation status.
         return $recommendation->get_status();
+    }
+
+    /**
+     * Check if a recommendation should be shown in the recommendations list.
+     *
+     * A recommendation is hidden from the list when hide_if_ok() returns true and
+     * its effective status is OK or N/A.
+     *
+     * @param recommendation $recommendation The recommendation to check.
+     * @return bool
+     */
+    public static function recommendation_should_be_shown(recommendation $recommendation): bool {
+        if (
+            $recommendation->hide_if_ok() &&
+                (self::get_effective_status($recommendation) === recommendation::OK ||
+                 self::get_effective_status($recommendation) === recommendation::NA)
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**

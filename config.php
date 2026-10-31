@@ -192,11 +192,33 @@ $THEME->layouts = [
     ]
 ];
 
-$THEME->parents = ['boost'];
+// Actively require the mwp class file.
+// We use require_once() to load the class actively, bypassing Moodle's autoloader and MUC class cache.
+// This avoids a fatal error if the plugin files were updated from a release without MWP support to a release with MWP support,
+// but without purging caches.
+$mwpclassfile = $CFG->dirroot . '/theme/boost_union/classes/local/mwp.php';
+if (file_exists($mwpclassfile)) {
+    require_once($mwpclassfile);
+}
+
+// If we are on MWP and the Workplace theme is present.
+if (
+    class_exists('\theme_boost_union\local\mwp') &&
+        \theme_boost_union\local\mwp::extension_present() == true &&
+        \theme_boost_union\local\mwp::themeworkplace_present() == true
+) {
+    // Set the parent themes to workplace and boost afterwards.
+    $THEME->parents = ['workplace', 'boost'];
+
+    // Otherwise.
+} else {
+    // Set the parent theme to boost only.
+    $THEME->parents = ['boost'];
+}
+
 $THEME->enable_dock = false;
 $THEME->extrascsscallback = 'theme_boost_union_get_extra_scss';
 $THEME->prescsscallback = 'theme_boost_union_get_pre_scss';
-$THEME->precompiledcsscallback = 'theme_boost_union_get_precompiled_css';
 $THEME->yuicssmodules = [];
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->requiredblocks = '';
@@ -204,10 +226,27 @@ $THEME->addblockposition = BLOCK_ADDBLOCK_POSITION_FLATNAV;
 $THEME->iconsystem = \core\output\icon_system::FONTAWESOME;
 $THEME->haseditswitch = true;
 $THEME->usescourseindex = true;
+
 // During the initial installation, we can't access the config table yet, so we set an empty array.
 // Otherwise, we get the hidden primary navigation items from the config.
 $THEME->removedprimarynavitems = during_initial_install() ?
         [] : explode(',', get_config('theme_boost_union', 'hidenodesprimarynavigation'));
+// If we are on MWP.
+if (
+    class_exists('\theme_boost_union\local\mwp') &&
+        \theme_boost_union\local\mwp::extension_present() == true
+) {
+    // Call the BU MWP class method only if the class and method exist.
+    if (
+        class_exists('\\local_boost_union_mwp\\local\\mwp') &&
+            method_exists('\\local_boost_union_mwp\\local\\mwp', 'config_postprocess_removedprimarynavitems')
+    ) {
+        // Post-process the setting.
+        $THEME->removedprimarynavitems =
+                \local_boost_union_mwp\local\mwp::config_postprocess_removedprimarynavitems($THEME->removedprimarynavitems);
+    }
+}
+
 // By default, all boost theme do not need their titles displayed.
 $THEME->activityheaderconfig = [
     'notitle' => true

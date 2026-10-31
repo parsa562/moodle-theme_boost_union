@@ -24,6 +24,7 @@
  * * Include static pages
  * * Include accessibility pages
  * * Include info banners
+ * * Modify the behaviour of the login instructions in the side panel
  *
  * @package   theme_boost_union
  * @copyright 2022 Luca Bösch, BFH Bern University of Applied Sciences luca.boesch@bfh.ch
@@ -33,16 +34,63 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Get the body attributes.
 $bodyattributes = $OUTPUT->body_attributes();
+
+// Get the login page arrangement.
+$loginarrangement = get_config('theme_boost_union', 'loginarrangement');
+
+// If the login page arrangement is legacy.
+if ($loginarrangement == THEME_BOOST_UNION_SETTING_LOGINARRANGEMENT_LEGACY) {
+    // Set the flag for mustache.
+    $usesidebysideloginarrangement = false;
+
+    // We cannot use $PAGE->add_body_class here anymore as the output is already being generated,
+    // so we need to add the class directly to the body attributes.
+    $bodyattributes = preg_replace('/\bclass="([^"]*)"/', 'class="$1 theme_boost_union-loginarrangement-legacy"', $bodyattributes);
+
+    // Compose the login wrapper class.
+    $loginformposition = get_config('theme_boost_union', 'loginformposition');
+    $loginwrapperclass = 'login-wrapper-' . $loginformposition;
+
+    // Otherwise, it should be side by side.
+} else {
+    // Set the flag.
+    $usesidebysideloginarrangement = true;
+
+    // We cannot use $PAGE->add_body_class here anymore as the output is already being generated,
+    // so we need to add the class directly to the body attributes.
+    $bodyattributes =
+            preg_replace('/\bclass="([^"]*)"/', 'class="$1 theme_boost_union-loginarrangement-sidebyside"', $bodyattributes);
+}
+
+// Get the login background image text and color.
 [$loginbackgroundimagetext, $loginbackgroundimagetextcolor] = theme_boost_union_get_loginbackgroundimage_text();
+
+// Left-panel instructions. Use the Boost Union side instructions settings if configured;
+// if empty, nothing is shown in the left panel (no fallback to the Moodle default welcome content).
+// Note: both settings are also read in core_renderer.php::login() to render the same content
+// above/below the login form on small screens (where the left panel is hidden).
+$logininstructionssideupper = get_config('theme_boost_union', 'logininstructionssideupper');
+$leftinstructionsupper = !empty($logininstructionssideupper)
+    ? format_text($logininstructionssideupper, FORMAT_HTML)
+    : null;
+$logininstructionssidelower = get_config('theme_boost_union', 'logininstructionssidelower');
+$leftinstructionslower = !empty($logininstructionssidelower)
+    ? format_text($logininstructionssidelower, FORMAT_HTML)
+    : null;
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
     'bodyattributes' => $bodyattributes,
+    'hasleftinstructions' => !empty($leftinstructionsupper) || !empty($leftinstructionslower),
+    'leftinstructionsupper' => $leftinstructionsupper,
+    'leftinstructionslower' => $leftinstructionslower,
     'loginbackgroundimagetext' => $loginbackgroundimagetext,
     'loginbackgroundimagetextcolor' => $loginbackgroundimagetextcolor,
-    'loginwrapperclass' => 'login-wrapper-' . get_config('theme_boost_union', 'loginformposition'),
+    'usesidebysideloginarrangement' => $usesidebysideloginarrangement,
+    'loginwrapperclass' => (!empty($loginwrapperclass)) ? $loginwrapperclass : '',
     'logincontainerclass' =>
             (get_config('theme_boost_union', 'loginformtransparency') == THEME_BOOST_UNION_SETTING_SELECT_YES) ?
                     'login-container-80t' : '',

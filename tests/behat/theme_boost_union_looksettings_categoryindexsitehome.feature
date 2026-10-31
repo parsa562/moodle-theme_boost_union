@@ -6,6 +6,9 @@ Feature: Configuring the theme_boost_union plugin for the "Category index / site
 
   Background:
     Given the following config values are set as admin:
+      | config       | value |
+      | enablemyhome | 1     |
+    And the following config values are set as admin:
       | config                    | value   |
       | frontpageloggedin         | 2,4,5,6 |
       # We set courseswithsummarieslimit to a really small value as we have just some test courses and want to especially test
@@ -495,7 +498,7 @@ Feature: Configuring the theme_boost_union plugin for the "Category index / site
       | guestloginbutton | 1     |
     And I log in as "admin"
     And I am on the "Course 1" "enrolment methods" page
-    And I click on "Enable" "link" in the "Self enrolment (Student)" "table_row"
+    And I click on "Enable" "link" in the "Self enrolment as 'Student'" "table_row"
     And I click on "Edit" "link" in the "Guest access" "table_row"
     And I set the following fields to these values:
       | Allow guest access | Yes |

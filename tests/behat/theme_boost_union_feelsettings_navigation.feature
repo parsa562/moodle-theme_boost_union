@@ -50,9 +50,12 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Given the following config values are set as admin:
       | config                     | value     | plugin            |
       | hidenodesprimarynavigation | <setting> | theme_boost_union |
-    And I am on login page
-    And I press "Access as a guest"
-    When I am on site homepage
+    And the following config values are set as admin:
+      | config           | value |
+      | enablemyhome     | 1     |
+      | guestloginbutton | 1     |
+    When I log in as "guest"
+    And I am on site homepage
     Then I <shouldornot> see "Calendar" in the ".primary-navigation" "css_element"
 
     Examples:
@@ -122,6 +125,10 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
 
   Scenario Outline: Setting: Show login link as button.
     Given the following config values are set as admin:
+      | config       | value |
+      | enablemyhome | 1     |
+      | forcelogin   | 0     |
+    And the following config values are set as admin:
       | config                 | value     | plugin            |
       | loginlinkbuttonenabled | <setting> | theme_boost_union |
     When I am on site homepage
@@ -133,26 +140,55 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
       | no      | should not  |
 
   @javascript
-  Scenario Outline: Setting: Show starred courses popover in the navbar.
+  Scenario: Setting: Show starred courses popover in the navbar.
+    Given the following "courses" exist:
+      | fullname                                                                                                 | shortname |
+      | <span lang="en" class="multilang">Course</span><span lang="de" class="multilang">Kurs</span> 2 & < ' " > | C2        |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | student1 | C2     | student        |
+    And the following config values are set as admin:
+      | config          | value |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
+      | config                   | value | plugin            |
+      | shownavbarstarredcourses | yes   | theme_boost_union |
+    And the "multilang" filter is "on"
+    And the "multilang" filter applies to "content and headings"
+    And the theme cache is purged and the theme is reloaded
+    When I log in as "student1"
+    And I follow "My courses"
+    And I click on ".coursemenubtn" "css_element" in the "//div[contains(@class, 'card course-card') and contains(.,'Course 2')]" "xpath_element"
+    And I click on "Star this course" "link" in the "//div[contains(@class, 'card course-card') and contains(.,'Course 2')]" "xpath_element"
+    And I reload the page
+    Then "nav.navbar #usernavigation .popover-region-favourites" "css_element" should be visible
+    And I click on "nav.navbar #usernavigation .popover-region-favourites" "css_element"
+    And I should see "Course 2 & < ' \" >" in the "nav.navbar #usernavigation .popover-region-favourites" "css_element"
+    And I hover over the "Course 2" "text" in the "nav.navbar #usernavigation .popover-region-favourites" "css_element"
+    And "Course 2 & < ' \" >" "text" should be visible
+
+  @javascript
+  Scenario: Setting: Do not show starred courses popover in the navbar.
     Given the following config values are set as admin:
-      | config                   | value     | plugin            |
-      | shownavbarstarredcourses | <setting> | theme_boost_union |
+      | config          | value |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
+      | config                   | value | plugin            |
+      | shownavbarstarredcourses | no    | theme_boost_union |
     And the theme cache is purged and the theme is reloaded
     When I log in as "student1"
     And I follow "My courses"
     And I click on ".coursemenubtn" "css_element" in the "//div[contains(@class, 'card course-card') and contains(.,'Course 1')]" "xpath_element"
     And I click on "Star this course" "link" in the "//div[contains(@class, 'card course-card') and contains(.,'Course 1')]" "xpath_element"
     And I reload the page
-    Then "nav.navbar #usernavigation .popover-region-favourites" "css_element" <shouldornot> be visible
-
-    Examples:
-      | setting | shouldornot |
-      | yes     | should      |
-      | no      | should not  |
+    Then "nav.navbar #usernavigation .popover-region-favourites" "css_element" should not be visible
 
   @javascript
   Scenario: Setting: Do not show starred courses popover in the navbar if Boost Union is not the active theme (cross-theme check).
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
       | config                   | value | plugin            |
       | shownavbarstarredcourses | yes   | theme_boost_union |
     And I log in as "admin"
@@ -169,6 +205,9 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
   @javascript
   Scenario: Setting: Show starred courses popover in the navbar (and make sure that I see the right courses there).
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
       | config                   | value | plugin            |
       | shownavbarstarredcourses | yes   | theme_boost_union |
     And the following "courses" exist:
@@ -205,6 +244,9 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
   @javascript
   Scenario Outline: Setting: Starred courses popover cog icon link target
     Given the following config values are set as admin:
+      | config          | value |
+      | enablemycourses | 1     |
+    And the following config values are set as admin:
       | config                   | value     | plugin            |
       | shownavbarstarredcourses | yes       | theme_boost_union |
       | starredcourseslinktarget | <setting> | theme_boost_union |
@@ -307,7 +349,7 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     And page top is not at the top of the viewport
     Then "#back-to-top" "css_element" should be visible
 
-  Scenario: Setting: Activity navigation - Enable "Activity navigation"
+  Scenario: Setting: Activity navigation - Show "Activity navigation" (and verify the navigation links)
     Given the following config values are set as admin:
       | config             | value | plugin            |
       | activitynavigation | yes   | theme_boost_union |
@@ -322,17 +364,32 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Then I should see "Forum 1" in the "#prev-activity-link" "css_element"
     And I should see "Forum 3" in the "#next-activity-link" "css_element"
 
-  Scenario: Setting: Activity navigation - Disable "Activity navigation" (countercheck)
+  Scenario Outline: Setting: Activity navigation - Show, hide or do not change "Activity navigation" in course formats with and without course index
     Given the following config values are set as admin:
-      | config             | value | plugin            |
-      | activitynavigation | no    | theme_boost_union |
+      | config             | value     | plugin            |
+      | activitynavigation | <setting> | theme_boost_union |
+    And the following "courses" exist:
+      | fullname | shortname | format   |
+      | Course 2 | C2        | <format> |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student1 | C2     | student |
     And the following "activities" exist:
-      | activity | name    | course | idnumber |
-      | forum    | Forum 1 | C1     | forum1   |
-      | forum    | Forum 2 | C1     | forum2   |
-      | forum    | Forum 3 | C1     | forum3   |
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I follow "Forum 2"
-    Then "#prev-activity-link" "css_element" should not exist
-    And "#next-activity-link" "css_element" should not exist
+      | activity | name    | course | idnumber | section |
+      | page     | Page 1  | C2     | page1    | 0       |
+      | page     | Page 2  | C2     | page2    | 0       |
+      | page     | Page 3  | C2     | page3    | 0       |
+    When I am on the "Page 2" "page activity" page logged in as "student1"
+    Then "#prev-activity-link" "css_element" <shouldornot> exist
+    And "#next-activity-link" "css_element" <shouldornot> exist
+    And "#jump-to-activity" "css_element" <shouldornot> exist
+
+    # The 'Custom sections' (topics) format uses the course index, the 'Social' format does not.
+    Examples:
+      | format | setting | shouldornot |
+      | topics | no      | should not  |
+      | topics | yes     | should      |
+      | topics | hide    | should not  |
+      | social | no      | should      |
+      | social | yes     | should      |
+      | social | hide    | should not  |

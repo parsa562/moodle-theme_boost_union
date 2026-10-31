@@ -14,6 +14,36 @@
     background: linear-gradient(135deg, $primary 0%, mix($primary, $white, 85%) 100%);
 }
 
+/* Replicate the Moodle Boost default login button style (from .login-identityprovider-btn)
+   for the btn-outline-lightmoodle variant: white background with a light gray border.
+   Replicating the styles is necessary as we cannot re-use the existing class without side-effects here. */
+.btn-outline-lightmoodle {
+    background-color: $white;
+    border-color: $gray-400;
+    color: $gray-600;
+
+    &:hover,
+    &:focus {
+        background-color: $gray-100;
+        border-color: $gray-500;
+        color: $gray-700;
+    }
+}
+
+/* Utility class to let an mform element span the full width of the form by removing its (empty) label column.
+   This is useful for elements which are not associated to a particular form field, e.g. a standalone notification.
+   Add this class to the element in PHP with $element->updateAttributes(['parentclass' => 'theme-boost-union-fullwidth-formelement']). */
+.fitem.theme-boost-union-fullwidth-formelement {
+    > .col-md-3 {
+        display: none;
+    }
+
+    > .col-md-9 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
 
 /*=======================================
  * Settings: Look -> Site branding
@@ -100,9 +130,10 @@
         color: #fff;
     }
 
-    /* Change the color of the login link in the navbar to white. */
+    /* Change the color of the login link in the navbar to white
+       (but not if the login link is shown as button, see the login button rules below). */
     .login,
-    .login a {
+    .login a:not(.btn) {
         color: $white;
     }
 
@@ -206,14 +237,16 @@
         background-color: white;
     }
 
-    /* Change the background color of the search panel in the navbar. */
+    /* Change the background color of the search panel in the navbar.
+       The --bu-navbar-bg custom property holds the navbar tint (see theme_boost_union_get_scss_navbar() in locallib.php),
+       the primary color is used as fallback if no tint is set. */
     #searchform-navbar {
-        background-color: $primary;
+        background-color: var(--bu-navbar-bg, #{$primary});
 
         /* Make sure that the search form input elements are colorized as well. */
         input,
         button {
-            background-color: $primary;
+            background-color: var(--bu-navbar-bg, #{$primary});
             border-color: $white;
             color: $white;
         }
@@ -277,9 +310,11 @@
         border-color: var(--bs-gray-500);
     }
 
-    /* Change the background color of the search panel in the navbar. */
+    /* Change the background color of the search panel in the navbar.
+       The --bu-navbar-bg custom property holds the navbar tint (see theme_boost_union_get_scss_navbar() in locallib.php),
+       the primary color is used as fallback if no tint is set. */
     #searchform-navbar {
-        background-color: $primary;
+        background-color: var(--bu-navbar-bg, #{$primary});
 
         /* Make sure that the search form input element have a real border, even if focused. */
         input:focus {
@@ -287,9 +322,10 @@
         }
     }
 
-    /* Change the color of the login link in the navbar to dark grey and to darker grey when hovered. */
+    /* Change the color of the login link in the navbar to dark grey and to darker grey when hovered
+       (but not if the login link is shown as button, see the login button rules below). */
     .login,
-    .login a {
+    .login a:not(.btn) {
         color: rgba($black, .6);
         &:hover {
             color: rgba($black, .9);
@@ -301,6 +337,13 @@
     .divider {
         border-left: 1px solid rgba($black, .6) !important; /* stylelint-disable-line declaration-no-important */
     }
+}
+
+/* Tweak the login button (if the login link is shown as button) in both primary color navbars.
+   The login button is a primary button and would have the same background color as the navbar otherwise.
+   Show it as light button instead, like the navigation items in the navbar when they are hovered. */
+.navbar.bg-primary .login .btn-primary {
+    @extend .btn-light;
 }
 
 /*=======================================
@@ -345,40 +388,104 @@
  ======================================*/
 
 /*---------------------------------------
- * Setting: Login container position
+ * Setting: Login page arrangement: Legacy
  --------------------------------------*/
 
-/* Move the login window to the side based on the theme settings.
-   While the classes login-wrapper-left and login-wrapper-right are set here,
-   the class login-wrapper-center is not set here as the login form is already centered by Moodle core. */
-.login-wrapper.login-wrapper-left {
-    justify-content: left;
-}
-.login-wrapper.login-wrapper-right {
-    justify-content: right;
+/* Replicate the most important login page styles from before Moodle 5.2. */
+body.theme_boost_union-loginarrangement-legacy {
+    &.pagelayout-login #page {
+        background: $gray-100;
+        @include gradient-x($gray-100, $gray-300, 0%, 100%);
+        div[role="main"] {
+            height: 100%;
+        }
+    }
+
+    .login-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .login-container {
+        background-color: $white;
+        padding: 3rem;
+        box-shadow: $box-shadow;
+        margin-bottom: 2rem;
+        @include border-radius();
+    }
 }
 
+
 /*---------------------------------------
- * Setting: Login container transparency
+ * Setting: Login page divider
+ --------------------------------------*/
+
+/* From Moodle 5.2 on, just the .login-separator is contained in Moodle core, so we have to ship the login-divider ourselves. */
+.login-container .login-divider {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-top: $border-width solid $border-color;
+}
+
+/* Spacer-only divider variant. Equivalent to Bootstrap's my-3 spacing. */
+.login-container .login-margin {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+
+/*---------------------------------------
+ * Setting: Login container position (for the legacy login page arrangement only)
+ --------------------------------------*/
+
+/* On larger screens, move the login window to the side based on the theme settings.
+   While the classes login-wrapper-left, -right, -semileft, -semiright are set here,
+   the class login-wrapper-center is not set here as the login form is already centered by Moodle core. */
+@include media-breakpoint-up(md) {
+    body.theme_boost_union-loginarrangement-legacy {
+        .login-wrapper.login-wrapper-left {
+            justify-content: left;
+            padding-left: 1rem;
+        }
+        .login-wrapper.login-wrapper-right {
+            justify-content: right;
+            padding-right: 1rem;
+        }
+        .login-wrapper.login-wrapper-semileft {
+            justify-content: left;
+            padding-left: 10rem;
+        }
+        .login-wrapper.login-wrapper-semiright {
+            justify-content: right;
+            padding-right: 10rem;
+        }
+    }
+}
+
+
+/*---------------------------------------
+ * Setting: Login container transparency (for the legacy login page arrangement only)
  --------------------------------------*/
 
 /* Make background of login panel slightly transparent. */
-.login-container.login-container-80t {
+body.theme_boost_union-loginarrangement-legacy .login-container.login-container-80t {
     background-color: rgba(255, 255, 255, 0.8);
 }
 
 /*---------------------------------------
- * Setting: Login container width
+ * Setting: Login container width (for the legacy login page arrangement only)
  --------------------------------------*/
 
 /* Override the fixed 500px width from Boost core with the custom width setting. */
 @include media-breakpoint-up(md) {
-    .login-container {
+    body.theme_boost_union-loginarrangement-legacy .login-container {
         width: $bu-logincontainer-width !important; /* stylelint-disable-line declaration-no-important */
     }
 
     /* Allow login-container to expand when tabs need more space. */
-    body.pagelayout-login .login-container:has(#login-layout-tabs) {
+    body.pagelayout-login.theme_boost_union-loginarrangement-legacy .login-container:has(#login-layout-tabs) {
         width: auto !important; /* stylelint-disable-line declaration-no-important */
         min-width: $bu-logincontainer-width;
         max-width: 100%;
@@ -1293,6 +1400,39 @@ body.hascourseindexcmicons {
         span.courseindex-cmicon-container {
             display: block;
         }
+
+        /* Hide the completion info within the activity type icon container.
+           This element just serves as data source for the observer JS if the completion info is shown as icon color
+           and would be shown by Moodle core JS. In all other cases, it is not used at all.
+           Either way, it must not be shown as it would take up space within the activity type icon
+           (Moodle core sets display: inline-flex and min-width: 20px on all .completioninfo elements). */
+        .courseindex-cmicon-icon .completioninfo {
+            display: none;
+        }
+
+        /* Align the completion icons with each other.
+           Moodle core shrinks the icons in the course index with a font-relative rule
+           (.courseindex .icon {font-size: 10px}). This affects the 'complete' and 'fail' completion icons which are
+           rendered as FontAwesome glyphs and which are sized in em (fa-fw is 1.25em, i.e. 12.5px), but it does not
+           affect the 'incomplete' completion icon which is rendered as SVG image and which keeps the absolute size
+           from img.icon (i.e. 20px).
+           On top of that, the FontAwesome glyphs are centered within their box while the SVG image is aligned to the
+           left edge of its box (as the SVG file carries preserveAspectRatio="xMinYMid").
+           The completion icons therefore do not share the same center and the completion icon appears to jump
+           horizontally as soon as an activity is completed. This is especially obvious if the completion info is shown
+           at the end of the line where the icons are right-aligned and both differences add up.
+           We therefore pin all completion icons to the same box and center their content within this box.
+           We deliberately do not rely on the .courseindex-cmicon-cpl-* classes here as Moodle core replaces the whole
+           completion element (and thus these classes) as soon as the completion state changes. */
+        .completioninfo .icon {
+            /* Resize the icons to a common size. */
+            width: $icon-width;
+            max-width: $icon-width;
+            /* Center the FontAwesome glyphs within the box. */
+            text-align: center;
+            /* Center the SVG images within the box. */
+            object-fit: contain;
+        }
     }
 
     /* If the admin configured the completion info to be shown as icon color. */
@@ -1301,18 +1441,6 @@ body.hascourseindexcmicons {
             /* Hide the completion widget at the beginning of the line. */
             .courseindex-cmicon-cpl-sol {
                 display: none;
-            }
-
-            /* And hide the completion info within the activity type icon container.
-               (This element just serves as data source for the observer JS and would be shown by Moodle core JS). */
-            .courseindex-cmicon-icon .completioninfo {
-                display: none;
-            }
-
-            /* And move the section title in the course index slightly to the right to align it vertically with the
-               activity title (which is now slightly more right as well) again. */
-            .courseindex-chevron {
-                padding-right: 12px;
             }
         }
     }
@@ -1323,12 +1451,6 @@ body.hascourseindexcmicons {
             /* Hide the completion widget at the beginning of the line. */
             .courseindex-cmicon-cpl-sol {
                 display: none;
-            }
-
-            /* And move the section title in the course index slightly to the right to align it vertically with the
-               activity title (which is now slightly more right as well) again. */
-            .courseindex-chevron {
-                padding-right: 12px;
             }
         }
     }
@@ -1341,9 +1463,16 @@ body.hascourseindexcmicons {
                 display: none;
             }
 
-            /* And move the activity icon slightly closer to the completion icon. */
             .courseindex-item .completioninfo {
+                /* And move the activity icon slightly closer to the completion icon. */
                 min-width: 20px;
+                /* And move the completion icon (and thus the activity icon and title) slightly to the left to align the
+                   completion icon vertically with the title of the parent section and the activity icon with the title
+                   of a subsection on the same level.
+                   The completion icon is centered within a box of $icon-width (see above) while the section chevron
+                   is a FontAwesome glyph which is sized 1.25em at the course index icon font size of 10px and which is
+                   aligned to the left edge of its box. We thus pull the completion icon by half of the difference. */
+                margin-left: (1.25 * 10px - $icon-width) * .5;
             }
         }
     }
@@ -1381,9 +1510,13 @@ body.hascourseindexcmicons {
         }
 
         /* Gain back the vertical space which was given to the icon by reducing the vertical padding of each courseindex
-           element by 0.1rem. */
+           element by 0.1rem.
+           The left padding is deliberately left untouched as Moodle core uses it to indent the activities below their
+           section and the subsections and their activities below their parent section. */
         .courseindex-item {
-            padding: .45rem 0 .45rem .5rem;
+            padding-top: .45rem;
+            padding-bottom: .45rem;
+            padding-right: 0;
         }
 
         /* Overwrite activity type icon style for dimmed activities. */
@@ -1712,6 +1845,66 @@ body.theme-boost-union-commincourse {
     }
 }
 
+/*---------------------------------------
+ * Setting: Activity & section navigation elements
+ --------------------------------------*/
+
+/* Give the core activity and section navigation a modern look by
+   styling their links like Bootstrap small secondary buttons. Additionally,
+   fix the position of the "next section" arrow which core renders in front of
+   the section name instead of behind it. */
+
+/* Activity navigation (previous / next activity links). */
+.activity-navigation {
+    /* Style the navigation links to look like Bootstrap small buttons. */
+    #prev-activity-link,
+    #next-activity-link {
+        @extend .btn;
+        @extend .btn-secondary;
+        @extend .btn-sm;
+    }
+
+    /* Match the size of the jump-to-activity selector to the small buttons. */
+    #jump-to-activity {
+        @extend .form-select-sm;
+    }
+
+    /* Add a top border to separate the navigation from the activity. */
+    @extend .border-top;
+    @extend .pt-5;
+}
+
+/* Section navigation (previous / next section links). This covers both the
+   navigation shown above the section (.navigationtitle) and the one shown below
+   the section on /course/section.php which also carries a jump-to selector
+   (.mdl-bottom). */
+.section-navigation {
+    /* Style the navigation links to look like Bootstrap small buttons. */
+    .prevsection a,
+    .nextsection a {
+        @extend .btn;
+        @extend .btn-secondary;
+        @extend .btn-sm;
+        display: inline-flex;
+        gap: .25rem;
+    }
+
+    /* Move the "next section" arrow behind the section name (core renders it in front of the text for unknown reasons). */
+    .nextsection .rarrow {
+        order: 1;
+    }
+
+    /* Match the size of the jump-to-section selector to the small buttons. */
+    .jumpmenu {
+        @extend .form-select-sm;
+    }
+
+    /* Add a top padding to the lower section navigation to separate the navigation from the activities. */
+    &:nth-of-type(2) {
+        @extend .pt-5;
+    }
+}
+
 
 /*=======================================
  * Settings: Feel -> Blocks.
@@ -1815,6 +2008,17 @@ body.theme-boost-union-commincourse {
     }
 }
 
+/* Add a right padding to the login link in the navbar if the offcanvas region is enabled.
+   Moodle core adds a left padding to the login link only (with .ps-2 in the core/user_menu template).
+   As long as the login link is the last element in the navbar, this is fine. But as soon as the offcanvas
+   region is enabled, the offcanvas divider and toggle icon follow directly after the login link and the
+   login link would stick to the divider without this padding.
+   A logged-in user's usermenu does not need this treatment as it is rendered as a .btn element which
+   already brings its own horizontal padding. */
+#usernavigation:has(.drawer-offcanvas-toggle) .login {
+    padding-right: map-get($spacers, 2);
+}
+
 
 /*---------------------------------------
  * Settings: Additional block regions - The outside-left and outside-right regions.
@@ -1863,8 +2067,10 @@ body.theme-boost-union-commincourse {
 /* On even larger screens. */
 @include media-breakpoint-up(lg) {
     body.limitedwidth {
-        /* If any block region is enabled, handle the block region placement. */
-        #page.drawers .main-inner-wrapper {
+        /* If any block region is enabled, handle the block region placement
+           (for the main content as well as for the header region wrapper). */
+        #page.drawers .main-inner-wrapper,
+        #page.drawers .theme-block-region-header-wrapper {
             &.main-inner-outside-left-right,
             &.main-inner-outside-left,
             &.main-inner-outside-right {
@@ -1894,13 +2100,16 @@ body.theme-boost-union-commincourse {
             }
         }
 
-        /* And set the width and margin of the outside-left and right regions. */
-        #theme-block-region-outside-left {
+        /* And set the width and margin of the outside-left and right regions
+           (as well as of their spacers next to the header region). */
+        #theme-block-region-outside-left,
+        .theme-block-region-outside-left-spacer {
             margin-right: 1rem;
             margin-top: 1.5rem;
             width: $bu-blockregionoutsideleftwidth;
         }
-        #theme-block-region-outside-right {
+        #theme-block-region-outside-right,
+        .theme-block-region-outside-right-spacer {
             margin-left: 1rem;
             margin-top: 1.5rem;
             width: $bu-blockregionoutsiderightwidth;
@@ -1924,7 +2133,9 @@ body.theme-boost-union-commincourse {
         #page .main-inner-outside-left-right {
             /* Limit the maximum width of the left and right region blocks, so that enough space remains for the main content. */
             #theme-block-region-outside-left,
-            #theme-block-region-outside-right {
+            #theme-block-region-outside-right,
+            .theme-block-region-outside-left-spacer,
+            .theme-block-region-outside-right-spacer {
                 max-width: 200px;
             }
         }
@@ -2107,6 +2318,26 @@ body.limitedwidth .theme-block-region-footer-coursecontentwidth {
 }
 
 /* Block region: Header. */
+
+/* The header region is wrapped into an element (next to spacers for the outside-left and outside-right regions)
+   which inherits all styles of Boost core's main-inner element to be aligned with the main content.
+   We deliberately do not re-use the main-inner class itself in the DOM to not confuse any code which selects this class. */
+.theme-boost-union-header-main-inner {
+    @extend .main-inner;
+}
+/* Remove the spacing which Boost core gives the main-inner element.
+   The second selector is just needed to be more specific than the outside region rules for the main-inner element above. */
+#page.drawers .theme-block-region-header-wrapper .theme-boost-union-header-main-inner,
+body.limitedwidth #page.drawers .theme-block-region-header-wrapper .theme-boost-union-header-main-inner {
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    /* Boost core also gives the main-inner element a white background (and rounded corners) to let the main content
+       stand out from a page background image or color. The header region, however, has always been placed directly
+       on the page background (just like the outside regions). Thus, remove the background again to avoid that the
+       header region is shown in a white box as soon as a page background is configured. */
+    background-color: transparent;
+}
 #theme-block-region-header {
     /* On larger screens. */
     @include media-breakpoint-up(md) {
@@ -2129,7 +2360,7 @@ body.limitedwidth .theme-block-region-footer-coursecontentwidth {
     margin-top: 1rem;
 }
 /* Remove margin-top again if this block region is already preceded by the outside-top region. */
-#theme-block-region-outside-top + #theme-block-region-header {
+#theme-block-region-outside-top + .theme-block-region-header-wrapper #theme-block-region-header {
     margin-top: 0;
 }
 
@@ -2169,6 +2400,55 @@ body.limitedwidth .theme-block-region-footer-coursecontentwidth {
 
 
 /*=======================================
+ * Settings: Feel -> Course.
+ ======================================*/
+
+/*---------------------------------------
+ * Settings: Appearance of section 0 and sections ≥ 1.
+ --------------------------------------*/
+
+/* If section 0 is configured to be hidden entirely on the course main page
+   (and the corresponding body class was added by the theme's layout file),
+   hide it in the course index as well. */
+body.theme-boost-union-hidesectionzero {
+    #courseindex {
+        .courseindex-section[data-number="0"] {
+            display: none;
+        }
+    }
+}
+
+/* If section 0 or sections ≥ 1 are configured to be shown without collapsing on the course main page
+   (and the corresponding body class was added by the theme's layout file).
+   Moodle core renders a subsection (delegated section) as its own section within its parent section and a
+   subsection follows the appearance setting of the section in which it is placed. Thus, the subsections within the
+   affected sections are covered by the following descendant rules as well, while the subsections themselves are
+   excluded from the sections ≥ 1 selector (as they would be matched by it even if they are placed in section 0). */
+body.theme-boost-union-sectionzeronotcollapsible li#section-0,
+body.theme-boost-union-sectiononeplusnotcollapsible li[id^="section-"]:not(#section-0):not(.delegated-section) {
+    /* Hide the collapse / expand toggle of the affected section.
+       (It is kept in the DOM on purpose so that the course format JS does not break, but visually hidden.) */
+    > .section-item > .course-section-header [data-for="sectiontoggler"] {
+        display: none;
+    }
+
+    /* Hide the collapse / expand toggle of the subsections within the affected section as well.
+       But keep the space of the toggle as Moodle core aligns the subsection title with the activities within the
+       subsection and the subsection title would be moved to the left otherwise. */
+    li.delegated-section > .section-item > .course-section-header [data-for="sectiontoggler"] {
+        visibility: hidden;
+    }
+
+    /* Keep the content of the affected section (and of its subsections) always expanded, even if the
+       'Collapse all' control is used (which would otherwise collapse it via the course format JS). */
+    .course-content-item-content {
+        display: block !important;  /* stylelint-disable-line declaration-no-important */
+        height: auto !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+
+/*=======================================
  * Settings: Content -> Footer.
  ======================================*/
 
@@ -2176,12 +2456,20 @@ body.limitedwidth .theme-block-region-footer-coursecontentwidth {
  * Settings: Footnote.
  --------------------------------------*/
 
-/* Static pages links dividers. */
+/* Static pages links dividers.
+   The links live in a flex container (see footnote.mustache), so we draw the divider on the inner,
+   inline <a> element rather than on the flex item itself. Otherwise the border would be stretched to
+   the full height of the flex line (the line-height, i.e. 24px) instead of just the text height.
+   The spacing around the divider is added here as well (instead of as pe-2 / me-2 utility classes in
+   the template): the padding puts a gap between the link text and the divider, the margin puts a gap
+   between the divider and the next link. */
 #footnote {
-    .theme_boost_union_footnote_link {
-        border-right: 2px solid $breadcrumb-divider-color;
+    .theme_boost_union_footnote_link a {
+        padding-right: 0.5rem;
+        border-right: 2px solid $border-color;
+        margin-right: 0.5rem;
     }
-    .theme_boost_union_footnote_link:last-of-type {
+    .theme_boost_union_footnote_link:last-of-type a {
         border-right: none;
     }
 }
@@ -2262,9 +2550,6 @@ body.limitedwidth .theme-block-region-footer-coursecontentwidth {
 @include media-breakpoint-up(sm) {
     /* If there is a loginbackground image configured. */
     body.pagelayout-login.loginbackgroundimage #footnote {
-        /* Add a box shadow to the footnote to match the look of the login box. */
-        box-shadow: $logincontainer-shadow;
-
         /* Add horizontal margin as the page does not have a margin itself. */
         margin-left: 15px;
         margin-right: 15px;
@@ -2321,6 +2606,25 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
     /* Remove the top border as there is the gradient in #page. */
     border-top: none;
 }
+
+/* Finally, handle the footnote on the login page with the side-by-side arrangement.
+   We could have solved this with enhanced selectors above already.
+   However, as the selectors above are already complicated enough and as this is a special
+   case here, we just re-set some remaining aspects of the footnote here.*/
+
+body.theme_boost_union-loginarrangement-sidebyside #footnote {
+    /* Fix whitespace. */
+    margin-left: 0 !important;  /* stylelint-disable-line declaration-no-important */
+    margin-right: 0 !important;  /* stylelint-disable-line declaration-no-important */
+    margin-bottom: 1rem !important;  /* stylelint-disable-line declaration-no-important */
+    margin-top: 2rem !important;  /* stylelint-disable-line declaration-no-important */
+    padding-left: 0 !important;  /* stylelint-disable-line declaration-no-important */
+    padding-right: 0 !important;  /* stylelint-disable-line declaration-no-important */
+
+    /* Add top border. */
+    border-top: $border-width solid $border-color !important;  /* stylelint-disable-line declaration-no-important */
+}
+
 
 /*---------------------------------------
  * Settings: Footer.
@@ -2410,14 +2714,24 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
     border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important; /* stylelint-disable-line declaration-no-important,max-line-length */
 }
 
+/* Remove the bottom margin from the last element (typically a paragraph) in the additional footer popover content sections
+   to keep the spacing to the section divider consistent with the other footer sections. */
+.theme_boost_union_footer_popovercontentstart,
+.theme_boost_union_footer_popovercontentend {
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
 
 /*=======================================
  * Settings: Content -> Info banner.
  ======================================*/
 
-/* Adjust the margins of the info banners to align with the header and main content on larger screens. */
+/* Adjust the margins of the info banners to align with the header and main content on larger screens,
+   but not for the side-by-side login arrangement. */
 @include media-breakpoint-up(md) {
-    .themeboostunioninfobanner {
+    body:not(.theme_boost_union-loginarrangement-sidebyside) .themeboostunioninfobanner {
         margin-left: 15px;
         margin-right: 15px;
     }
@@ -2507,6 +2821,21 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
     }
     .carousel-indicators {
         filter: drop-shadow(0 0 1px rgb(0, 0, 0));
+    }
+
+    /* If the slide's background image is linked, let clicks on the caption box pass through to the linked image.
+       Otherwise, the caption box (including its paddings) would cover a part of the linked image and would
+       create an unclickable area there. Interactive elements within the caption remain clickable. */
+    .carousel-caption.slide-imagelinked {
+        pointer-events: none;
+
+        a,
+        button,
+        input,
+        select,
+        textarea {
+            pointer-events: auto;
+        }
     }
 }
 

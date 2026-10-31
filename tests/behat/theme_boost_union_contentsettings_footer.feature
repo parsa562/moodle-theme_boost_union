@@ -46,6 +46,81 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
     And I should not see "<span lang=\"en\" class=\"multilang\">Footnote</span>" in the "#footnote" "css_element"
     And I should not see "FootnoteFussnote" in the "#footnote" "css_element"
 
+  Scenario Outline: Setting: Footnote - Place footnote on login page depending on login arrangement
+    Given the following config values are set as admin:
+      | config           | value              | plugin            |
+      | footnote         | Footnote text      | theme_boost_union |
+      | footnotelayouts  | login              | theme_boost_union |
+      | loginarrangement | <loginarrangement> | theme_boost_union |
+    When I am on login page
+    Then "#footnote" "css_element" should exist
+    And the "class" attribute of "body" "css_element" should contain "theme_boost_union-loginarrangement-<loginarrangement>"
+    And "<anchorelementid>" "css_element" should appear before "#footnote" "css_element" in the "<contextselector>" "css_element"
+
+    Examples:
+      | loginarrangement | anchorelementid  | contextselector  |
+      | sidebyside       | div[role='main'] | .login-container |
+      | legacy           | #page            | #page-wrapper    |
+
+  Scenario Outline: Setting: Page layouts for footnote - Set the layouts
+    Given the following config values are set as admin:
+      | config           | value              | plugin            |
+      | footnote         | Footnote text      | theme_boost_union |
+      | footnotelayouts  | <layouts>          | theme_boost_union |
+      | loginarrangement | <loginarrangement> | theme_boost_union |
+    When I log in as "admin"
+    And I follow "Dashboard"
+    Then "#footnote" "css_element" <dashboardshouldornot> exist
+    And I am on "Course 1" course homepage
+    Then "#footnote" "css_element" <courseshouldornot> exist
+    And I log out
+    And I am on login page
+    Then "#footnote" "css_element" <loginshouldornot> exist
+
+    # We do not want to burn too much CPU time by testing all available layouts. We just test three important layouts.
+    Examples:
+      | layouts                  | loginarrangement | dashboardshouldornot | courseshouldornot | loginshouldornot |
+      | mydashboard              | sidebyside       | should               | should not        | should not       |
+      | mydashboard              | legacy           | should               | should not        | should not       |
+      | login                    | sidebyside       | should not           | should not        | should           |
+      | login                    | legacy           | should not           | should not        | should           |
+      | mydashboard,login,course | sidebyside       | should               | should            | should           |
+      | mydashboard,login,course | legacy           | should               | should            | should           |
+
+  Scenario Outline: Setting: Footnote - Hide footnote when printing (Hide the footnote when the page is printed)
+    Given the following config values are set as admin:
+      | config              | value         | plugin            |
+      | footnote            | Footnote text | theme_boost_union |
+      | footnotehideonprint | <setting>     | theme_boost_union |
+    When I log in as "admin"
+    And I follow "Dashboard"
+    Then "#footnote" "css_element" should exist
+    And "#footnote.d-print-none" "css_element" <shouldornot> exist
+
+    Examples:
+      | setting | shouldornot |
+      | yes     | should      |
+      | no      | should not  |
+
+  Scenario Outline: Setting: Footnote - Hide footnote when printing (Hide the footnote when the page is printed even if the footnote only contains static page links)
+    Given the following config values are set as admin:
+      | config              | value     | plugin            |
+      | footnote            |           | theme_boost_union |
+      | footnotehideonprint | <setting> | theme_boost_union |
+      | enableimprint       | yes       | theme_boost_union |
+      | imprintcontent      | Imprint   | theme_boost_union |
+      | imprintlinkposition | footnote  | theme_boost_union |
+    When I log in as "admin"
+    And I follow "Dashboard"
+    Then "#footnote" "css_element" should exist
+    And ".theme_boost_union_footnote_imprintlink" "css_element" should exist in the "#footnote" "css_element"
+    And "#footnote.d-print-none" "css_element" <shouldornot> exist
+
+    Examples:
+      | setting | shouldornot |
+      | yes     | should      |
+      | no      | should not  |
+
   @javascript
   Scenario Outline: Setting: Footer - Enable and disable the footer button
     Given the following config values are set as admin:
@@ -82,7 +157,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | enablefooterbutton   | <footervalue>                                                   | theme_boost_union |
       | additionalhtmlfooter | <div id="custom-footer-html"><p>Custom Footer Content</p></div> |                   |
     When I log in as "admin"
-    And I am on site homepage
+    And I am on homepage
     Then "#custom-footer-html" "css_element" should exist
     And ".footer-content-popover #custom-footer-html" "css_element" <shouldornotpopover> exist
     And "[data-region='footer-container-popover'] + #custom-footer-html" "css_element" <shouldornotpagebottom> exist
@@ -142,7 +217,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppressservices | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Services and support" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -159,7 +234,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppresscontact | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Contact site support" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -173,7 +248,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppresslogininfo | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "You are logged in as" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -193,7 +268,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
     And I set the field "Username" to "admin"
     And I set the field "Password" to "wrongpass"
     And I press "Log in"
-    And I should see "Invalid login, please try again"
+    And I should see "Your login info may be incorrect. Please try again."
     And I set the field "Username" to "admin"
     And I set the field "Password" to "admin"
     And I press "Log in"
@@ -250,6 +325,20 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | no    | should      |
       | yes   | should not  |
 
+  Scenario Outline: Setting: Footer - Suppress telemetry trace ID link
+    Given the following config values are set as admin:
+      | config                         | value   | plugin            |
+      | footersuppresstelemetrytraceid | <value> | theme_boost_union |
+    And all Boost Union MUC caches are purged
+    And I log in as "admin"
+    When I am on homepage
+    Then I <shouldornot> see "Telemetry trace" in the ".footer-content-popover" "css_element"
+
+    Examples:
+      | value | shouldornot |
+      | no    | should      |
+      | yes   | should not  |
+
   # Unfortunately, this can't be tested with Behat on Moodle 4.3 anymore
   # Scenario Outline: Setting: Footer - Suppress theme switcher links
 
@@ -259,7 +348,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppresspowered | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Powered by Moodle" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -276,7 +365,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppressstandardfooter_tool_dataprivacy | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Data retention summary" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -292,7 +381,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppressstandardfooter_core_userfeedback | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Give feedback about this software" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -309,7 +398,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppressstandardfooter_tool_mobile | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Get the mobile app" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -328,7 +417,7 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | footersuppressstandardfooter_tool_policy | <value> | theme_boost_union |
     And all Boost Union MUC caches are purged
     And I log in as "admin"
-    When I am on site homepage
+    When I am on homepage
     Then I <shouldornot> see "Policies" in the ".footer-content-popover" "css_element"
 
     Examples:
@@ -384,6 +473,37 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
       | no    | should      |
       | yes   | should not  |
 
+  Scenario: Setting: Footer - Additional content at the beginning and at the end of the footer popover - Add content
+    Given the following config values are set as admin:
+      | config                    | value                                                                                                      | plugin            |
+      | footerpopovercontentstart | <span lang="en" class="multilang">Start content</span><span lang="de" class="multilang">Startinhalt</span> | theme_boost_union |
+      | footerpopovercontentend   | <span lang="en" class="multilang">End content</span><span lang="de" class="multilang">Endinhalt</span>     | theme_boost_union |
+    And the following config values are set as admin:
+      | config               | value                                                    |
+      | additionalhtmlfooter | <div id="custom-footer-html">Custom Footer Content</div> |
+    And the "multilang" filter is "on"
+    And the "multilang" filter applies to "content and headings"
+    When I log in as "admin"
+    And I am on homepage
+    Then ".footer-section.theme_boost_union_footer_popovercontentstart" "css_element" should exist in the ".footer-content-popover" "css_element"
+    And I should see "Start content" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
+    And I should not see "Startinhalt" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
+    And ".theme_boost_union_footer_popovercontentstart" "css_element" should appear before ".logininfo" "css_element"
+    And ".footer-section.theme_boost_union_footer_popovercontentend" "css_element" should exist in the ".footer-content-popover" "css_element"
+    And I should see "End content" in the ".theme_boost_union_footer_popovercontentend" "css_element"
+    And I should not see "Endinhalt" in the ".theme_boost_union_footer_popovercontentend" "css_element"
+    And ".theme_boost_union_footer_popovercontentend" "css_element" should appear before "#custom-footer-html" "css_element"
+
+  Scenario: Setting: Footer - Additional content at the beginning and at the end of the footer popover - Do not add content
+    Given the following config values are set as admin:
+      | config                    | value | plugin            |
+      | footerpopovercontentstart |       | theme_boost_union |
+      | footerpopovercontentend   |       | theme_boost_union |
+    When I log in as "admin"
+    And I am on homepage
+    Then ".theme_boost_union_footer_popovercontentstart" "css_element" should not exist
+    And ".theme_boost_union_footer_popovercontentend" "css_element" should not exist
+
   @javascript
   Scenario: View a user tour under Boost Union
     Given I log in as "admin"
@@ -394,16 +514,3 @@ Feature: Configuring the theme_boost_union plugin for the "Footer" tab on the "C
     And I press "Save changes"
     When I am on the "C1" "Course" page logged in as "teacher1"
     Then I should see "Reset user tour on this page"
-
-  @javascript
-  Scenario: Support multilang additionalhtmlfooter content (backport of MDL-88210 / MDL-85498)
-    Given the following config values are set as admin:
-      | config               | value                                                                                                                                                                                |
-      | additionalhtmlfooter | <div id="custom-footer-html"><p><span lang="en" class="multilang">Custom Footer Content</span><span lang="de" class="multilang">Benutzerdefinierter Fußzeileninhalt</span></p></div> |
-    And the "multilang" filter is "on"
-    And the "multilang" filter applies to "content and headings"
-    And I log in as "admin"
-    When I am on homepage
-    And I click on ".btn-footer-popover" "css_element" in the "#page-footer" "css_element"
-    Then I should see "Custom Footer Content" in the ".popover-body" "css_element"
-    But I should not see "Benutzerdefinierter Fußzeileninhalt" in the ".popover-body" "css_element"

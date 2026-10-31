@@ -70,7 +70,7 @@ class primary extends \core\navigation\output\primary {
 
         // Core adds the guest calendar node without checking the removed list, so remove it explicitly.
         if (in_array(THEME_BOOST_UNION_SETTING_HIDENODESPRIMARYNAVIGATION_CALENDAR, $removed)) {
-            $calendarnode = $this->page->primarynav->find('calendar', \navigation_node::TYPE_ROOTNODE);
+            $calendarnode = $this->page->primarynav->find('calendar', \core\navigation\navigation_node::TYPE_ROOTNODE);
             if ($calendarnode) {
                 $calendarnode->remove();
             }

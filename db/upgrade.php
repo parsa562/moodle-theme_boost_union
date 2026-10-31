@@ -31,7 +31,7 @@ use theme_boost_union\snippets;
  * @return bool result
  */
 function xmldb_theme_boost_union_upgrade($oldversion) {
-    global $DB, $OUTPUT;
+    global $CFG, $DB, $OUTPUT;
 
     $dbman = $DB->get_manager();
 
@@ -134,8 +134,7 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         // Show the notification.
         // (If this notification is shown during a CLI upgrade, the p and strong HTML tags are shown as well.
         // We accept this glitch as it's just a one-time glitch and the admin can still read the notification.
-        $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_SUCCESS);
-        $notification->set_show_closebutton(false);
+        $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_SUCCESS, false);
         echo $OUTPUT->render($notification);
 
         // Boost_union savepoint reached.
@@ -716,13 +715,29 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025041429, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041434) {
+    if ($oldversion < 2025100600) {
+        // Remove the timelinetintenabled setting from Boost Union.
+        unset_config('timelinetintenabled', 'theme_boost_union');
+
+        // Remove the upcomingeventstintenabled setting from Boost Union.
+        unset_config('upcomingeventstintenabled', 'theme_boost_union');
+
+        // Boost_union savepoint reached.
+        upgrade_plugin_savepoint(true, 2025100600, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2025100601) {
         // Rename slide and tile background image fileareas to match config setting names.
         // Config stays: slide1backgroundimage, slide2backgroundimage, etc.
         // Old filearea: slidebackgroundimage1, slidebackgroundimage2, etc.
         // New filearea: slide1backgroundimage, slide2backgroundimage, etc.
         // Same applies for tile background images.
         // This makes filearea names consistent with config names and simplifies the code.
+
+        // Require the theme's lib.php.
+        // Note: We can't rely on the fact that it has been loaded already as this is only the case if Boost Union (or a child
+        // theme of it) is the currently active theme. However, we need the constants which are defined in it.
+        require_once($CFG->dirroot . '/theme/boost_union/lib.php');
 
         // Get file storage.
         $fs = get_file_storage();
@@ -782,10 +797,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041434, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100601, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041438) {
+    if ($oldversion < 2025100605) {
         // Define table theme_boost_union_course to be created.
         $table = new xmldb_table('theme_boost_union_course');
 
@@ -874,10 +889,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041438, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100605, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041439) {
+    if ($oldversion < 2025100606) {
         // Change course header layout settings from stackeddark/stackedlight to unified stacked layout.
         // The old layouts had the text style embedded in the layout choice.
         // Now we have a separate text style setting, so we need to split the old setting values.
@@ -891,10 +906,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041439, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100606, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041448) {
+    if ($oldversion < 2025100615) {
         // Define table theme_boost_union_menuitems to be altered.
         $table = new xmldb_table('theme_boost_union_menuitems');
 
@@ -907,10 +922,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041448, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100615, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041450) {
+    if ($oldversion < 2025100617) {
         // Define fields email* to be added to theme_boost_union_menuitems.
         $table = new xmldb_table('theme_boost_union_menuitems');
         $field = new xmldb_field('email_cc', XMLDB_TYPE_TEXT, null, null, null, null, null, 'email');
@@ -931,10 +946,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041450, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100617, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041451) {
+    if ($oldversion < 2025100618) {
         // Define table theme_boost_union_flavours to be altered.
         $table = new xmldb_table('theme_boost_union_flavours');
 
@@ -964,10 +979,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041451, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100618, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041452) {
+    if ($oldversion < 2025100619) {
         // Define table theme_boost_union_flavours to be altered.
         $table = new xmldb_table('theme_boost_union_flavours');
 
@@ -988,10 +1003,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041452, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100619, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041454) {
+    if ($oldversion < 2025100621) {
         // Define table theme_boost_union_flavours to be altered.
         $table = new xmldb_table('theme_boost_union_flavours');
 
@@ -1004,10 +1019,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041454, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100621, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041456) {
+    if ($oldversion < 2025100623) {
         // Define table theme_boost_union_flavours to be altered.
         $table = new xmldb_table('theme_boost_union_flavours');
 
@@ -1067,10 +1082,10 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041456, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100623, 'theme', 'boost_union');
     }
 
-    if ($oldversion < 2025041457) {
+    if ($oldversion < 2025100624) {
         // Migrate old yes/no value to the new Shibboleth source selector values.
         $oldsetting = get_config('theme_boost_union', 'loginshibbolethinternalwayf');
         if ($oldsetting === THEME_BOOST_UNION_SETTING_SELECT_YES) {
@@ -1078,7 +1093,170 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
         }
 
         // Boost Union savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041457, 'theme', 'boost_union');
+        upgrade_plugin_savepoint(true, 2025100624, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2026042000) {
+        // Set the login arrangement to legacy for existing installations if no value exists yet.
+        if (get_config('theme_boost_union', 'loginarrangement') === false) {
+            set_config('loginarrangement', THEME_BOOST_UNION_SETTING_LOGINARRANGEMENT_LEGACY, 'theme_boost_union');
+        }
+
+        // Set the login page brand to loginheading for existing installations if the setting was set to logootherwiseheading
+        // previously.
+        if (get_config('theme_boost_union', 'loginpagebrand') == 'logootherwiseheading') {
+            set_config('loginpagebrand', THEME_BOOST_UNION_SETTING_LOGINPAGEBRAND_LOGOHEADING, 'theme_boost_union');
+        }
+
+        // Boost Union savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042000, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2026042003) {
+        // Define field displayfieldcustomfield to be added to theme_boost_union_menuitems.
+        $table = new xmldb_table('theme_boost_union_menuitems');
+        $field = new xmldb_field('displayfieldcustomfield', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'displayfield');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field displayfieldsecond to be added to theme_boost_union_menuitems.
+        $table = new xmldb_table('theme_boost_union_menuitems');
+        $field = new xmldb_field('displayfieldsecond', XMLDB_TYPE_INTEGER, '9', null, null, null, null, 'displayfield');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field displayfieldsecondcustomfield to be added to theme_boost_union_menuitems.
+        $field = new xmldb_field(
+            'displayfieldsecondcustomfield',
+            XMLDB_TYPE_INTEGER,
+            '18',
+            null,
+            null,
+            null,
+            null,
+            'displayfieldsecond'
+        );
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field textcountsecond to be added to theme_boost_union_menuitems.
+        $table = new xmldb_table('theme_boost_union_menuitems');
+        $field = new xmldb_field('textcountsecond', XMLDB_TYPE_INTEGER, '9', null, null, null, null, 'textcount');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Boost Union savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042003, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2026042011) {
+        // Remove all activitypurpose* settings from Boost Union which are still set to the deprecated 'interface' purpose.
+        // This purpose has been deprecated in Moodle 4.4 and has been removed in Moodle 5.2. As Moodle core does not hold a color
+        // for this purpose in the $activity-icon-colors SCSS map since Moodle 4.4, these settings would break the SCSS
+        // compilation of the whole theme.
+        // The affected activities will simply fall back to their default purpose again.
+        $boostunionconfig = get_config('theme_boost_union');
+        foreach ($boostunionconfig as $name => $value) {
+            if (str_starts_with($name, 'activitypurpose') && $value === 'interface') {
+                unset_config($name, 'theme_boost_union');
+            }
+        }
+
+        // Boost Union savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042011, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2026042015) {
+        // Define table theme_boost_union_flavours to be altered.
+        $table = new xmldb_table('theme_boost_union_flavours');
+
+        // Define field content_footerpopoverstart to be added.
+        $field = new xmldb_field(
+            'content_footerpopoverstart',
+            XMLDB_TYPE_TEXT,
+            null,
+            null,
+            null,
+            null,
+            null,
+            'content_footnote_format'
+        );
+
+        // Conditionally launch add field content_footerpopoverstart.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field content_footerpopoverstart_format to be added.
+        $field = new xmldb_field(
+            'content_footerpopoverstart_format',
+            XMLDB_TYPE_INTEGER,
+            '2',
+            null,
+            null,
+            null,
+            null,
+            'content_footerpopoverstart'
+        );
+
+        // Conditionally launch add field content_footerpopoverstart_format.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field content_footerpopoverend to be added.
+        $field = new xmldb_field(
+            'content_footerpopoverend',
+            XMLDB_TYPE_TEXT,
+            null,
+            null,
+            null,
+            null,
+            null,
+            'content_footerpopoverstart_format'
+        );
+
+        // Conditionally launch add field content_footerpopoverend.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field content_footerpopoverend_format to be added.
+        $field = new xmldb_field(
+            'content_footerpopoverend_format',
+            XMLDB_TYPE_INTEGER,
+            '2',
+            null,
+            null,
+            null,
+            null,
+            'content_footerpopoverend'
+        );
+
+        // Conditionally launch add field content_footerpopoverend_format.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Boost Union savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042015, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2026042017) {
+        // Change the default of the field type on table theme_boost_union_menus to 0 (list type).
+        // The field was defined with the default 1 (card type) which contradicted the code default (list type).
+        $table = new xmldb_table('theme_boost_union_menus');
+        $field = new xmldb_field('type', XMLDB_TYPE_INTEGER, '9', null, XMLDB_NOTNULL, null, '0', 'location');
+
+        // Launch change of default for field type.
+        $dbman->change_field_default($table, $field);
+
+        // Boost Union savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042017, 'theme', 'boost_union');
     }
 
     // Load the builtin SCSS snippets into the database.

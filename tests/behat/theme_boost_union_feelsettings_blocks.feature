@@ -5,7 +5,11 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
   I need to be able to configure the theme Boost Union plugin
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | config          | value |
+      | enablemyhome    | 1     |
+      | enablemycourses | 1     |
+    And the following "users" exist:
       | username |
       | student1 |
       | teacher1 |
@@ -399,6 +403,40 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
       | outside-right | blockregionoutsiderightwidth | 300px        |
       | outside-right | blockregionoutsiderightwidth | 400px        |
 
+  @javascript
+  Scenario Outline: Setting: Block region width for 'Outside (left/right)' regions - Valid width values are accepted by the settings form (tested on the 'Outside (left)' field as representative for all fields which use the regex)
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Feel" in site administration
+    And I click on "Blocks" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Block region width for 'Outside (left)' region" to "<settingvalue>"
+    And I click on "Save changes" "button"
+    Then I should see "Changes saved"
+    And I should not see "Some settings were not changed due to an error."
+    And the field "Block region width for 'Outside (left)' region" matches value "<settingvalue>"
+
+    Examples:
+      | settingvalue |
+      | 400px        |
+      | 10%          |
+      | 10vw         |
+
+  @javascript
+  Scenario Outline: Setting: Block region width for 'Outside (left/right)' regions - Invalid width values which would break the SCSS compilation are rejected by the settings form (tested on the 'Outside (left)' field as representative for all fields which use the regex)
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Feel" in site administration
+    And I click on "Blocks" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Block region width for 'Outside (left)' region" to "<settingvalue>"
+    And I click on "Save changes" "button"
+    Then I should see "Some settings were not changed due to an error."
+    And I should see "This value is not valid"
+    And I should not see "Changes saved"
+
+    Examples:
+      | settingvalue |
+      | 300px)       |
+      | 10%)         |
+      | abc          |
+
   Scenario Outline: Setting: Block region width for 'Outside (top/bottom)' regions
     Given the following config values are set as admin:
       | config                | value          | plugin            |
@@ -478,6 +516,9 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
 
   Scenario Outline: Setting: Show right-hand block drawer of site home on first login
     Given the following config values are set as admin:
+      | config       | value |
+      | enablemyhome | 1     |
+    And the following config values are set as admin:
       | config                                       | value     | plugin            |
       | showsitehomerighthandblockdraweronfirstlogin | <setting> | theme_boost_union |
     And the following "blocks" exist:
@@ -494,6 +535,10 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
 
   Scenario Outline: Setting: Show right-hand block drawer of site home on visit
     Given the following config values are set as admin:
+      | config       | value |
+      | forcelogin   | 0     |
+      | enablemyhome | 1     |
+    And  the following config values are set as admin:
       | config                                  | value     | plugin            |
       | showsitehomerighthandblockdraweronvisit | <setting> | theme_boost_union |
     And the following "blocks" exist:
@@ -509,6 +554,9 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
 
   Scenario Outline: Setting: Show right-hand block drawer of site home on guest login
     Given the following config values are set as admin:
+      | config       | value |
+      | enablemyhome | 1     |
+    And the following config values are set as admin:
       | config                                       | value     | plugin            |
       | showsitehomerighthandblockdraweronguestlogin | <setting> | theme_boost_union |
     And the following "blocks" exist:
@@ -543,10 +591,10 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
     And DOM elements "<editoffdomelements>" should be vertically aligned
 
     Examples:
-      | setting | regions                                  | block1region  | block2region  | alignmentspacer1shouldornot | alignmentspacer2shouldornot | domelements                                                                                                                                                | editoffdomelements                                                                   |
-      | 1       | outside-left,outside-right,content-upper | outside-left  | outside-right | should                      | should                      | #theme-block-region-outside-left .add_block_button,#theme-block-region-outside-right .add_block_button,#theme-block-region-content-upper .add_block_button | #block-region-outside-left,#block-region-outside-right,#page-content .course-content |
-      | 1       | outside-left,content-upper               | outside-left  | content-upper | should                      | should not                  | #theme-block-region-outside-left .add_block_button,#theme-block-region-content-upper .add_block_button                                                     | #block-region-outside-left,#theme-block-region-content-upper                         |
-      | 1       | outside-right,content-upper              | content-upper | outside-right | should not                  | should                      | #theme-block-region-outside-right .add_block_button,#theme-block-region-content-upper .add_block_button                                                    | #block-region-outside-right,#theme-block-region-content-upper                        |
+      | setting | regions                                  | block1region  | block2region  | alignmentspacer1shouldornot | alignmentspacer2shouldornot | domelements                                                                                                                                                                                       | editoffdomelements                                                                   |
+      | 1       | outside-left,outside-right,content-upper | outside-left  | outside-right | should                      | should                      | #theme-block-region-outside-left [data-region=add-block-button],#theme-block-region-outside-right [data-region=add-block-button],#theme-block-region-content-upper [data-region=add-block-button] | #block-region-outside-left,#block-region-outside-right,#page-content .course-content |
+      | 1       | outside-left,content-upper               | outside-left  | content-upper | should                      | should not                  | #theme-block-region-outside-left [data-region=add-block-button],#theme-block-region-content-upper [data-region=add-block-button]                                                                  | #block-region-outside-left,#theme-block-region-content-upper                         |
+      | 1       | outside-right,content-upper              | content-upper | outside-right | should not                  | should                      | #theme-block-region-outside-right [data-region=add-block-button],#theme-block-region-content-upper [data-region=add-block-button]                                                                 | #block-region-outside-right,#theme-block-region-content-upper                        |
 
   @javascript
   Scenario Outline: Setting: Outside regions vertical alignment in dashboard
@@ -569,10 +617,10 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
     And DOM elements "<editoffdomelements>" should be vertically aligned
 
     Examples:
-      | setting | regions                    | block1region | block2region  | alignmentspacer1shouldornot | alignmentspacer2shouldornot | domelements                                                                                                          | editoffdomelements                                                   |
-      | 1       | outside-left,outside-right | outside-left | outside-right | should                      | should                      | #theme-block-region-outside-left .add_block_button,#theme-block-region-outside-right .add_block_button,#page-content | #block-region-outside-left,#block-region-outside-right,#page-content |
-      | 1       | outside-left,outside-top   | outside-left | outside-top   | should                      | should not                  | #theme-block-region-outside-left .add_block_button,#page-content                                                     | #block-region-outside-left,#page-content                             |
-      | 1       | outside-top,outside-right  | outside-top  | outside-right | should not                  | should                      | #theme-block-region-outside-right .add_block_button,#page-content                                                    | #block-region-outside-right,#page-content                            |
+      | setting | regions                    | block1region | block2region  | alignmentspacer1shouldornot | alignmentspacer2shouldornot | domelements                                                                                                                                    | editoffdomelements                                                   |
+      | 1       | outside-left,outside-right | outside-left | outside-right | should                      | should                      | #theme-block-region-outside-left [data-region=add-block-button],#theme-block-region-outside-right [data-region=add-block-button],#page-content | #block-region-outside-left,#block-region-outside-right,#page-content |
+      | 1       | outside-left,outside-top   | outside-left | outside-top   | should                      | should not                  | #theme-block-region-outside-left [data-region=add-block-button],#page-content                                                                  | #block-region-outside-left,#page-content                             |
+      | 1       | outside-top,outside-right  | outside-top  | outside-right | should not                  | should                      | #theme-block-region-outside-right [data-region=add-block-button],#page-content                                                                 | #block-region-outside-right,#page-content                            |
 
   @javascript
   Scenario Outline: Setting: Outside regions wrapping
@@ -593,6 +641,45 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
       | setting | shouldcontain      | beforeafter |
       | 1       | should contain     | before      |
       | 0       | should not contain | after       |
+
+  @javascript
+  Scenario Outline: Setting: Align header region with main content region width and position
+    Given the following config values are set as admin:
+      | config                       | value                          | plugin            |
+      | blockregionsforcourse        | <regions>                      | theme_boost_union |
+      | blockregionoutsideleftwidth  | <blockregionoutsideleftwidth>  | theme_boost_union |
+      | blockregionoutsiderightwidth | <blockregionoutsiderightwidth> | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    And I turn editing mode on
+    And I change window size to "large"
+    Then DOM element ".theme-block-region-outside-left-spacer" should have computed style "width" "<blockregionoutsideleftwidth>"
+    And DOM element ".theme-block-region-outside-right-spacer" should have computed style "width" "<blockregionoutsiderightwidth>"
+    And DOM elements "#theme-block-region-header" and "#topofscroll" should have the same "left" position value
+    And DOM elements "#theme-block-region-header" and "#topofscroll" should have the same "right" position value
+
+    Examples:
+      | regions                           | blockregionoutsideleftwidth | blockregionoutsiderightwidth |
+      | outside-left,outside-right,header | 300px                       | 300px                        |
+      | outside-left,outside-right,header | 200px                       | 400px                        |
+      | outside-left,outside-right,header | 400px                       | 200px                        |
+
+  Scenario Outline: Setting: Check existence of the outside region spacers next to the header region
+    Given the following config values are set as admin:
+      | config                | value     | plugin            |
+      | blockregionsforcourse | <regions> | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    And I turn editing mode on
+    Then ".theme-block-region-header-wrapper .theme-block-region-outside-left-spacer" "css_element" <outsideleftregionshouldornot> exist
+    And ".theme-block-region-header-wrapper .theme-block-region-outside-right-spacer" "css_element" <outsiderightregionshouldornot> exist
+
+    Examples:
+      | regions                           | outsideleftregionshouldornot | outsiderightregionshouldornot |
+      | outside-left,outside-right,header | should                       | should                        |
+      | outside-left,header               | should                       | should not                    |
+      | outside-right,header              | should not                   | should                        |
+      | outside-left,outside-right        | should not                   | should not                    |
 
   Scenario Outline: Setting: Harden block regions - Block edit controls are shown in allowed regions and hidden in restricted region regardless of hardening setting (Regression test).
     Given the following config values are set as admin:

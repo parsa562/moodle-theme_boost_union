@@ -4,9 +4,25 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
   As admin
   I need to be able to configure the theme Boost Union plugin
 
-  Scenario Outline: Setting: Login container position
+  Scenario Outline: Setting: Login page arrangement
+    Given the following config values are set as admin:
+      | config           | value     | plugin            |
+      | loginarrangement | <setting> | theme_boost_union |
+    When I am on login page
+    Then the "class" attribute of "body" "css_element" should contain "theme_boost_union-loginarrangement-<bodyclass>"
+    And the "class" attribute of "body" "css_element" should not contain "theme_boost_union-loginarrangement-<notbodyclass>"
+    And the "class" attribute of "#page" "css_element" <pagefluidshouldornot> contain "container-fluid"
+    And "aside.login-layout-left" "css_element" <sidepanelshouldornot> exist
+
+    Examples:
+      | setting    | bodyclass  | notbodyclass | pagefluidshouldornot | sidepanelshouldornot |
+      | sidebyside | sidebyside | legacy       | should not           | should               |
+      | legacy     | legacy     | sidebyside   | should               | should not           |
+
+  Scenario Outline: Setting: Login container position (only applies when using the legacy login page layout)
     Given the following config values are set as admin:
       | config            | value     | plugin            |
+      | loginarrangement  | legacy    | theme_boost_union |
       | loginformposition | <setting> | theme_boost_union |
     When I am on login page
     Then the "class" attribute of ".login-wrapper" "css_element" should contain "<class>"
@@ -14,14 +30,17 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     And the "class" attribute of ".login-wrapper" "css_element" should not contain "<notclass2>"
 
     Examples:
-      | setting | class                | notclass1            | notclass2           |
-      | center  | login-wrapper-center | login-wrapper-left   | login-wrapper-right |
-      | left    | login-wrapper-left   | login-wrapper-center | login-wrapper-right |
-      | right   | login-wrapper-right  | login-wrapper-center | login-wrapper-left  |
+      | setting   | class                   | notclass1            | notclass2               |
+      | center    | login-wrapper-center    | login-wrapper-left   | login-wrapper-right     |
+      | left      | login-wrapper-left      | login-wrapper-center | login-wrapper-right     |
+      | right     | login-wrapper-right     | login-wrapper-center | login-wrapper-left      |
+      | semileft  | login-wrapper-semileft  | login-wrapper-center | login-wrapper-semiright |
+      | semiright | login-wrapper-semiright | login-wrapper-center | login-wrapper-semileft  |
 
-  Scenario Outline: Setting: Login form transparency
+  Scenario Outline: Setting: Login form transparency (only applies when using the legacy login page layout)
     Given the following config values are set as admin:
       | config                | value     | plugin            |
+      | loginarrangement      | legacy    | theme_boost_union |
       | loginformtransparency | <setting> | theme_boost_union |
     When I am on login page
     Then the "class" attribute of ".login-container" "css_element" <shouldcontain> "login-container-80t"
@@ -32,9 +51,10 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
       | no      | should not contain |
 
   @javascript
-  Scenario Outline: Setting: Login container width
+  Scenario Outline: Setting: Login container width (only applies when using the legacy login page layout)
     Given the following config values are set as admin:
       | config              | value     | plugin            |
+      | loginarrangement    | legacy    | theme_boost_union |
       | logincontainerwidth | <setting> | theme_boost_union |
     And the theme cache is purged and the theme is reloaded
     When I am on login page
@@ -62,7 +82,6 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
 
     Examples:
       | setting              | logoshouldornot | headingshouldornot | headinghiddenshouldornot | taglineshouldornot |
-      | logootherwiseheading | should          | should not         | should                   | should not         |
       | logoheadingtagline   | should          | should             | should not               | should             |
       | logoheading          | should          | should             | should not               | should not         |
       | logotagline          | should          | should not         | should                   | should             |
@@ -80,10 +99,8 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     And "h1.login-heading.visually-hidden" "css_element" <headinghiddenshouldornot> exist
     And ".login-tagline" "css_element" <taglineshouldornot> exist
 
-    # Note: logootherwiseheading shows the heading as fallback when no logo is uploaded.
     Examples:
       | setting              | headingshouldornot | headinghiddenshouldornot | taglineshouldornot |
-      | logootherwiseheading | should             | should not               | should not         |
       | logoheadingtagline   | should             | should not               | should             |
       | logoheading          | should             | should not               | should not         |
       | logotagline          | should not         | should                   | should             |
@@ -232,7 +249,10 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
       | 3       | should contain | mb-3  |
 
   @javascript
-  Scenario: Setting: Login page background images - Do not upload any login background image
+  Scenario: Setting: Login page background images - Do not upload any login background image (legacy arrangement)
+    Given the following config values are set as admin:
+      | config           | value  | plugin            |
+      | loginarrangement | legacy | theme_boost_union |
     When I am on login page
     Then the "class" attribute of "body" "css_element" should contain "path-login"
     And the "class" attribute of "body" "css_element" should not contain "loginbackgroundimage"
@@ -240,8 +260,24 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     And DOM element "body" should have computed style "background-image" "none"
 
   @javascript
-  Scenario: Setting: Login page background images - Upload one custom login background image
-    Given the following "theme_boost_union > setting files" exist:
+  Scenario: Setting: Login page background images - Do not upload any login background image (side-by-side arrangement)
+    Given the following config values are set as admin:
+      | config           | value      | plugin            |
+      | loginarrangement | sidebyside | theme_boost_union |
+    When I am on login page
+    Then the "class" attribute of "body" "css_element" should contain "path-login"
+    And the "class" attribute of "body" "css_element" should not contain "loginbackgroundimage"
+    And the "class" attribute of "body" "css_element" should not contain "loginbackgroundimage1"
+    # When no Boost Union login background image is uploaded in the side-by-side arrangement,
+    # Boost core's default login_background image is shown on the left (decorative) panel.
+    And DOM element ".login-layout-left" should have background image with file name "login_background"
+
+  @javascript
+  Scenario Outline: Setting: Login page background images - Upload one custom login background image
+    Given the following config values are set as admin:
+      | config           | value              | plugin            |
+      | loginarrangement | <loginarrangement> | theme_boost_union |
+    And the following "theme_boost_union > setting files" exist:
       | filearea             | filepath                                       |
       | loginbackgroundimage | theme/boost_union/tests/fixtures/login_bg1.png |
     And the theme cache is purged and the theme is reloaded
@@ -251,12 +287,20 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     Then the "class" attribute of "body" "css_element" should contain "path-login"
     And the "class" attribute of "body" "css_element" should contain "loginbackgroundimage"
     And the "class" attribute of "body" "css_element" should contain "loginbackgroundimage1"
-    And DOM element "body" should have computed style "background-size" "cover"
-    And DOM element "body" should have background image with file name "login_bg1.png"
+    And DOM element "<bgelement>" should have computed style "background-size" "cover"
+    And DOM element "<bgelement>" should have background image with file name "login_bg1.png"
+
+    Examples:
+      | loginarrangement | bgelement          |
+      | sidebyside       | .login-layout-left |
+      | legacy           | body               |
 
   @javascript
-  Scenario: Setting: Login page background images - Upload multiple custom login background image (and have one picked randomly)
-    Given the following "theme_boost_union > setting files" exist:
+  Scenario Outline: Setting: Login page background images - Upload multiple custom login background images (and have one picked randomly)
+    Given the following config values are set as admin:
+      | config           | value              | plugin            |
+      | loginarrangement | <loginarrangement> | theme_boost_union |
+    And the following "theme_boost_union > setting files" exist:
       | filearea             | filepath                                       |
       | loginbackgroundimage | theme/boost_union/tests/fixtures/login_bg1.png |
       | loginbackgroundimage | theme/boost_union/tests/fixtures/login_bg2.png |
@@ -271,14 +315,20 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     # However, the random image picking function is designed to detect Behat runs and will then always ship the
     # image matching the number of uploaded images (i.e. if you upload 3 images, you will get the third).
     And the "class" attribute of "body" "css_element" should contain "loginbackgroundimage3"
-    And DOM element "body" should have computed style "background-size" "cover"
-    And DOM element "body" should have background image with file name "login_bg3.png"
+    And DOM element "<bgelement>" should have computed style "background-size" "cover"
+    And DOM element "<bgelement>" should have background image with file name "login_bg3.png"
+
+    Examples:
+      | loginarrangement | bgelement          |
+      | sidebyside       | .login-layout-left |
+      | legacy           | body               |
 
   @javascript
   Scenario Outline: Setting: Login page background images - Define the background image position.
     Given the following config values are set as admin:
-      | config                       | value      | plugin            |
-      | loginbackgroundimageposition | <position> | theme_boost_union |
+      | config                       | value              | plugin            |
+      | loginarrangement             | <loginarrangement> | theme_boost_union |
+      | loginbackgroundimageposition | <position>         | theme_boost_union |
     And the following "theme_boost_union > setting files" exist:
       | filearea             | filepath                                       |
       | loginbackgroundimage | theme/boost_union/tests/fixtures/login_bg1.png |
@@ -286,13 +336,15 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     When I am on login page
     # Reloading the page is necessary to ensure that the background image CSS is applied, as it might not appear on the first load due to caching.
     And I reload the page
-    Then DOM element "body.pagelayout-login" should have computed style "background-position" "<cssvalue>"
+    Then DOM element "<bgelement>" should have computed style "background-position" "<cssvalue>"
 
     # We do not want to burn too much CPU time by testing all available options. We just test the default value and one non-default value.
     Examples:
-      | position      | cssvalue |
-      | center center | 50% 50%  |
-      | left top      | 0% 0%    |
+      | loginarrangement | bgelement          | position      | cssvalue |
+      | sidebyside       | .login-layout-left | center center | 50% 50%  |
+      | sidebyside       | .login-layout-left | left top      | 0% 0%    |
+      | legacy           | body               | center center | 50% 50%  |
+      | legacy           | body               | left top      | 0% 0%    |
 
   Scenario: Setting: Display text for login background images - Add a text to the login background image
     Given the following config values are set as admin:
@@ -351,9 +403,10 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
       | accordion | should not      | should               |
 
   @javascript
-  Scenario Outline: Setting: Enhanced tabs layout behaviour: Load the javascript module
+  Scenario Outline: Setting: Enhanced tabs layout behaviour: Load the javascript module (only applies when using the legacy login page layout)
     Given the following config values are set as admin:
       | config                  | value     | plugin            |
+      | loginarrangement        | legacy    | theme_boost_union |
       | loginlayout             | tabs      | theme_boost_union |
       | loginenhancedtabslayout | <setting> | theme_boost_union |
     And the theme cache is purged and the theme is reloaded
@@ -373,9 +426,10 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
   # Unfortunately, this can't be reliably tested with Behat yet
   # Scenario: Setting: Enhanced tabs layout behaviour: Lock the vertical position of the tabs when switching tabs
 
-  Scenario: Setting: Login instructions
+  Scenario: Setting: Login instructions (legacy arrangement)
     Given the following config values are set as admin:
       | config                 | value                   | plugin            |
+      | loginarrangement       | legacy                  | theme_boost_union |
       | logininstructionsabove | Above instructions text | theme_boost_union |
       | logininstructionsbelow | Below instructions text | theme_boost_union |
     When I am on login page
@@ -383,6 +437,38 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     And ".login-instructions-above" "css_element" should appear before ".theme_boost_union-loginmethod  " "css_element"
     And I should see "Below instructions text" in the ".login-instructions-below" "css_element"
     And ".login-instructions-below" "css_element" should appear after ".theme_boost_union-loginmethod  " "css_element"
+
+  @javascript
+  Scenario: Setting: Login instructions (side-by-side arrangement)
+    Given the following config values are set as admin:
+      | config                     | value                        | plugin            |
+      | loginarrangement           | sidebyside                   | theme_boost_union |
+      | logininstructionssideupper | Side upper instructions text | theme_boost_union |
+      | logininstructionssidelower | Side lower instructions text | theme_boost_union |
+    # On large screens the side panel is visible and shows both instruction blocks.
+    When I change viewport size to "large"
+    And I am on login page
+    Then I should see "Side upper instructions text" in the ".login-layout-left .login-layout-left-instructions-upper" "css_element"
+    And I should see "Side lower instructions text" in the ".login-layout-left .login-layout-left-instructions-lower" "css_element"
+    And ".login-layout-left-instructions-upper" "css_element" should appear before ".login-layout-left-instructions-lower" "css_element" in the "aside.login-layout-left" "css_element"
+    # On small screens the side panel is hidden, the instructions appear above/below the login form.
+    When I change viewport size to "mobile"
+    And I am on login page
+    And I should see "Side upper instructions text" in the ".login-instructions.login-instructions-sideupper" "css_element"
+    And I should see "Side lower instructions text" in the ".login-instructions.login-instructions-sidelower" "css_element"
+    And ".login-instructions-sideupper" "css_element" should appear before ".theme_boost_union-loginmethod" "css_element"
+    And ".login-instructions-sidelower" "css_element" should appear after ".theme_boost_union-loginmethod" "css_element"
+
+  Scenario: Setting: Login instructions (side-by-side arrangement, no instructions case)
+    Given the following config values are set as admin:
+      | config                     | value      | plugin            |
+      | loginarrangement           | sidebyside | theme_boost_union |
+      | logininstructionssideupper |            | theme_boost_union |
+      | logininstructionssidelower |            | theme_boost_union |
+    When I am on login page
+    Then ".login-layout-left-content" "css_element" should not exist
+    And ".login-instructions-sideupper" "css_element" should not exist
+    And ".login-instructions-sidelower" "css_element" should not exist
 
   Scenario Outline: Setting: Login order
     Given the following config values are set as admin:
@@ -536,13 +622,13 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
     And I should not see "multilang"
 
     Examples:
-      | localtext                                                                                            | idptext                                                                                              | selfregtext                                                                                        | guesttext                                                                                             | localexpected                  | idpexpected                   | selfregexpected               | guestexpected                       |
-      |                                                                                                      |                                                                                                      |                                                                                                    |                                                                                                       | Login with your Moodle account | Log in using your account on: | Is this your first time here? | Some courses may allow guest access |
-      | Local <span class="multilang" lang="en">account</span><span class="multilang" lang="de">Konto</span> |                                                                                                      |                                                                                                    |                                                                                                       | Local account                  | Log in using your account on: | Is this your first time here? | Some courses may allow guest access |
-      |                                                                                                      | IDP <span class="multilang" lang="en">login</span><span class="multilang" lang="de">Anmeldung</span> |                                                                                                    |                                                                                                       | Login with your Moodle account | IDP login                     | Is this your first time here? | Some courses may allow guest access |
-      |                                                                                                      |                                                                                                      | Selfreg <span class="multilang" lang="en">text</span><span class="multilang" lang="de">Text</span> |                                                                                                       | Login with your Moodle account | Log in using your account on: | Selfreg text                  | Some courses may allow guest access |
-      |                                                                                                      |                                                                                                      |                                                                                                    | Guest <span class="multilang" lang="en">access</span><span class="multilang" lang="de">Zugriff</span> | Login with your Moodle account | Log in using your account on: | Is this your first time here? | Guest access                        |
-      | Local A                                                                                              | IDP A                                                                                                | Selfreg A                                                                                          | Guest A                                                                                               | Local A                        | IDP A                         | Selfreg A                     | Guest A                             |
+      | localtext                                                                                            | idptext                                                                                              | selfregtext                                                                                        | guesttext                                                                                             | localexpected                  | idpexpected                 | selfregexpected            | guestexpected             |
+      |                                                                                                      |                                                                                                      |                                                                                                    |                                                                                                       | Login with your Moodle account | Login with your IDP account | Don't have an account yet? | Looking for a quick peek? |
+      | Local <span class="multilang" lang="en">account</span><span class="multilang" lang="de">Konto</span> |                                                                                                      |                                                                                                    |                                                                                                       | Local account                  | Login with your IDP account | Don't have an account yet? | Looking for a quick peek? |
+      |                                                                                                      | IDP <span class="multilang" lang="en">login</span><span class="multilang" lang="de">Anmeldung</span> |                                                                                                    |                                                                                                       | Login with your Moodle account | IDP login                   | Don't have an account yet? | Looking for a quick peek? |
+      |                                                                                                      |                                                                                                      | Selfreg <span class="multilang" lang="en">text</span><span class="multilang" lang="de">Text</span> |                                                                                                       | Login with your Moodle account | Login with your IDP account | Selfreg text               | Looking for a quick peek? |
+      |                                                                                                      |                                                                                                      |                                                                                                    | Guest <span class="multilang" lang="en">access</span><span class="multilang" lang="de">Zugriff</span> | Login with your Moodle account | Login with your IDP account | Don't have an account yet? | Guest access              |
+      | Local A                                                                                              | IDP A                                                                                                | Selfreg A                                                                                          | Guest A                                                                                               | Local A                        | IDP A                       | Selfreg A                  | Guest A                   |
 
   Scenario Outline: Setting: Login instruction
     Given the following config values are set as admin:
@@ -648,15 +734,140 @@ Feature: Configuring the theme_boost_union plugin for the "Login page" tab on th
 
     # We do not want to burn too much CPU time by testing all available options. We just test the default value and one non-default value.
     Examples:
-      | provider         | buttoncolorconfig                | buttoncolor       | buttonselector                     | expectedclass         |
-      | locallogin       | loginlocalbuttoncolor            | primary           | #login-method-local .btn           | btn-primary           |
-      | locallogin       | loginlocalbuttoncolor            | outline-secondary | #login-method-local .btn           | btn-outline-secondary |
-      | idplogin         | loginidpbuttoncolor              | outline-secondary | #login-method-idp .btn             | btn-outline-secondary |
-      | idplogin         | loginidpbuttoncolor              | outline-primary   | #login-method-idp .btn             | btn-outline-primary   |
-      | selfregistration | loginselfregistrationbuttoncolor | secondary         | #login-method-firsttimesignup .btn | btn-secondary         |
-      | selfregistration | loginselfregistrationbuttoncolor | primary           | #login-method-firsttimesignup .btn | btn-primary           |
-      | guestlogin       | loginguestbuttoncolor            | secondary         | #login-method-guest .btn           | btn-secondary         |
-      | guestlogin       | loginguestbuttoncolor            | outline-primary   | #login-method-guest .btn           | btn-outline-primary   |
+      | provider         | buttoncolorconfig                | buttoncolor         | buttonselector                     | expectedclass           |
+      | locallogin       | loginlocalbuttoncolor            | primary             | #login-method-local .btn           | btn-primary             |
+      | locallogin       | loginlocalbuttoncolor            | outline-secondary   | #login-method-local .btn           | btn-outline-secondary   |
+      | idplogin         | loginidpbuttoncolor              | outline-secondary   | #login-method-idp .btn             | btn-outline-secondary   |
+      | idplogin         | loginidpbuttoncolor              | outline-primary     | #login-method-idp .btn             | btn-outline-primary     |
+      | idplogin         | loginidpbuttoncolor              | outline-lightmoodle | #login-method-idp .btn             | btn-outline-lightmoodle |
+      | selfregistration | loginselfregistrationbuttoncolor | secondary           | #login-method-firsttimesignup .btn | btn-secondary           |
+      | selfregistration | loginselfregistrationbuttoncolor | primary             | #login-method-firsttimesignup .btn | btn-primary             |
+      | guestlogin       | loginguestbuttoncolor            | secondary           | #login-method-guest .btn           | btn-secondary           |
+      | guestlogin       | loginguestbuttoncolor            | outline-primary     | #login-method-guest .btn           | btn-outline-primary     |
+      | guestlogin       | loginguestbuttoncolor            | outline-lightmoodle | #login-method-guest .btn           | btn-outline-lightmoodle |
+
+  Scenario Outline: Setting: Login provider button size
+    Given the following config values are set as admin:
+      | config                | value        | plugin            |
+      | login<provider>enable | yes          | theme_boost_union |
+      | <buttonsizeconfig>    | <buttonsize> | theme_boost_union |
+    And the following config values are set as admin:
+      | config           | value               |
+      | auth             | manual,email,oauth2 |
+      | registerauth     | email               |
+      | guestloginbutton | 1                   |
+    And I log in as "admin"
+    And I navigate to "Server > OAuth 2 services" in site administration
+    And I press "Google"
+    And I should see "Create new service: Google"
+    And I set the following fields to these values:
+      | Name          | Testing service   |
+      | Client ID     | thisistheclientid |
+      | Client secret | supersecret       |
+    And I press "Save changes"
+    And I log out
+    When I am on login page
+    Then the "class" attribute of "<buttonselector>" "css_element" should contain "<expectedclass>"
+    And the "class" attribute of "<buttonselector>" "css_element" should not contain "<notexpectedclass>"
+
+    # We do not want to burn too much CPU time by testing all available options on all login methods.
+    # We just test the small and the large size on the login methods and verify with the local login button that the medium size
+    # (which is the default) does not add any size class at all.
+    Examples:
+      | provider         | buttonsizeconfig                | buttonsize | buttonselector                     | expectedclass | notexpectedclass |
+      | locallogin       | loginlocalbuttonsize            | sm         | #login-method-local .btn           | btn-sm        | btn-lg           |
+      | locallogin       | loginlocalbuttonsize            | lg         | #login-method-local .btn           | btn-lg        | btn-sm           |
+      | locallogin       | loginlocalbuttonsize            | md         | #login-method-local .btn           | btn-primary   | btn-sm           |
+      | locallogin       | loginlocalbuttonsize            | md         | #login-method-local .btn           | btn-primary   | btn-lg           |
+      | idplogin         | loginidpbuttonsize              | sm         | #login-method-idp .btn             | btn-sm        | btn-lg           |
+      | idplogin         | loginidpbuttonsize              | lg         | #login-method-idp .btn             | btn-lg        | btn-sm           |
+      | selfregistration | loginselfregistrationbuttonsize | sm         | #login-method-firsttimesignup .btn | btn-sm        | btn-lg           |
+      | selfregistration | loginselfregistrationbuttonsize | lg         | #login-method-firsttimesignup .btn | btn-lg        | btn-sm           |
+      | guestlogin       | loginguestbuttonsize            | sm         | #login-method-guest .btn           | btn-sm        | btn-lg           |
+      | guestlogin       | loginguestbuttonsize            | lg         | #login-method-guest .btn           | btn-lg        | btn-sm           |
+
+  Scenario Outline: Setting: Login provider divider type - Verify the divider type
+    Given the following config values are set as admin:
+      | config                      | value     | plugin            |
+      | loginlayout                 | vertical  | theme_boost_union |
+      | loginlocalloginenable       | yes       | theme_boost_union |
+      | loginidploginenable         | yes       | theme_boost_union |
+      | loginselfregistrationenable | yes       | theme_boost_union |
+      | loginguestloginenable       | yes       | theme_boost_union |
+      | login<provider>dividertype  | <setting> | theme_boost_union |
+      # Move the login method to the end so that the divider is not dropped as first method
+      | loginorder<provider>        | 4         | theme_boost_union |
+    And the following config values are set as admin:
+      | config           | value               |
+      | auth             | manual,email,oauth2 |
+      | registerauth     | email               |
+      | guestloginbutton | 1                   |
+    And I log in as "admin"
+    And I navigate to "Server > OAuth 2 services" in site administration
+    And I press "Google"
+    And I should see "Create new service: Google"
+    And I set the following fields to these values:
+      | Name          | Testing service   |
+      | Client ID     | thisistheclientid |
+      | Client secret | supersecret       |
+    And I press "Save changes"
+    And I log out
+    When I am on login page
+    Then "<selector> .login-margin" "css_element" <marginshouldornot> exist
+    And "<selector> .login-divider" "css_element" <lineshouldornot> exist
+    And "<selector> .login-separator" "css_element" <separatorshouldornot> exist
+
+    # We do not want to burn too much CPU time by testing all available permutations. We just test the default value and one non-default value per login provider.
+    Examples:
+      | provider        | selector                      | setting    | marginshouldornot | lineshouldornot | separatorshouldornot |
+      | local           | #login-method-local           | linewithor | should not        | should not      | should               |
+      | local           | #login-method-local           | none       | should not        | should not      | should not           |
+      | idp             | #login-method-idp             | linewithor | should not        | should not      | should               |
+      | idp             | #login-method-idp             | margin     | should            | should not      | should not           |
+      | firsttimesignup | #login-method-firsttimesignup | linewithor | should not        | should not      | should               |
+      | firsttimesignup | #login-method-firsttimesignup | line       | should not        | should          | should not           |
+      | guest           | #login-method-guest           | linewithor | should not        | should not      | should               |
+      | guest           | #login-method-guest           | line       | should not        | should          | should not           |
+
+  Scenario Outline: Setting: Login provider divider type - First provider never has a divider
+    Given the following config values are set as admin:
+      | config                      | value     | plugin            |
+      | loginlayout                 | vertical  | theme_boost_union |
+      | loginlocalloginenable       | yes       | theme_boost_union |
+      | loginidploginenable         | yes       | theme_boost_union |
+      | loginselfregistrationenable | yes       | theme_boost_union |
+      | loginguestloginenable       | yes       | theme_boost_union |
+      | login<provider>dividertype  | <setting> | theme_boost_union |
+      | loginorderlocal             | <localorder>           | theme_boost_union |
+      | loginorderidp               | <idporder>             | theme_boost_union |
+      | loginorderfirsttimesignup   | <firsttimesignuporder> | theme_boost_union |
+      | loginorderguest             | <guestorder>           | theme_boost_union |
+    And the following config values are set as admin:
+      | config           | value               |
+      | auth             | manual,email,oauth2 |
+      | registerauth     | email               |
+      | guestloginbutton | 1                   |
+    And I log in as "admin"
+    And I navigate to "Server > OAuth 2 services" in site administration
+    And I press "Google"
+    And I should see "Create new service: Google"
+    And I set the following fields to these values:
+      | Name          | Testing service   |
+      | Client ID     | thisistheclientid |
+      | Client secret | supersecret       |
+    And I press "Save changes"
+    And I log out
+    When I am on login page
+    Then "<selector> .login-margin" "css_element" should not exist
+    And "<selector> .login-divider" "css_element" should not exist
+    And "<selector> .login-separator" "css_element" should not exist
+
+    Examples:
+      | provider        | selector                      | setting    | localorder | idporder | firsttimesignuporder | guestorder |
+      | local           | #login-method-local           | line       | 1          | 2        | 3                    | 4          |
+      | idp             | #login-method-idp             | linewithor | 2          | 1        | 3                    | 4          |
+      | firsttimesignup | #login-method-firsttimesignup | margin     | 2          | 3        | 1                    | 4          |
+      | guest           | #login-method-guest           | line       | 2          | 3        | 4                    | 1          |
 
   @javascript
   Scenario Outline: Setting: Login form layout tabs - Verify tabs structure and primarylogin functionality

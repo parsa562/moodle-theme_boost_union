@@ -504,9 +504,9 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And I click on "Add content" "button" in the "New section" "section"
     And I click on "Activity or resource" "button" in the "New section" "section"
     # First, we test that the default filter is _not_ set anymore.
-    Then DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should not have a CSS filter close to hex color "<originalhex>"
+    Then DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should not have a CSS filter close to hex color "<originalhex>"
     # And then we test if the applied filter is close enough to the hex color.
-    And DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should have a CSS filter close enough to hex color "<colorhex>"
+    And DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should have a CSS filter close enough to hex color "<colorhex>"
 
     # Unfortunately, we can only test 5 out of 7 purpose types as Moodle does does not ship with any activity with the
     # administration and interface types. But this should be an acceptable test coverage anyway.
@@ -533,9 +533,9 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And I click on "Add content" "button" in the "New section" "section"
     And I click on "Activity or resource" "button" in the "New section" "section"
     # First, we test that the default filter is _not_ set anymore.
-    Then DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should not have a CSS filter close to hex color "<originalhex>"
+    Then DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should not have a CSS filter close to hex color "<originalhex>"
     # And then we test if the applied filter is close enough to the hex color.
-    And DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should have a CSS filter close enough to hex color "<colorhex>"
+    And DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should have a CSS filter close enough to hex color "<colorhex>"
 
     # We only test 1 out of 6 purpose types as we have tested the rest already in the previous scenario.
     Examples:
@@ -556,9 +556,9 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And I click on "Add content" "button" in the "New section" "section"
     And I click on "Activity or resource" "button" in the "New section" "section"
     # First, we test that the default filter is _not_ set anymore.
-    Then DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should not have a CSS filter close to hex color "<originalhex>"
+    Then DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should not have a CSS filter close to hex color "<originalhex>"
     # And then we test if the applied filter is close enough to the hex color.
-    And DOM element ".chooser-container .activityiconcontainer.modicon_<modname> img" should have a CSS filter close enough to hex color "<colorhex>"
+    And DOM element "[data-region=chooser-container] [data-internal=<modname>] .activityiconcontainer img" should have a CSS filter close enough to hex color "<colorhex>"
 
     # We only test 1 out of 6 purpose types as we have tested the rest already in the previous scenario.
     Examples:
@@ -723,6 +723,48 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     Then "#footnote" "css_element" should exist
     And I should see "My global footnote" in the "#footnote" "css_element"
 
+  Scenario: Flavours: Footer popover content - Set flavour-specific footer popover contents (with no global footer popover contents set)
+    Given the following "theme_boost_union > flavours" exist:
+      | title                | applytocategories_ids | content_footerpopoverstart      | content_footerpopoverend      |
+      | My shiny new flavour | CAT1                  | <p>My flavour popover start</p> | <p>My flavour popover end</p> |
+    When I log in as "admin"
+    And I am on "Course 1" course homepage
+    Then I should see "My flavour popover start" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
+    And I should see "My flavour popover end" in the ".theme_boost_union_footer_popovercontentend" "css_element"
+
+  Scenario: Flavours: Footer popover content - Set flavour-specific footer popover contents (with global footer popover contents being overridden)
+    Given the following config values are set as admin:
+      | config                    | value                          | plugin            |
+      | footerpopovercontentstart | <p>My global popover start</p> | theme_boost_union |
+      | footerpopovercontentend   | <p>My global popover end</p>   | theme_boost_union |
+    And the following "theme_boost_union > flavours" exist:
+      | title                | applytocategories_ids | content_footerpopoverstart      | content_footerpopoverend      |
+      | My shiny new flavour | CAT1                  | <p>My flavour popover start</p> | <p>My flavour popover end</p> |
+    When I log in as "admin"
+    And I am on "Course 1" course homepage
+    Then I should see "My flavour popover start" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
+    And I should not see "My global popover start" in the ".footer-content-popover" "css_element"
+    And I should see "My flavour popover end" in the ".theme_boost_union_footer_popovercontentend" "css_element"
+    And I should not see "My global popover end" in the ".footer-content-popover" "css_element"
+
+  Scenario: Flavours: Footer popover content - Do not set flavour-specific footer popover contents (with global footer popover contents being served properly)
+    Given the following config values are set as admin:
+      | config                    | value                          | plugin            |
+      | footerpopovercontentstart | <p>My global popover start</p> | theme_boost_union |
+      | footerpopovercontentend   | <p>My global popover end</p>   | theme_boost_union |
+    And the following "theme_boost_union > flavours" exist:
+      | title                | applytocategories_ids |
+      | My shiny new flavour | CAT1                  |
+    When I log in as "admin"
+    And I am on "Course 1" course homepage
+    Then I should see "My global popover start" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
+    And I should see "My global popover end" in the ".theme_boost_union_footer_popovercontentend" "css_element"
+
+  # Please note: In theme designer mode, Moodle core sends the stylesheets with an Expires header of
+  # THEME_DESIGNER_CACHE_LIFETIME (10 seconds by default) and without a revision in the stylesheet URL. If this
+  # scenario runs faster than that, the browser serves the old stylesheet from its cache and the last step fails.
+  # Github actions therefore sets THEME_DESIGNER_CACHE_LIFETIME to 0 in config.php via the extra-config input
+  # of the moodle-plugin-ci workflow, see https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/1415.
   @javascript
   Scenario Outline: Flavours: Flavour SCSS should be applied immediately in normal operation as well as if theme designer mode is on (with styles_debug.php).
     Given the following config values are set as admin:
@@ -732,6 +774,13 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And the following "theme_boost_union > flavours" exist:
       | title        | applytocategories_ids | look_rawscss                         |
       | Test Flavour | CAT1                  | .path-course-view #page-header h1 { display: none; } |
+    # Please note: The admin user gets the plain textarea editor here to avoid loading TinyMCE on the flavour edit form.
+    # In theme designer mode, each TinyMCE instance fetches the editor CSS from styles_debug.php which compiles
+    # the editor SCSS on every request. Since Moodle 5.3 (MDL-68037), this compilation is very slow and makes the
+    # TinyMCE autosave AJAX calls run into the pending JS timeout of Behat on Github actions.
+    And the following "user preferences" exist:
+      | user  | preference | value    |
+      | admin | htmleditor | textarea |
     When I log in as "admin"
     And I am on "Course 1" course homepage
     And I should not see "Course 1" in the "#page-header .page-header-headings" "css_element"

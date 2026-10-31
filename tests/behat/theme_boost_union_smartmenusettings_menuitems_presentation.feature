@@ -5,11 +5,23 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
   I need to be able to configure the theme Boost Union plugin
 
   Background:
-    Given the following "courses" exist:
-      | fullname               | shortname | category |
-      | Test course1           | C1        | 0        |
-      | Test course2           | C2        | 0        |
-      | Test course word count | C3        | 0        |
+    # For this feature, we would not really need the home and my courses nodes. However, we still enable them to keep the feature
+    # and the steps with the 'More' menu in particular consistent with previous Boost Union releases.
+    Given the following config values are set as admin:
+      | config          | value |
+      | enablemyhome    | 1     |
+      | enablemycourses | 1     |
+    And the following "custom field categories" exist:
+      | name                 | component   | area   | itemid |
+      | Course custom fields | core_course | course | 0      |
+    And the following "custom fields" exist:
+      | name              | category             | type | shortname |
+      | Test custom field | Course custom fields | text | testcf    |
+    And the following "courses" exist:
+      | fullname               | shortname                     | category | customfield_testcf                   |
+      | Test course1           | C1                            | 0        | Custom1                              |
+      | Test course2           | C2                            | 0        | Custom2                              |
+      | Test course word count | C3 has a very long short name | 0        | Custom3 has a very long custom field |
     And the following "users" exist:
       | username |
       | user1    |
@@ -51,21 +63,99 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
 
   Scenario Outline: Smartmenus: Menu items: Presentation - Display the different fields as smart menu item title
     Given the following "theme_boost_union > smart menu item" exists:
-      | menu         | Quick links       |
-      | title        | Available courses |
-      | itemtype     | Dynamic courses   |
-      | category     | 0                 |
-      | displayfield | <selectnamefield> |
-      | textcount    | <numberofwords>   |
+      | menu                    | Quick links       |
+      | title                   | Available courses |
+      | itemtype                | Dynamic courses   |
+      | category                | 0                 |
+      | displayfield            | <firstlinefield>  |
+      | displayfieldcustomfield | <firstlinecustom> |
     When I log in as "admin"
     Then I should see smart menu "Quick links" item "<showntitle>" in location "Main, Menu, User, Bottom"
     And I should not see smart menu "Quick links" item "<notshowntitle>" in location "Main, Menu, User, Bottom"
 
     Examples:
-      | selectnamefield   | numberofwords | showntitle             | notshowntitle          |
-      | Course short name |               | C1                     | Test course            |
-      | Course full name  |               | Test course word count | C1                     |
-      | Course full name  | 2             | Test course..          | Test course word count |
+      | firstlinefield                          | firstlinecustom | showntitle             | notshowntitle |
+      | Course short name                       |                 | C1                     | Test course   |
+      | Course full name                        |                 | Test course word count | C1            |
+      | Custom course field                     | testcf          | Custom1                | Test course1  |
+      | Course full name (Course short name)    |                 | Test course1 (C1)      | Custom1       |
+      | Course short name (Course full name)    |                 | C1 (Test course1)      | Custom1       |
+      | Course full name (Custom course field)  | testcf          | Test course1 (Custom1) | C1            |
+      | Course short name (Custom course field) | testcf          | C1 (Custom1)           | Test course1  |
+
+  Scenario Outline: Smartmenus: Menu items: Presentation - Display the different fields as smart menu item second line (Show second line cases)
+    Given the following "theme_boost_union > smart menu item" exists:
+      | menu                          | Quick links        |
+      | title                         | Available courses  |
+      | itemtype                      | Dynamic courses    |
+      | category                      | 0                  |
+      # We just set the first line to avoid false positives with the second line values.
+      | displayfield                  | <firstlinefield>   |
+      | displayfieldcustomfield       | <firstlinecustom>  |
+      | displayfieldsecond            | <secondlinefield>  |
+      | displayfieldsecondcustomfield | <secondlinecustom> |
+    When I log in as "admin"
+    Then I should see smart menu "Quick links" item "<showntitle>" in location "Main, Menu, User, Bottom"
+
+    Examples:
+      | firstlinefield      | firstlinecustom | secondlinefield     | secondlinecustom | showntitle   |
+      | Custom course field | testcf          | Course full name    |                  | Test course1 |
+      | Course full name    |                 | Course short name   |                  | C1           |
+      | Course full name    |                 | Custom course field | testcf           | Custom1      |
+
+  Scenario: Smartmenus: Menu items: Presentation - Display the different fields as smart menu item second line (No second line case)
+    Given the following "theme_boost_union > smart menu item" exists:
+      | menu                    | Quick links          |
+      | title                   | Available courses    |
+      | itemtype                | Dynamic courses      |
+      | category                | 0                    |
+      # We just set the first line to avoid false positives with the second line values.
+      | displayfield            | Custom course field  |
+      | displayfieldcustomfield | testcf               |
+      | displayfieldsecond      | -- No second line -- |
+    When I log in as "admin"
+    Then I should not see smart menu "Quick links" item "Test course1" in location "Main, Menu, User, Bottom"
+    And I should not see smart menu "Quick links" item "C1" in location "Main, Menu, User, Bottom"
+    And ".boost-union-smartmenu-secondline" "css_element" should not exist
+
+  Scenario Outline: Smartmenus: Menu items: Presentation - Display the smart menu item course full name with a word count
+    Given the following "theme_boost_union > smart menu item" exists:
+      | menu                          | Quick links              |
+      | title                         | Available courses        |
+      | itemtype                      | Dynamic courses          |
+      | category                      | 0                        |
+      | displayfield                  | <firstlinefield>         |
+      | displayfieldcustomfield       | <firstlinecustom>        |
+      | textcount                     | <numberofwords>          |
+      | displayfieldsecond            | <secondlinefield>        |
+      | displayfieldsecondcustomfield | <secondlinecustom>       |
+      | textcountsecond               | <secondlinewords>        |
+    When I log in as "admin"
+    Then I should see smart menu "Quick links" item "<showntitle>" in location "Main, Menu, User, Bottom"
+    And I should not see smart menu "Quick links" item "<notshowntitle>" in location "Main, Menu, User, Bottom"
+
+    Examples:
+      | firstlinefield                         | firstlinecustom | numberofwords | secondlinefield      | secondlinecustom | secondlinewords | showntitle                                           | notshowntitle          |
+      # First line - no word count: full course name is shown unchanged.
+      | Course full name                       |                 |               | -- No second line -- |                  |                 | Test course word count                               | Test course..          |
+      # First line - Course short name: short name is never truncated, even if textcount is set.
+      | Course short name                      |                 | 2             | -- No second line -- |                  |                 | C3 has a very long short name                        | C3 has..               |
+      # First line - Custom course field: custom field is never truncated, even if textcount is set.
+      | Custom course field                    | testcf          | 2             | -- No second line -- |                  |                 | Custom3 has a very long custom field                 | Custom3 has..          |
+      # First line - Course full name, word count = 2: full name is truncated.
+      | Course full name                       |                 | 2             | -- No second line -- |                  |                 | Test course..                                        | Test course word count |
+      # First line - combined fields: only the full name part is truncated, the other part is kept intact.
+      | Course full name (Course short name)   |                 | 2             | -- No second line -- |                  |                 | Test course.. (C3 has a very long short name)        | Test course word count |
+      | Course short name (Course full name)   |                 | 2             | -- No second line -- |                  |                 | C3 has a very long short name (Test course..)        | Test course word count |
+      | Course full name (Custom course field) | testcf          | 2             | -- No second line -- |                  |                 | Test course.. (Custom3 has a very long custom field) | Test course word count |
+      # Second line - Course full name, no word count: full course name is shown unchanged in second line.
+      | Course short name                      |                 |               | Course full name     |                  |                 | Test course word count                               | Test course..          |
+      # Second line - Course short name: short name is never truncated, even if textcountsecond is set.
+      | Course full name                       |                 | 2             | Course short name    |                  | 2               | C3 has a very long short name                        | C3 has..               |
+      # Second line - Custom course field: custom field is never truncated, even if textcountsecond is set.
+      | Course full name                       |                 | 2             | Custom course field  | testcf           | 2               | Custom3 has a very long custom field                 | Custom3 has..          |
+      # Second line - Course full name, word count = 2: full name in second line is truncated.
+      | Course short name                      |                 |               | Course full name     |                  | 2               | Test course..                                        | Test course word count |
 
   @javascript
   Scenario: Smartmenus: Menu items: Presentation - Display the menu item title in different types
@@ -350,7 +440,7 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | url          | https://moodle.org/3 |
       | textposition | Bottom overlay       |
     And all Boost Union MUC caches are purged
-    And I am on site homepage
+    And I am on homepage
     And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
     Then I should see "Resources below" in the ".primary-navigation .dropdown-menu.show" "css_element"
     And "//div[contains(@class, 'card-text-below')]//a[contains(., 'Resources below')]" "xpath_element" should exist
@@ -378,7 +468,7 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | url             | https://example.com |
       | backgroundcolor | #031FC3             |
     And all Boost Union MUC caches are purged
-    And I am on site homepage
+    And I am on homepage
     And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
     Then DOM element ".dropdown-menu .menu-item-static .content-block" should have computed style "background-color" "rgb(3, 31, 195)"
     And I click on "Quick links" "link" in the ".boost-union-menubar" "css_element"
@@ -390,7 +480,7 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I upload "theme/boost_union/tests/fixtures/backimg.png" file to "Card image" filemanager
     And I click on "Save changes" "button"
     And all Boost Union MUC caches are purged
-    And I am on site homepage
+    And I am on homepage
     And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
     Then the image at "//div[contains(@class, 'primary-navigation')]//img[contains(@src, 'pluginfile.php') and contains(@src, '/theme_boost_union/smartmenus_itemimage/')]" "xpath_element" should be identical to "theme/boost_union/tests/fixtures/backimg.png"
 
@@ -410,14 +500,14 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I click on "Preferred language" "link"
     And I set the field "Preferred language" to "English ‎(en)‎"
     And I press "Save changes"
-    And I am on site homepage
+    And I am on homepage
     Then I should see smart menu "Quick links" item "Lorem ipsum" in location "Main, Menu, User, Bottom"
     And I should not see smart menu "Quick links" item "Dolor sit amet" in location "Main, Menu, User, Bottom"
     And I follow "Preferences" in the user menu
     And I click on "Preferred language" "link"
     And I set the field "Preferred language" to "Deutsch ‎(de)‎"
     And I press "Save changes"
-    And I am on site homepage
+    And I am on homepage
     Then I should see smart menu "Quick links" item "Dolor sit amet" in location "Main, Menu, User, Bottom"
     And I should not see smart menu "Quick links" item "Lorem ipsum" in location "Main, Menu, User, Bottom"
 
@@ -441,7 +531,7 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | itemtype | Static             |
       | url      | http://moodle.org  |
     And all Boost Union MUC caches are purged
-    And I am on site homepage
+    And I am on homepage
     Then "Links" "theme_boost_union > Main menu smart menu" should exist
     And "Links" "theme_boost_union > Menu bar smart menu" should exist
     And "Links" "theme_boost_union > User menu smart menu" should exist
@@ -467,7 +557,7 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | itemtype | Static             |
       | url      | http://moodle.org  |
     And all Boost Union MUC caches are purged
-    And I am on site homepage
+    And I am on homepage
     Then "Smartmenu Resource" "theme_boost_union > Main menu smart menu item" should exist
     And "Smartmenu Resource" "theme_boost_union > Menu bar smart menu item" should exist
     And "Smartmenu Resource" "theme_boost_union > User menu smart menu item" should exist

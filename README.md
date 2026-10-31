@@ -1,7 +1,7 @@
 moodle-theme_boost_union
 ========================
 
-[![Moodle Plugin CI](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions/workflows/moodle-plugin-ci.yml/badge.svg?branch=MOODLE_500_STABLE)](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3AMOODLE_500_STABLE)
+[![Moodle Plugin CI](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions/workflows/moodle-plugin-ci.yml/badge.svg?branch=main)](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3Amain)
 
 Theme Boost Union is an enhanced child theme of Boost which is intended, on the one hand, to make Boost simply more configurable and, on the other hand, to provide helpful additional features for the daily Moodle operation of admins, teachers and students.
 
@@ -9,7 +9,7 @@ Theme Boost Union is an enhanced child theme of Boost which is intended, on the 
 Requirements
 ------------
 
-This theme requires Moodle 5.0+
+This theme requires Moodle 5.2+
 
 
 Motivation for this theme
@@ -252,26 +252,6 @@ In this section, you can modify the look & feel of the course listing on the cat
 
 With this setting, you can modify the look & feel of the category listing on the category index pages and on site home. As an alternative to the way how Moodle core presents them, you can present the category listing as a refreshed list of boxes.
 
-#### Tab "Blocks"
-
-##### Timeline block
-
-###### Tint timeline activity icons
-
-With this setting, you can tint the activity icons in the timeline block based on the activity purposes. By default, Moodle core displays them just as black icons.
-
-##### Upcoming events block
-
-###### Tint upcoming events activity icons
-
-With this setting, you can tint the activity icons in the upcoming events block based on the activity purposes. By default, Moodle core displays them just as black icons.
-
-##### Recently accessed items block
-
-###### Tint recently accessed items activity icons
-
-With this setting, you can tint the activity icons in the recently accessed items block based on the activity purposes. By default, Moodle core displays them just as black icons.
-
 ##### Activities block
 
 ###### Tint activities activity icons
@@ -413,9 +393,13 @@ With this setting a back to top button will appear in the bottom right corner of
 
 With this setting, upon toggling edit mode on and off, the scroll position at where the user was when performing the toggle is preserved.
 
-###### Activity navigation elements
+###### Activity & section navigation elements
 
-With this setting the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.
+With this setting, you can control the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0 in favour of the course index. With Boost Union, you can bring them back or hide them completely. The setting has three options:
+
+* No change: The elements are displayed as Moodle core decides. Moodle core does not display them in course formats which use the course index (like the 'Custom sections' and 'Weekly sections' formats), but it still displays them in course formats which do not use the course index (like the 'Social' format or third party course formats with a disabled course index) and on activity pages which are embedded in a frame.
+* Show: The elements are displayed in all courses. Furthermore, within courses using the 'one section per page' mode, similar elements for the previous and next section are displayed as well.
+* Hide: The elements are hidden in all courses, even in courses where Moodle core would display them. Course formats which render their own section navigation elements will still display them as these are not controlled by this setting.
 
 ###### Show navigation on policy overview page
 
@@ -455,6 +439,14 @@ Outside regions can not only be enabled with the layout settings above, their ap
 
 With these settings, the right-hand block drawer of site home will be displayed in its expanded state by default.
 
+#### Tab "Course"
+
+In this tab there are the following settings:
+
+##### Sections
+
+Here, you control the appearance of section 0 (the general section) as well as the appearance of all other sections on the course main page. You can control the collapsing behaviour of these sections. Please note that there are some technical limitations which are explained in the settings' descriptions.
+
 #### Tab "Links"
 
 In this tab there are the following settings:
@@ -491,6 +483,12 @@ In this tab there are the following settings:
 
 With this setting, a hint will appear at the top of the Moodle page if JavaScript is not enabled. This is particularly helpful as several Moodle features do not work without JavaScript.
 
+##### Additional HTML
+
+###### Process additional HTML footer with filters
+
+With this setting, you can enable that the content of the Moodle core setting 'Before BODY is closed' on the Additional HTML settings page is processed by the Moodle text filters before it is added to the page. This is useful if you use that setting to show visible content, like a short text or a list of links, at the end of the footer popover and want to use, for example, the multi-language content filter there. But before you enable this setting, please consider that there is a much better way to show visible content in the footer popover: The 'Additional content at the beginning of the footer popover' and 'Additional content at the end of the footer popover' settings in the Content -> Footer tab are made exactly for this purpose. Their content is shown in separate sections of the footer popover and is processed with the Moodle text filters anyway. If you still want to enable this setting, please note that Moodle core processed this content with the text filters temporarily in some Moodle versions, but removed this processing again due to problems: All enabled text filters will process the whole content and might break raw HTML and JavaScript code, like analytics or tracking code. Thus, please enable this setting only if you really need it and test your additional HTML footer content thoroughly afterwards.
+
 ### Settings page "Content"
 
 #### Tab "Footer"
@@ -502,6 +500,14 @@ In this tab there are the following settings:
 ###### Footnote
 
 Whatever you add to this textarea will be displayed at the end of a page, in the footer. Refer to the setting description on the settings page for further instructions.
+
+###### Page layouts for footnote
+
+With this setting, you can control on which page layouts the footnote is shown. If no layout is selected, the footnote will not be shown on any layout.
+
+###### Hide footnote when printing
+
+With this setting, you can hide the footnote when a page is printed. The footnote will still be shown on screen as usual.
 
 ##### Footer
 
@@ -520,6 +526,14 @@ With these settings, you can entirely suppress particular links in the footer.
 ###### Suppress footer output by plugin ...
 
 With this setting, you can entirely suppress the footer output by particular plugins.
+
+###### Additional content at the beginning of the footer popover
+
+Whatever you add to this textarea will be displayed in a separate section at the beginning of the footer popover, i.e. above all other links and information in the footer popover.
+
+###### Additional content at the end of the footer popover
+
+Whatever you add to this textarea will be displayed in a separate section at the end of the footer popover, i.e. below all other links and information in the footer popover.
 
 #### Tab "Static pages"
 
@@ -679,6 +693,10 @@ These capabilities are used to control who is allowed to edit a particular block
 
 This capability is used to control who is able to override the course header settings in a course (if this feature was enabled in the theme settings). By default, it is assigned to teachers and managers.
 
+### theme/boost_union:overridesectionincourse
+
+This capability is used to control who is able to override the section settings (appearance of section 0 and appearance of sections ≥ 1) in a course (if this feature was enabled in the theme settings). By default, it is assigned to teachers and managers.
+
 ### theme/boost_union:transfercourseheaderduringimport
 
 This capability is used to control who will trigger the transfer of a course header during course import. Controlling this by a capability is an option due to technical limitations, please see the "Backup & Restore" section in this file for details. By default, it is assigned to managers.
@@ -767,15 +785,22 @@ As you have read in the introduction, the main design principle of Boost Union i
   Boost Union especially allows you to override the uploaded favicon within its flavours.
   Against this background, if you switch from Boost to Boost Union and had a favicon shown in Boost before, this favicon won't be shown until you upload it again in Boost Union directly.
 * Login page authentication instructions:
-  Boost Union does not output the Moodle core setting `auth_instructions` (authentication method instructions) on the login page anymore.
-  In Moodle core, this setting is shown in context of the user self-registration method.
-  However, in Boost Union with its enhanced login page layouts (tabs, accordion), the self-registration section might not be visible after page load, making the instructions hidden from view.
+  Boost Union does not output the Moodle core setting `auth_instructions` (authentication method instructions) on the login page.
+  In Moodle core, this setting is shown in the left hand layout on the login page (on larger screens) and below the login form (on smaller screens).
+  Additionally, if the Moodle core setting `auth_instructions` is empty, Moodle core shows some advertisement text at this place instead.
+  However, in Boost Union with its login page arrangements (side-by-side, legacy) and its enhanced login page layouts (tabs, accordion), these implicit behavious would have been problematic.
   To improve the admin experience and provide a cleaner solution, Boost Union offers dedicated login instructions settings for each login method as well as generic instructions.
   Against this background, if you switch from Boost to Boost Union and had a text configured in the Moodle core `auth_instructions` setting, this text won't be shown until you copy it to Boost Union's own login instructions.
+* Login page texts:
+  Boost Union has extensive options to control the look of the login page. When implementing the settings to individually configure the login page elements, we sometimes added strings to Boost Union itself instead of using the login page strings from Moodle core. This was done to improve future-proofness of the login page settings. Against this background, you should be aware that several strings on the login page coming from Boost Union might be the same as the strings in Moodle core, but might require separate translation into your language.
+* Login page widgets:
+  In addition to the previous item, to implement the various login page options, we sometimes had to diverge from the Moodle Core login page behaviour as it would have been too complicated to keep up exactly the same look as Moodle core for all Boost Union setting permutations. Against this background, you should be aware that the out-of-the box configuration of Boost Union might not 100% match the login page look of Moodle core and you might even not be able to always replicate 100% the same login page look as you would get with Moodle Core. On the other hand, with the Boost Union login page settings you are much more flexible.
 * Footer popover:
   As soon as you click the footer button (questionmark icon) in the bottom right corner of the screen, a popover with several links appears. However, the content of this link list is far from being well-structured and looks more like a garage sale. When implementing the settings to individually suppress each of these popover links, we had to make some code re-arrangements which result in the fact that the popover links are slightly more well-structured even if you do not enable any setting in Boost Union.
 * Clickable header and transition time in the user's menu third level:
   Due to the way how the smart menu was integrated into the user menu, as soon as at least one smart menu exists on the page, the header of the language menu in the user menu is now fully clickable - compared to Boost core where only the 'back' arrow in the language menu is clickable - and the transition time to open the language menu is shortened. This should be a neglectible difference to Boost core.
+* Activity and section navigation styling:
+  Boost Union restyles the core activity navigation (previous / next activity links) and section navigation (previous / next section links) to look like Bootstrap small secondary buttons and, along the way, fixes the position of the "next section" arrow which Moodle core renders in front of the section name instead of behind it. This restyling is always active as soon as the "Activity & section navigation elements" setting is set to "Show" and there is intentionally no setting to switch back to the original Moodle core look. This is simply because the original look is rather oldfashioned and Moodle core does not really show these navigation elements anywhere else in its default course formats anymore.
 
 
 Companion plugin local_navbarplus
@@ -861,6 +886,9 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
 3. `theme_boost_union` > `get_pre_scss()`:
    * Adds the Boost Union Pre SCSS from disk\
      (which is located on `/theme/boost_union/scss/boost_union/pre.scss` and which is empty currently)
+   * If we are on Moodle Workplace™:\
+     * Adds the Boost Union MWP Pre SCSS from disk\
+       (which is located on `/local/boost_union_mwp/scss/pre.scss`)
    * Sets several SCSS variables based on Boost Union or Boost Union flavour settings
    * Adds the Boost Union external Pre SCSS\
      (which is set on `/admin/settings.php?section=theme_boost_union_look#theme_boost_union_look_scss`)
@@ -868,13 +896,20 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
      (which is set within the active flavour on `/theme/boost_union/flavours/overview.php`)
 
 4. `theme_boost_union` > `get_main_scss()`:
-   * Calls the `theme_boost` > `get_main_scss()` function
-     * Adds the Boost Core Preset\
-       (which is set on `/admin/settings.php?section=themesettingboost` and defaults to the `/theme/boost/scss/preset/default.scss` file).
-       With this preset, the FontAwesome library, the Bootstrap library and all the Moodle core stylings are added which means that this preset is the place where all the Moodle core style is added.
+   * If we are on Moodle LMS:
+     * Calls the `theme_boost` > `get_main_scss()` function
+       * Adds the Boost Core Preset\
+         (which is set on `/admin/settings.php?section=themesettingboost` and defaults to the `/theme/boost/scss/preset/default.scss` file).
+         With this preset, the FontAwesome library, the Bootstrap library and all the Moodle core stylings are added which means that this preset is the place where all the Moodle core style is added.
+   * If we are on Moodle Workplace™:\
+     * Calls the `theme_workplace` > `get_main_scss()` function
+       From this parent theme, the FontAwesome library, the Bootstrap library and all the Moodle core and MWP stylings are added which means that this preset is the place where all the Moodle core style is added.
    * Adds the Boost Union Post SCSS from disk\
      (which is located on `/theme/boost_union/scss/boost_union/post.scss`)
      This file holds all the Boost Union specific SCSS code which can be added to the stack without being dependent on specific configurations like configured colors or sizes.
+   * If we are on Moodle Workplace™:\
+     * Adds the Boost Union MWP Post SCSS from disk\
+       (which is located on `/local/boost_union_mwp/scss/post.scss`)
    * Adds the Boost Union external SCSS\
      (which is set on `/admin/settings.php?section=theme_boost_union_look#theme_boost_union_look_scss`)
    * Adds the Boost Union SCSS snippets\
@@ -888,6 +923,9 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
 
 6. `theme_boost_union` > `get_extra_scss()`:
    * Overrides / enhances the background images which have been set before
+   * If we are on Moodle Workplace™:\
+     * Adds the MWP tenant branding Custom SCSS\
+       (which is set within the active tenant on `/admin/tool/tenant/index.php`)
    * Adds the Boost Union flavour Post SCSS\
      (which is set within the active flavour on `/theme/boost_union/flavours/overview.php`)
    * Adds the Boost Union features' SCSS.
@@ -959,6 +997,16 @@ This plugin has not been tested with Moodle's support for right-to-left (RTL) la
 If you want to use this plugin with a RTL language and it doesn't work as-is, you are free to send us a pull request on Github with modifications.
 
 
+Moodle Workplace™ support
+-------------------------
+
+This theme is installable on [Moodle Workplace™](https://moodle.com/products/workplace), but will lack essential Moodle Workplace™ widgets and won't have any support for tenants.
+
+But don't worry, there is the Boost Union MWP edition which provides full Moodle Workplace™ support and which is maintained by Boost Union co-maintainer bdecent. If you want to use Boost Union on Moodle Workplace™, you can find all details on the [bdecent product presentation page](https://bdecent.de/union).
+
+Technical note: The Boost Union MWP edition comes as an additional plugin which is included in / called from all relevant places in this theme's code. Thus, if you like, you can generally evaluate this theme on Moodle Workplace™ directly and order the Boost Union MWP edition as soon as you are ready to.
+
+
 Maintainers
 -----------
 
@@ -1006,6 +1054,7 @@ Moodle an Hochschulen e.V. would like to thank these contributors for their cont
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
 * Carinthia University of Applied Sciences, Mario Wehr: Code
 * Catalyst IT Australia, Brendan Heywood: Code
+* Catalyst IT Australia, Misha Golenkov: Code
 * Catalyst IT Canada, Karl Michael Reyes: Code
 * Catalyst IT Europe, Mark Johnson: Code
 * Catalyst IT Europe, Simon Thornett: Code
@@ -1014,6 +1063,7 @@ Moodle an Hochschulen e.V. would like to thank these contributors for their cont
 * FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
 * Friedrich Schiller University Jena: Funding, Ideating
 * Hochschule Hannover - University of Applied Sciences and Arts: Code, Funding, Ideating
+* Hochschule München - University of Applied Sciences: Funding
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code

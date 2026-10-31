@@ -44,9 +44,13 @@ require_once($CFG->libdir . '/behat/lib.php');
 // Require own locallib.php.
 require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
 
-// Add activity navigation if the feature is enabled.
+// Add activity navigation if the feature is set to 'Show'.
+// Moodle core shows the activity navigation (and the section navigation) as soon as the theme does not use the course index.
+// If the feature is set to 'No change', nothing is done here and Moodle core decides about the activity navigation.
+// If the feature is set to 'Hide', nothing is done here either, but the activity navigation is suppressed
+// in the activity_navigation() function of Boost Union's core_renderer.
 $activitynavigation = get_config('theme_boost_union', 'activitynavigation');
-if ($activitynavigation == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+if ($activitynavigation == THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_SHOW) {
     $PAGE->theme->usescourseindex = false;
 }
 
@@ -65,7 +69,13 @@ if ($PAGE->has_secondary_navigation()) {
     $secondarynavigation = $moremenu->export_for_template($OUTPUT);
     $overflowdata = $PAGE->secondarynav->get_overflow_menu_data();
     if (!is_null($overflowdata)) {
-        $overflow = $overflowdata->export_for_template($OUTPUT);
+        $selectmenu = new \core\output\select_menu(
+            'tertiarynavigation',
+            $overflowdata->urls,
+            $overflowdata->selected,
+        );
+        $selectmenu->set_label($overflowdata->label, $overflowdata->labelattributes);
+        $overflow = $selectmenu->export_for_template($OUTPUT);
     }
 }
 
