@@ -146,3 +146,199 @@
         }
     }
 }
+
+/* Moodle 5.3 docks the drawers next to the course content (below the page title, as high as
+   their content, grey, below the navbar's layer) on standard and limited-width pages. Salek
+   keeps them as before 5.3: flush with the window edge, full window height (see "full-height
+   desktop drawers" in _layout.scss), white, above the navbar. Boost Union undoes the docking the
+   same way when outside block regions are shown (see scss/boost_union/post.scss).
+   !important as Moodle core's selectors for the docked drawers are highly specific. */
+/* stylelint-disable declaration-no-important */
+@include media-breakpoint-up(lg) {
+    .pagelayout-standard,
+    body.limitedwidth {
+        .drawer.drawer-left,
+        .drawer.drawer-right {
+            z-index: 1015 !important;
+            max-height: none !important;
+            padding-bottom: 0 !important;
+            clip-path: none !important;
+            border-radius: 0 !important;
+        }
+
+        .drawer.drawer-left {
+            right: auto !important;
+            left: calc(-#{$drawer-left-width} - 10px) !important;
+            width: $drawer-left-width !important;
+
+            &.show {
+                left: 0 !important;
+            }
+        }
+
+        .drawer.drawer-right {
+            left: auto !important;
+            right: calc(-#{$drawer-right-width} - 10px) !important;
+
+            &.show {
+                right: 0 !important;
+            }
+        }
+
+        // Moodle 5.3 also moves the content down (2.5rem) to line it up with the docked drawers.
+        #page.drawers .main-inner,
+        #page.drawers .theme-boost-union-header-main-inner {
+            margin-top: 1.5rem !important;
+        }
+
+        .drawer-toggles {
+            .drawer-left-toggle {
+                left: 0 !important;
+                right: auto !important;
+            }
+
+            .drawer-right-toggle {
+                right: 0 !important;
+                left: auto !important;
+            }
+        }
+    }
+}
+/* stylelint-enable declaration-no-important */
+
+// Drawer colours as before 5.3 (5.3 made the left drawers grey-200).
+#theme_boost-drawers-courseindex {
+    background-color: $salek-surface;
+}
+
+#theme_boost-drawers-primary {
+    background-color: var(--bs-gray-100);
+}
+
+// Next to an open drawer the page keeps only 1rem of its side padding, as in Moodle 5.0 (5.3 keeps
+// all of it, which made the content 32px narrower).
+@include media-breakpoint-up(lg) {
+    #page.drawers {
+        &.show-drawer-left {
+            padding-left: 1rem;
+        }
+
+        &.show-drawer-right {
+            padding-right: 1rem;
+        }
+    }
+}
+
+/* The drawers' header (course index, blocks): a title section level with the navbar (the same
+   height, its title on the navbar's middle) with a hairline under it, the drawer's name as a clear
+   title, and a plain close button (x) instead of Moodle 5.3's panel icon. Moodle 5.3 also gives
+   the header a shadow while the drawer's content is scrolled; the hairline separates it instead. */
+.drawer .drawerheader {
+    box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+    @include media-breakpoint-up(md) {
+        padding-top: 16px !important; /* stylelint-disable-line declaration-no-important */ // The navbar's top (over 5.3's docked-drawer padding).
+    }
+
+    .drawerheadertop {
+        align-items: center;
+        min-height: 75px; // The navbar's height.
+        height: auto;
+        padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over 5.3's docked-drawer gap.)
+        padding-inline: 16px 12px;
+        border-bottom: 1px solid $salek-line;
+    }
+
+    .drawerheading {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        a,
+        .courseindex-link {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .m-1.)
+            color: $salek-ink;
+            font-size: 1rem;
+            font-weight: 700;
+            opacity: 1;
+        }
+    }
+
+    .drawerheading,
+    .draweractions {
+        display: flex;
+        align-self: center;
+        align-items: center;
+    }
+
+    .drawertoggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 0;
+        border-radius: $salek-radius-sm;
+        --bs-btn-bg: transparent;
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */ // (Over 5.3's icon button fill.)
+        color: $salek-message-muted;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-close, 18px);
+        }
+
+        > span,
+        .icon {
+            display: none;
+        }
+
+        &:hover {
+            background-color: $salek-soft !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-ink;
+        }
+    }
+}
+
+// The course index's "Collapse all / Expand all": the small outlined pill of the course page, at
+// the end of its row under the title section (instead of Moodle's icon and text under a line).
+#courseindexdrawercontrols {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    padding: 12px 16px 4px !important; /* stylelint-disable-line declaration-no-important */
+
+    hr {
+        display: none;
+    }
+
+    .courseindex-collapsemenu {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border: 1px solid $salek-control-border;
+        border-radius: $salek-button-radius;
+        background-color: $salek-surface;
+        color: var(--bs-primary);
+        font-size: .8125rem;
+        font-weight: 500;
+
+        .icon {
+            display: none;
+        }
+
+        > span::before {
+            @include salek-mask-icon($salek-icon-collapse, 14px);
+            margin-inline-end: 6px;
+            vertical-align: -2px;
+        }
+
+        &[aria-expanded="false"] > span::before {
+            transform: scaleY(-1);
+        }
+
+        &:hover {
+            border-color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), .05);
+        }
+    }
+}
