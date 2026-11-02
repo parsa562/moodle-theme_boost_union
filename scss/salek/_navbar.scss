@@ -1,5 +1,141 @@
 // Salek: Navbar (guest and logged in), user menu, phone navbar and the phone bottom bar.
 
+/* Navbar background: Moodle 5.3 paints the navbar with .bg-body (#f8f9fa, !important);
+   keep it a little lighter than that so it still stands off the grey page. */
+.navbar.fixed-top:not(.boost-union-menubar) {
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* Both navigation bars: Moodle 5.3 draws the items as small rounded pills (.mds-nav-pill) with a
+   dot on the current one; Salek keeps the items of Moodle 5.0 (see "The items of both bars" below):
+   full height with a faint column on hover, the Salek font, a line under the current item.
+   (Tab pages like admin/search.php mark the current tab with .active instead of
+   .mds-nav-pill--selected.) */
+.secondary-navigation .secondarynav-tabbar {
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+
+    // The list may only grow (min-height), never be fixed to the bar's height: Moodle moves
+    // tabs into "More" when the list wraps and gets taller than the bar. The tabs stretch to
+    // the list's height as flex items.
+    > nav {
+        height: 100%;
+    }
+
+    .more-nav {
+        min-height: 100%;
+        align-items: stretch;
+    }
+
+    .nav-item {
+        height: auto;
+    }
+}
+
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation,
+#page.drawers .secondary-navigation .secondarynav-tabbar {
+    .more-nav {
+        gap: 0;
+    }
+
+    .mds-nav-pill {
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .mds-nav-pill,
+    .mds-nav-pill:visited,
+    .mds-nav-pill--selected,
+    .mds-nav-pill--selected:visited,
+    .mds-nav-pill.active {
+        background-color: transparent;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, .035);
+        }
+    }
+}
+
+// The first tab meets the bar's rounded corners.
+#page.drawers .secondary-navigation .secondarynav-tabbar .nav-item:first-child > .mds-nav-pill {
+    border-start-start-radius: $salek-secondary-navbar-radius;
+    border-end-start-radius: $salek-secondary-navbar-radius;
+}
+
+/* The items of both bars, as in Moodle 5.0, for the React pills and for the server-rendered menu
+   shown until React has mounted (see "Menus flashing in" below), so the two never differ:
+   - Top bar: 8px around, dark regular text (15px), a 3px line under the current item.
+   - Tab bar: 8px 16px, links in the link colour, the current tab dark with a 3px line inside it at
+     the bottom (clear of the bar's rounded corner under the first tab). */
+@mixin salek-nav-item($padding) {
+    position: relative;
+    padding: $padding;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    gap: 0; // (The pills put 4px between the label and the "More" arrow.)
+    font-family: inherit;
+
+    .mds-nav-pill__label {
+        font: inherit;
+        line-height: inherit;
+    }
+
+    .mds-nav-pill__indicator {
+        display: none;
+    }
+}
+
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .mds-nav-pill,
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .primarynav-navbar > nav.moremenu .nav-link {
+    @include salek-nav-item(8px);
+    color: var(--bs-body-color);
+    font-size: .9375rem; // (Moodle 5.0: 16px, semi-bold; lighter here.)
+    font-weight: 400;
+}
+
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .mds-nav-pill--selected,
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .mds-nav-pill.active,
+.navbar.fixed-top:not(.boost-union-menubar) .primary-navigation .primarynav-navbar > nav.moremenu .nav-link.active {
+    border-bottom-color: var(--bs-primary);
+}
+
+#page .secondary-navigation .secondarynav-tabbar .mds-nav-pill,
+#page .secondary-navigation .secondarynav-tabbar > nav.moremenu .nav-link {
+    @include salek-nav-item(8px 16px);
+    color: var(--bs-link-color);
+    font-size: .9375rem;
+    font-weight: 400;
+
+    &:hover {
+        color: var(--bs-link-hover-color);
+    }
+}
+
+#page .secondary-navigation .secondarynav-tabbar .mds-nav-pill--selected,
+#page .secondary-navigation .secondarynav-tabbar .mds-nav-pill.active,
+#page .secondary-navigation .secondarynav-tabbar > nav.moremenu .nav-link.active {
+    &,
+    &:hover {
+        color: #000;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        bottom: -3px; // (On the 3px bottom line, where Moodle 5.0 drew it.)
+        inset-inline: 0;
+        width: auto;
+        height: 3px;
+        border-radius: 0;
+        background-color: var(--bs-primary);
+    }
+}
+
+#page .secondary-navigation .secondarynav-tabbar .nav-item:first-child > .mds-nav-pill--selected::before,
+#page .secondary-navigation .secondarynav-tabbar .nav-item:first-child > .mds-nav-pill.active::before,
+#page .secondary-navigation .secondarynav-tabbar > nav.moremenu .nav-item:first-child > .nav-link.active::before {
+    inset-inline-start: $salek-secondary-navbar-radius;
+}
+
 /* Guest navbar: make the login link a subtle outline action. */
 .navbar.fixed-top:not(.boost-union-menubar) {
     .login {
@@ -208,9 +344,8 @@
         background: transparent;
         border-radius: .45rem;
 
-        &:hover,
-        &:focus,
-        &.show {
+        /* No background on hover, click or while the menu is open; keyboard focus only. */
+        &:focus-visible {
             background: rgba(0, 0, 0, .035);
             box-shadow: none;
         }
@@ -380,6 +515,7 @@
    Users who get Moodle's own Site administration item see that instead of
    Calendar (see the :has() rule below). */
 .theme-boost-union-smartmenu #page-wrapper #page #page-footer .navbar.boost-union-bottom-menu {
+    padding-top: 0; // Moodle 5.3 gives .navbar a top padding.
     padding-bottom: env(safe-area-inset-bottom);
     background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
     box-shadow: 0 -6px 24px rgb(15 23 42 / 12%);
@@ -673,5 +809,76 @@ body.path-grade-report-grader {
 
     > .row {
         padding-inline: 0;
+    }
+}
+
+/* Menus flashing in on every page load: Moodle 5.3 renders both navigation bars with React and
+   keeps them invisible (opacity 0) until React has mounted and measured them, which on a slow
+   connection is a second or more of an empty top menu and a missing tab bar. Moodle already
+   puts a server-rendered version of each menu inside the React mount point (its no-JS fallback);
+   show that one right away instead, looking exactly like the React pills, and let React replace
+   it. React measures and settles the overflow into "More" before the browser paints, so no
+   unsettled state is ever shown. Until then, items that do not fit are clipped, not wrapped. */
+/* stylelint-disable declaration-no-important */
+body.jsenabled .navbar.fixed-top .primary-navigation .navigation.primarynav-navbar:not(.primarynav-measured),
+body.jsenabled #page .secondary-navigation .navigation.secondarynav-tabbar,
+body.jsenabled #page .secondary-navigation .secondarynav-tabbar > nav.moremenu {
+    opacity: 1 !important;
+}
+/* stylelint-enable declaration-no-important */
+
+.navbar.fixed-top .primary-navigation .primarynav-navbar > nav.moremenu,
+#page .secondary-navigation .secondarynav-tabbar > nav.moremenu {
+    height: 100%;
+    background-color: transparent; // (Moodle's .moremenu has the body colour: the bar's shows through.)
+
+    // (Its list is a .nav-tabs with a background of its own, which flashed white before React's
+    // list replaced it: the bar's colour shows through instead.)
+    .more-nav {
+        flex-wrap: nowrap;
+        gap: 0;
+        height: 100%;
+        overflow: hidden;
+        background-color: transparent;
+    }
+
+    .nav-item {
+        height: 100%;
+    }
+
+    // Items React always puts into "More".
+    .nav-item[data-forceintomoremenu="true"] {
+        display: none;
+    }
+
+    .nav-link {
+        display: flex;
+        flex-direction: row; // Tab lists (admin/search.php) stack their links' content otherwise.
+        align-items: center;
+        height: 100%;
+        background-color: transparent;
+        white-space: nowrap;
+
+        // Tab links reserve the width of their bold text in a hidden ::after (stacked below
+        // the text by flex-direction: column); not needed for these labels.
+        &:not(.dropdown-toggle)::after {
+            display: none;
+        }
+    }
+}
+
+/* The phone bottom bar (see salek_bottombar.php) covers the page's last 60px: keep that space free
+   and lift the footer buttons above it, as Boost Union 5.2 did for its bottom bar (5.3 dropped
+   the bar and these rules). */
+@include media-breakpoint-down(md) {
+    body.theme-boost-union-bottombar {
+        #page-wrapper #page {
+            padding-bottom: 75px;
+        }
+
+        #boost-union-footer-buttons,
+        &.jsenabled .btn-footer-popover {
+            bottom: calc(60px + 1rem);
+        }
     }
 }
