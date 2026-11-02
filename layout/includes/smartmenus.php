@@ -37,3 +37,6 @@ $includestarredcacheinvalidation = (
     !empty($primarymenu['includestarredcacheinvalidation'])
 );
 $templatecontext['includestarredcacheinvalidation'] = $includestarredcacheinvalidation ? true : false;
+
+// Salek: the phone bottom bar (built in the layout, see salek_bottombar).
+$templatecontext['bottombar'] = $salekbottombar ?? false;

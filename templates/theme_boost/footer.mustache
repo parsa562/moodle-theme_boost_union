@@ -303,6 +303,14 @@
         </div>
     </div>
 
+    {{! Salek: the phone bottom bar (see classes/output/navigation/salek_bottombar.php). }}
+    {{#bottombar}}
+        <nav class="navbar fixed-bottom navbar-light bg-white navbar-expand boost-union-bottom-menu d-block d-md-none" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+            <div class="bottom-navigation">
+                {{> core/moremenu}}
+            </div>
+        </nav>
+    {{/bottombar}}
 </footer>
 {{#js}}
   {{#footerbutton}}

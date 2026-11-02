@@ -76,12 +76,15 @@
 
 <nav class="navbar fixed-top {{navbarcolorclasses}} navbar-expand" aria-label="{{#str}}sitemenubar, admin{{/str}}">
     <div class="container-fluid">
+        {{! Salek: with the phone bottom bar, phones show the logo instead of the menu button. }}
+        {{^bottombar}}
         <button class="navbar-toggler aabtn d-block d-md-none px-1 my-1 border-0" data-toggler="drawers" data-action="toggle" data-target="theme_boost-drawers-primary">
             <span class="navbar-toggler-icon"></span>
             <span class="visually-hidden">{{#str}}sidepanel, core{{/str}}</span>
         </button>
+        {{/bottombar}}
 
-        <a href="{{#alternativelogolinkurl}}{{{alternativelogolinkurl}}}{{/alternativelogolinkurl}}{{^alternativelogolinkurl}}{{{ config.homeurl }}}{{/alternativelogolinkurl}}" class="navbar-brand d-none d-md-flex align-items-center m-0 me-4 p-0 aabtn">
+        <a href="{{#alternativelogolinkurl}}{{{alternativelogolinkurl}}}{{/alternativelogolinkurl}}{{^alternativelogolinkurl}}{{{ config.homeurl }}}{{/alternativelogolinkurl}}" class="navbar-brand {{#bottombar}}d-flex{{/bottombar}}{{^bottombar}}d-none d-md-flex{{/bottombar}} align-items-center m-0 me-4 p-0 aabtn">
 
             {{# output.should_display_navbar_logo }}
                 <img src="{{output.get_compact_logo_url}}" class="logo me-1" alt="{{sitename}}">

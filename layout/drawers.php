@@ -130,6 +130,14 @@ $primary = new theme_boost_union\output\navigation\primary($PAGE);
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
 
+// Salek: the phone bottom bar (Boost Union 5.3 has none). The two body classes are the ones the
+// Salek bottom bar styles (and Boost Union 5.2's bottom bar) use.
+$salekbottombar = (new theme_boost_union\output\navigation\salek_bottombar($PAGE))->export_bottombar($renderer);
+if ($salekbottombar) {
+    $extraclasses[] = 'theme-boost-union-smartmenu';
+    $extraclasses[] = 'theme-boost-union-bottombar';
+}
+
 // Add special class selectors to improve the Smart menus SCSS selectors.
 if (isset($primarymenu['includesmartmenu']) && $primarymenu['includesmartmenu'] == true) {
     $extraclasses[] = 'theme-boost-union-smartmenu';
