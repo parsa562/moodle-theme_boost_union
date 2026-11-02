@@ -98,7 +98,6 @@
     * Added the possibility to show the generic page 2 link.
     * Added the possibility to show the generic page 3 link.
     * Added the accessibility button (and the element to allow JS to add the back-to-top button).
-    * Added the bottom menu bar to show menus in footer for mobile devices.
     * Added the possibility to suppress the footer button (question mark in the circle).
     * Added the possibility to suppress each link in the footer popover individually.
       Three things are particularly important to know:
@@ -122,13 +121,13 @@
             </button>
         {{/output.has_communication_links}}
         {{#footerbutton }}
-            <button class="btn btn-icon rounded-circle bg-secondary btn-footer-popover" data-action="footer-popover" aria-label="{{#str}}showfooter, theme_boost{{/str}}">
+            <button class="btn btn-icon rounded-circle text-bg-secondary btn-footer-popover" data-action="footer-popover" aria-label="{{#str}}showfooter, theme_boost{{/str}}">
                 {{#pix}}e/question, core{{/pix}}
             </button>
         {{/footerbutton }}
         <div id="boost-union-footer-buttons">
             {{#accessibilitybutton}}
-                <a id="btn-accessibility-support" class="btn btn-icon rounded-circle bg-secondary d-print-none" href="{{accessibilitybuttonlink}}" aria-label="{{accessibilitybuttonsrlinktitle}}">
+                <a id="btn-accessibility-support" class="btn btn-icon rounded-circle text-bg-secondary d-print-none" href="{{accessibilitybuttonlink}}" aria-label="{{accessibilitybuttonsrlinktitle}}">
                     <i class="icon fa fa-universal-access fa-fw" aria-hidden="true"></i>
                 </a>
             {{/accessibilitybutton}}
@@ -304,15 +303,6 @@
         </div>
     </div>
 
-    {{#bottombar.drawer}}
-        {{#bottombar}}
-        <nav class="navbar fixed-bottom navbar-light bg-white navbar-expand boost-union-bottom-menu d-block d-md-none" aria-label="{{#str}}sitemenubar, admin{{/str}}">
-            <div class="bottom-navigation">
-                {{> core/moremenu}}
-            </div>
-        </nav>
-        {{/bottombar}}
-    {{/bottombar.drawer}}
 </footer>
 {{#js}}
   {{#footerbutton}}

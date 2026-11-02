@@ -253,11 +253,6 @@ define('THEME_BOOST_UNION_SETTING_STARREDCOURSES_LINKTARGET_DASHBOARD', 'dashboa
 define('THEME_BOOST_UNION_SETTING_GUESTACCESSHINT_WITHOUTPASSWORD', 'withoutpassword');
 define('THEME_BOOST_UNION_SETTING_GUESTACCESSHINT_ALWAYS', 'always');
 
-// The values 'yes' and 'no' of the activity navigation setting are kept from the time when it was a yes/no setting.
-define('THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_SHOW', 'yes');
-define('THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_NOCHANGE', 'no');
-define('THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_HIDE', 'hide');
-
 define('THEME_BOOST_UNION_SETTING_COURSEPROGRESSSTYLE_PERCENTAGE', 'percentage');
 define('THEME_BOOST_UNION_SETTING_COURSEPROGRESSSTYLE_BAR', 'bar');
 
@@ -1255,8 +1250,8 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
         file_safe_save_content($filedata, $candidate);
         send_file($candidate, $filename, $lifetime, 0, false, false, '', false, $serveoptions);
 
-        // Serve the files from the smart menu card images.
-    } else if (in_array($filearea, ['smartmenus_itemimage', 'snippets']) && $context->contextlevel === CONTEXT_SYSTEM) {
+        // Serve the files from the snippets.
+    } else if ($filearea === 'snippets' && $context->contextlevel === CONTEXT_SYSTEM) {
         // Get file storage.
         $fs = get_file_storage();
 

@@ -395,7 +395,7 @@ function theme_boost_union_get_course_related_hints() {
             && is_role_switched($COURSE->id)
     ) {
         // Get the role name switched to.
-        $opts = \user_get_user_navigation_info($USER, $PAGE);
+        $opts = \core\user::get_user_navigation_info($USER, $PAGE);
         $role = $opts->metadata['rolename'];
 
         // Get the URL to switch back (normal role).
@@ -2042,8 +2042,13 @@ function theme_boost_union_get_scss_to_mark_broken_links($theme) {
     $markbrokenlinksconfig = get_config('theme_boost_union', 'markbrokenlinks');
     if (isset($markbrokenlinksconfig) && $markbrokenlinksconfig == THEME_BOOST_UNION_SETTING_SELECT_YES) {
         // Set font color to the 'danger' color.
+        // In the dark color mode, the 'danger' color is lightened (like Moodle core does it for the .text-danger utility)
+        // so that it remains readable on the dark background.
         $scss .= 'a[href*="/brokenfile.php"] {
             color: $danger;
+            @include dark-mode {
+                color: dark-readable($danger);
+            }
         }';
 
         // SCSS to add broken-chain icon in front of the link and respect LTR and RTL while doing this.
@@ -2250,8 +2255,8 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
             $navbartintsetting = get_config('theme_boost_union', 'brandcolor');
         }
         // If a color is now available (either tint or brand color), override the navbar background.
-        // The color is set into the --bu-navbar-bg custom property as well which the elements that have to match the
-        // navbar background (e.g. the expanded search form) consume in scss/boost_union/post.scss.
+        // The color is set into the --bu-navbar-bg custom property which scss/boost_union/post.scss overrides with a
+        // more specific selector in the dark color mode so that the navbar is always dark there.
         if (!empty($navbartintsetting)) {
             $scss .= '.navbar.bg-primary {
                 --bu-navbar-bg: ' . $navbartintsetting . ';
@@ -3121,7 +3126,9 @@ function theme_boost_union_build_fa_icon_map() {
     }
 
     // Define the FontAwesome variables file path first.
-    $variablesfile = $CFG->dirroot . '/theme/boost/scss/fontawesome/_variables.scss';
+    // Since Moodle 5.3 (MDL-88766), FontAwesome is shipped as a bundle in the lib directory outside of the public
+    // directory, which is why the file is looked up relative to $CFG->root and not relative to $CFG->dirroot.
+    $variablesfile = $CFG->root . '/lib/bundles/fontawesome/scss/_variables.scss';
 
     // If the variables file exists.
     if (file_exists($variablesfile)) {
@@ -3370,6 +3377,29 @@ function theme_boost_union_render_setting_override_notification(int $mwp = 0, bo
 
     // Render as info notification while preserving action link data-* attributes.
     // If we would use $OUTPUT->notification(), the action link data-* attributes would be stripped.
+    return $OUTPUT->render_from_template('core/notification_info', [
+        'message' => $content,
+        'closebutton' => false,
+    ]);
+}
+
+/**
+ * Helper function to build a notification about the dark mode support of a setting.
+ *
+ * @param string $message The message which explains how the setting behaves in dark mode.
+ *                        It is only shown if the colour modes are enabled in Moodle core.
+ * @return string The HTML for the notification.
+ */
+function theme_boost_union_render_setting_darkmode_notification(string $message): string {
+    global $OUTPUT;
+
+    // Render notification body with mustache template.
+    $content = $OUTPUT->render_from_template('theme_boost_union/settingdarkmodenotification', [
+        'darkmodeenabled' => \theme_boost\colour_mode::is_enabled(),
+        'message' => $message,
+    ]);
+
+    // Render as info notification, the same way as the setting override notification.
     return $OUTPUT->render_from_template('core/notification_info', [
         'message' => $content,
         'closebutton' => false,

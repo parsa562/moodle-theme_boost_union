@@ -28,6 +28,7 @@
     * avatardata - Array of avatars to be displayed. Usually only the current user's avatar. If viewing as another user,
         includes that user's avatar.
     * userfullname - The name of the logged in user
+    * userfirstname - The first name of the logged in user, displayed alongside the avatar on wider viewports.
     * submenus - Array of submenus within the user menu.
       * id - The id of the submenu.
       * title - The title of the submenu.
@@ -43,6 +44,7 @@
         "metadata": [],
         "avatardata": [],
         "userfullname": "Admin User",
+        "userfirstname": "Admin",
         "submenus": [
             {
                 "id": "86cebd87",
@@ -65,6 +67,10 @@
     * Make submenu headers fully clickable as soon as at least one smart menu exists on the page.
     * Set the submenus' data-bs-theme attribute to light even if the navbar is dark
     * Salek: show the Edit mode switch in the user menu on phones (below md).
+    * Add the smart menu description (above or below the items or as help icon) to the submenus.
+    * Initialize the theme_boost_union/smartmenu_usermenu module which keeps the tooltips of the smart menu items alive
+      (core/usermenu disposes them when it initializes its truncation tooltips) and which keeps the user menu open when
+      the help icon of a smart menu is clicked.
 }}
 <div class="usermenu">
     {{#unauthenticateduser}}
@@ -85,8 +91,11 @@
                 <span class="userbutton">
                     {{> core/user_menu_metadata }}
                 </span>
+                {{#userfirstname}}
+                <span class="userfirstname d-none d-xl-block" dir="auto" aria-hidden="true">{{userfirstname}}</span>
+                {{/userfirstname}}
             </a>
-            <div id="user-action-menu" class="dropdown-menu dropdown-menu-end" data-bs-theme="light">
+            <div id="user-action-menu" class="dropdown-menu dropdown-menu-end">
                 <div id="usermenu-carousel" class="carousel slide" data-touch="false" data-interval="false" data-keyboard="false">
                     <div class="carousel-inner">
                         <div id="carousel-item-main" class="carousel-item active" role="menu" tabindex="-1" aria-label="{{#str}}user{{/str}}">
@@ -108,7 +117,7 @@
                                     {{#includesmartmenu}}
                                     {{! Make submenu headers fully clickable. }}
                                     <div class="header">
-                                        <a href="#" class="carousel-navigation-link" data-carousel-target-id="carousel-item-{{#returnid}}{{returnid}}{{/returnid}}{{^returnid}}main{{/returnid}}"
+                                        <a href="#" class="carousel-navigation-link text-decoration-none text-body" data-carousel-target-id="carousel-item-{{#returnid}}{{returnid}}{{/returnid}}{{^returnid}}main{{/returnid}}"
                                             aria-label="{{#str}}usermenugoback{{/str}}">
                                             <button type="button" class="btn btn-icon text-decoration-none text-body">
                                                 <span class="dir-rtl-hide">{{#pix}}i/arrow-left{{/pix}}</span>
@@ -129,7 +138,10 @@
                                     {{/includesmartmenu}}
                                     <div class="dropdown-divider"></div>
                                     <div class="items h-100 overflow-auto" role="menu" aria-labelledby="carousel-item-title-{{id}}">
+                                        {{#helpicon}}<div class="menu-helpicon">{{{helpicon}}}</div>{{/helpicon}}
+                                        {{#abovehelptext}}{{#helptext}}<div class="menu-description">{{{helptext}}}</div>{{/helptext}}{{/abovehelptext}}
                                         {{> core/user_action_menu_submenu_items }}
+                                        {{#belowhelptext}}{{#helptext}}<div class="menu-description">{{{helptext}}}</div>{{/helptext}}{{/belowhelptext}}
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +153,9 @@
     {{/unauthenticateduser}}
 </div>
 {{#js}}
-    require(['core/usermenu'], function(UserMenu) {
+    require(['core/usermenu', 'theme_boost_union/smartmenu_usermenu'], function(UserMenu, SmartMenuUserMenu) {
         UserMenu.init();
+        // Must be initialized after core/usermenu, see the module for details.
+        SmartMenuUserMenu.init();
     });
 {{/js}}

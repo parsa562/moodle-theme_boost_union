@@ -42,10 +42,10 @@
     }
 }}
 {{!
-    This template is a modified version of theme_boost_union/language_menu
+    This template is a modified version of theme_boost/language_menu
 
     Modifications compared to the original template:
-    * Set the submenus' data-bs-theme attribute to light even if the navbar is dark
+    * Salek: hide the language icon in the toggle.
 }}
 <div class="langmenu">
     <div class="dropdown show">
@@ -55,7 +55,7 @@
             </span>
             <b class="caret"></b>
         </a>
-        <div role="menu" aria-labelledby="lang-menu-toggle" id="lang-action-menu" class="dropdown-menu dropdown-menu-end" data-bs-theme="light">
+        <div role="menu" aria-labelledby="lang-menu-toggle" id="lang-action-menu" class="dropdown-menu dropdown-menu-end">
             {{#items}}
                 {{#link}}
                     <a href="{{{url}}}" class="dropdown-item ps-5" role="menuitem" {{#isactive}}aria-current="true"{{/isactive}}

@@ -44,16 +44,6 @@ require_once($CFG->libdir . '/behat/lib.php');
 // Require own locallib.php.
 require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
 
-// Add activity navigation if the feature is set to 'Show'.
-// Moodle core shows the activity navigation (and the section navigation) as soon as the theme does not use the course index.
-// If the feature is set to 'No change', nothing is done here and Moodle core decides about the activity navigation.
-// If the feature is set to 'Hide', nothing is done here either, but the activity navigation is suppressed
-// in the activity_navigation() function of Boost Union's core_renderer.
-$activitynavigation = get_config('theme_boost_union', 'activitynavigation');
-if ($activitynavigation == THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_SHOW) {
-    $PAGE->theme->usescourseindex = false;
-}
-
 // Add block button in editing mode.
 $addblockbutton = $OUTPUT->addblockbutton();
 
@@ -89,9 +79,6 @@ $primarymenu = $primary->export_for_template($renderer);
 if (isset($primarymenu['includesmartmenu']) && $primarymenu['includesmartmenu'] == true) {
     $extraclasses[] = 'theme-boost-union-smartmenu';
 }
-if (!empty($primarymenu['bottombar']) && !empty($primarymenu['bottombar']['drawer']) && !empty($primarymenu['includesmartmenu'])) {
-    $extraclasses[] = 'theme-boost-union-bottombar';
-}
 
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions()  && !$PAGE->has_secondary_navigation();
 // If the settings menu will be included in the header then don't add it here.
@@ -110,6 +97,7 @@ $templatecontext = [
     'hasblocks' => $hasblocks,
     'bodyattributes' => $bodyattributes,
     'primarymoremenu' => $primarymenu['moremenu'],
+    'includesmartmenu' => !empty($primarymenu['includesmartmenu']),
     'secondarymoremenu' => $secondarynavigation ?: false,
     'mobileprimarynav' => $primarymenu['mobileprimarynav'],
     'usermenu' => $primarymenu['user'],

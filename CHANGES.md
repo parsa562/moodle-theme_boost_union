@@ -4,6 +4,54 @@ moodle-theme_boost_union
 Changes
 -------
 
+### Unreleased
+
+* 2026-10-26 - Status of the Boost Union 5.3 release:
+               Please note: The Boost Union 5.3 release is generally working and usable in a way that we did not want to hold the release back any longer. We are still working on improvements and tests on 5.3 and will publish new releases and improvements and fixed are realized. Against this background, test the 5.3 release on your particular instance as usual and if you encounter any issues with Boost Union on 5.3, please report them as usual on https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues.
+               Please also be aware that we decided to remove the code for the card menu layout and bottom bar location from Boost Union smart menus for now. If you are using one of those features, please see https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/1464 for details.
+* 2026-10-26 - Improvement: Remove the experimental hint from the smart menus settings page, as the smart menus are not considered experimental anymore, resolves #355.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Allow long smart menu item titles in the user menu to wrap, as they ran below the caret of the submenu links or were cut off otherwise, and keep a long submenu title next to the arrow of the submenu header when it wraps.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Keep the user menu open when the menu help icon of a smart menu in the user menu is clicked, as the user menu closed on the click and the help popover could not be read otherwise.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Mark the active item on the third level of a smart menu (e.g. the current course within a dynamic courses item in submenu mode) as active, as its active flag got lost while flagging the active nodes, and do not mark the toggle of a smart menu which has been collapsed into the "More" menu as active (with a tick) anymore, as the tick is shown on the active item within the smart menu itself now, and indent the items of a dropdown menu or a smart menu level only if one of its own items is active and carries the tick.
+* 2026-10-26 - Upgrade: Keep the focus outline of the menu help icon of the smart menus in the user menu fully visible, as the scrollable items container of the user menu submenus cut off its top otherwise.
+* 2026-10-26 - Upgrade: Align the outside-left and outside-right block regions on large screens with the top of the main content area, which Moodle 5.3 moves down to line it up with the anchored drawers, and align the toggles of the closed drawers with this top as well, as the block regions started above the main content area and the toggles below it otherwise.
+* 2026-10-23 - Upgrade: Hide the collapse toggle of the subsections without keeping its space if a section is shown without collapsing, as Moodle 5.3 presents a subsection as a card of its own and the subsection title would be indented without reason otherwise, reduce the space below the section and subsection titles in this case and align the section summary with the title again, relates to #1454
+* 2026-10-22 - Upgrade: Apply the configured link color in the dark color mode which Moodle 5.3 introduced as well, as Moodle core derives the link colors of the dark color mode from the brand color instead of the link color.
+* 2026-10-22 - Upgrade: Show the 'light brand color' canvas background of the course header with a dark brand color tint in the dark color mode which Moodle 5.3 introduced, as Moodle core's .bg-primary-light class stays light in the dark color mode and the canvas became a glaring light area.
+* 2026-10-22 - Upgrade: Show the 'light grey' canvas background of the course header slightly darker than the page background, as Moodle 5.3 uses the same color for its .bg-light utility and the page background and the canvas was not visible anymore.
+* 2026-10-20 - Upgrade: Show the course index drawer and the block drawer flush with the window edges and with full height (like in Moodle 5.2 and before) on pages where the outside-left, outside-right, outside-top or header block region is shown, as the drawers which Moodle 5.3 anchors next to the main content area would cover these block regions otherwise.
+* 2026-10-20 - Upgrade - further work on the smart menu React implementation: Fix the overlapping tick of the active item in the submenus of the user menu (like the language menu) on pages without smart menus by keeping Moodle core's fixed indentation in the user_action_menu_submenu_items.mustache override and removing it with SCSS only within the smart menus if no item is active.
+* 2026-10-16 - Upgrade: Support the dark color mode which Moodle 5.3 introduced in Boost core in the theme's SCSS, the SCSS which is composed in the theme's code and the built-in SCSS snippets: Hardcoded light colors were replaced with the custom properties which Boost core remaps in the dark color mode or got a dark color mode alternative.
+* 2026-10-16 - Upgrade: Add a dark mode support notification to settings
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Fix the tooltips of the smart menu dropdown toggles in the React main navigation and menu bar: As Bootstrap allows only one component instance per element, the tooltip instance on a toggle prevented Bootstrap from closing its dropdown again when another dropdown was opened or when the user clicked outside. The tooltip is now attached to the label within the toggle.
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Fix the vertical alignment of the dropdown caret of smart menu items with children which are nested within the "More" menu
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Indent the smart menu descriptions within the "More" menu together with the menu items as soon as any item of the "More" menu is active
+* 2026-10-16 - Upgrade - further work on the smart menu React implementation: Widen the "More" menu by its horizontal overflow whenever its content changes, as Firefox does not account for the vertical scrollbar of a "More" menu which grows taller than the viewport when smart menus are expanded within it and shows a horizontal scrollbar otherwise
+* 2026-10-14 - Upgrade: Support the dark color mode which Moodle 5.3 introduced in Boost core in the navbar: The navbar and the smart menu menu bar are always shown dark in the dark color mode, regardless of the configured navbar color and navbar tint, and the dropdowns in the navbar as well as the smart menu headings and descriptions follow the color mode of the page.
+* 2026-10-13 - Upgrade: Adapt Behat scenarios to the new React main navigation
+* 2026-10-13 - Upgrade: Adopt changes to user_action_menu_items.mustache and add an override of user_action_menu_item_link.mustache
+* 2026-10-05 - Upgrade: Adopt changes to loginform.mustache
+* 2026-10-13 - Upgrade: Remove the activity & section navigation elements setting (setting, strings, layout code, renderer override, documentation and tests) as Moodle 5.3 ships a course linear navigation in its core course formats which covers the same use case. The legacy activity navigation is now shown or hidden as Moodle core decides. Existing values of the removed setting are unset during the upgrade.
+* 2026-10-08 - Upgrade: Migrate the smart menus in the primary navigation and the menu bar to React (adopting MDL-89294 from Moodle core), replacing the legacy core/moremenu based rendering, the theme_boost_union/smartmenu and theme_boost_union/submenu AMD modules and the intermediate Behat fix. Piggyback on this change, the layout of the smart menus has been aligned to the new Moodle core meny style and the Boost Union specific aspects have been revised.
+* 2026-10-08 - Upgrade: Remove the card presentation of smart menus for now (rendering, settings, strings and tests), existing smart menus which were configured as cards are rendered as list menus until the card presentation is re-implemented for the React-based smart menus.
+* 2026-10-08 - Upgrade: Remove the bottom bar for now (rendering, location setting, strings and tests), existing smart menus which were configured for the bottom bar location are not rendered there anymore until the bottom bar is re-implemented for the React-based smart menus.
+* 2026-10-08 - Upgrade: Intermediate fix to use the React-based primary navigation from Moodle core as long as no smart menu is configured and fall back to the core/moremenu-based primary navigation as soon as a smart menu is configured
+* 2026-10-08 - Upgrade: Adopt the 'Collapse all / Expand all' control which Moodle core moved out of section 0 to above the section list in classes/util/section.php
+* 2026-10-08 - Upgrade: Adopt the import sequence of the Boost Core default preset in the preset.scss test fixture
+* 2026-10-08 - Upgrade: Adopt the new FontAwesome bundle location in locallib.php
+* 2026-10-05 - Upgrade: Adopt changes in locallib.php
+* 2026-10-05 - Upgrade: Adopt changes to slider.mustache
+* 2026-10-05 - Upgrade: Adopt changes in flavour_edit_form.php and colorpicker_rule.php
+* 2026-10-05 - Upgrade: Adopt changes to submenu.js
+* 2026-10-05 - Upgrade: Adopt changes to \core_course\management\renderer.php
+* 2026-10-05 - Upgrade: Adopt changes to core_renderer.php
+* 2026-10-05 - Upgrade: Adopt changes to user_menu.mustache
+* 2026-10-05 - Upgrade: Adopt changes to columns2.mustache
+* 2026-10-05 - Upgrade: Adopt changes to drawers.mustache
+* 2026-10-05 - Upgrade: Adopt changes to footer.mustache
+* 2026-10-05 - Upgrade: Adopt changes to navbar.mustache
+* 2026-10-05 - Prepare compatibility for Moodle 5.3.
+
 ### v5.2-r14
 
 * 2026-10-22 - Bugfix: Let a subsection follow the section appearance setting of the section in which it is placed, as the subsections in section 0 lost their collapse toggle if the sections ≥ 1 were shown without collapsing and the subsections were not collapsed by default if their section was configured to be collapsed by default, resolves #1454

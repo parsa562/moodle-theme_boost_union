@@ -839,6 +839,10 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('navbarcolorsetting_desc', 'theme_boost_union', null, true);
         $description .=
                 theme_boost_union_render_setting_override_notification(THEME_BOOST_UNION_SETTING_TARGETPLATFORM_LMSMWP, false);
+        $description .=
+                theme_boost_union_render_setting_darkmode_notification(
+                    get_string('navbarcolorsetting_darkmode', 'theme_boost_union', null, true)
+                );
         $navbarcoloroptions = [
                 THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT =>
                         get_string('navbarcolorsetting_light', 'theme_boost_union'),
@@ -864,6 +868,10 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('navbartintsetting_desc', 'theme_boost_union', null, true);
         $description .=
                 theme_boost_union_render_setting_override_notification(THEME_BOOST_UNION_SETTING_TARGETPLATFORM_LMSMWP, false);
+        $description .=
+                theme_boost_union_render_setting_darkmode_notification(
+                    get_string('navbarcolorsetting_darkmode', 'theme_boost_union', null, true)
+                );
         $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
@@ -4281,28 +4289,6 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $title = get_string('scrollspysetting', 'theme_boost_union', null, true);
         $description = get_string('scrollspysetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $tab->add($setting);
-
-        // Setting: Activity & section navigation.
-        $name = 'theme_boost_union/activitynavigation';
-        $title = get_string('activitynavigationsetting', 'theme_boost_union', null, true);
-        $description = get_string('activitynavigationsetting_desc', 'theme_boost_union', null, true);
-        $activitynavigationoptions = [
-                THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_NOCHANGE =>
-                        get_string('nochange', 'theme_boost_union'),
-                THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_SHOW =>
-                        get_string('show', 'theme_boost_union'),
-                THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_HIDE =>
-                        get_string('hide', 'theme_boost_union'),
-        ];
-        $setting = new admin_setting_configselect(
-            $name,
-            $title,
-            $description,
-            THEME_BOOST_UNION_SETTING_ACTIVITYNAVIGATION_NOCHANGE,
-            $activitynavigationoptions
-        );
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
