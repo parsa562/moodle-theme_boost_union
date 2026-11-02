@@ -284,3 +284,60 @@ body.page-mycourses {
         }
     }
 }
+
+// Moodle 5.3 renders "Manage courses" and "Create course" inside the Course overview block, in a
+// row under its title and a line, instead of in the page header (.my-action-buttons, above).
+// Keep them at the end of the card's title row as before, with the same buttons, and the card and
+// its rows where they were.
+body.page-mycourses:not(:has(.my-action-buttons)) #page-header {
+    // (Measured: the card as far under the navbar as with the header buttons; desktop already has
+    // the 40px under the navbar, see _spacing.scss.)
+    @include media-breakpoint-down(md) {
+        padding-top: 8px;
+    }
+}
+
+body.page-mycourses #page #block-region-content > section.block_myoverview {
+    .block-header [class~="card-title"] {
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .block-myoverview:has(> [class~="flex-wrap"][class~="gap-2"] > form) {
+        padding-top: 20px; // (Measured: the filter row 88px under the card top, as before.)
+
+        > hr {
+            display: none;
+        }
+    }
+
+    [class~="card-body"] {
+        position: relative;
+    }
+
+    .block-myoverview > [class~="flex-wrap"][class~="gap-2"]:has(> form) {
+        position: absolute;
+        z-index: 1;
+        top: $salek-space-inset; // The card's padding: level with the title.
+        inset-inline-end: $salek-space-inset;
+        gap: 8px !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            top: $salek-space-inset-sm;
+            inset-inline-end: $salek-space-inset-sm;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            padding-inline: 20px;
+        }
+
+        [class~="btn-outline-primary"] {
+            @include salek-button-soft;
+        }
+    }
+}

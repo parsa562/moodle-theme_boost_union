@@ -940,3 +940,123 @@ body.cm-type-qbank {
     unicode-bidi: isolate;
     vertical-align: middle;
 }
+
+// Moodle 5.3 replaces the question bank's view selector (a <select>, styled as the pill above) with
+// the page selector of the other pages (.tertiary-navigation-selector, a large title there). Keep
+// the pill with the yellow dot here.
+body#page-question-edit #page.drawers #region-main:has(.qbank-hero) .tertiary-navigation .tertiary-navigation-selector .dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid $salek-control-border;
+    border-radius: 999px;
+    background: $salek-surface;
+    box-shadow: none;
+    color: $salek-text-strong;
+    font-size: .8125rem;
+    font-weight: 500;
+    line-height: 1;
+
+    &::before {
+        content: "";
+        flex: none;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: $salek-accent-yellow;
+    }
+
+    &::after {
+        width: 12px;
+        height: 9px;
+        border: 0;
+        border-radius: 0;
+        background: escape-svg($form-select-indicator) center / 12px 9px no-repeat;
+        box-shadow: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: var(--bs-primary);
+        background: $salek-surface;
+
+        &::after {
+            border: 0;
+        }
+    }
+}
+
+/* Moodle 5.3 puts the actions for the selected questions (move, delete, export) into the bar fixed
+   at the window's bottom, always shown. Salek keeps them where Moodle 5.0 had them: under the list
+   of questions, as buttons with their icon beside the text. */
+/* stylelint-disable declaration-no-important */
+#region-main #sticky-footer:has(#bulkactionsui-container) {
+    position: static !important;
+    z-index: auto !important;
+    width: auto !important;
+    min-height: 0 !important;
+    margin-top: 12px;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    .sticky-footer-content-wrapper,
+    .sticky-footer-content {
+        min-height: 0 !important;
+        padding: 0 !important;
+        justify-content: flex-start !important;
+    }
+}
+/* stylelint-enable declaration-no-important */
+
+#page.hasstickyfooter:has(#sticky-footer #bulkactionsui-container) {
+    margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// The actions themselves: soft buttons with the icon beside the text (5.3: icon above), after a
+// small "With selected" label.
+#region-main #bulkactionsui-container {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mt-2.)
+
+    > .ma-1 {
+        margin: 0 4px 0 0;
+        margin-inline: 0 4px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+    }
+
+    .actions {
+        flex-wrap: wrap !important; /* stylelint-disable-line declaration-no-important */ // (Over .flex-nowrap.)
+        gap: 8px;
+    }
+
+    .actions [class~="btn"] {
+        @include salek-button-soft;
+        flex-direction: row !important; /* stylelint-disable-line declaration-no-important */ // (Over .flex-column.)
+        align-items: center;
+        gap: 6px;
+        min-height: 36px;
+        padding: 6px 14px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-0.)
+        border-radius: $salek-button-radius;
+        font-size: .8125rem;
+
+        .bulkaction-icon {
+            width: auto !important; /* stylelint-disable-line declaration-no-important */ // (Over .w-100.)
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ps-2.)
+
+            .icon {
+                margin: 0;
+            }
+        }
+
+        &:disabled {
+            opacity: .55;
+        }
+    }
+}
