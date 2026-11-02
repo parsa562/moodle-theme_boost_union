@@ -754,3 +754,43 @@
     }
 }
 
+
+
+// Activity icons in their tinted circles (course page, activity headers, reports, …): centred,
+// as in Moodle 5.0. Moodle 5.3 made the container a block, which put the icon in its top corner.
+.activityiconcontainer {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    > img,
+    > .icon {
+        display: block;
+        margin: 0;
+    }
+}
+
+// Moodle's "white" utility (sticky bars, some cards and panels) in Salek's box white.
+.bg-white {
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// The same box white where Moodle 5.3, or the site's own raw SCSS setting, paints boxes pure white:
+// the course index list, the course sections, the question list, the message drawer's panels.
+/* stylelint-disable declaration-no-important */
+#theme_boost-drawers-courseindex .drawercontent .courseindex,
+.course-content .course-section .section-item,
+table.question-bank-table {
+    background-color: $salek-surface !important;
+}
+
+[data-region="right-hand-drawer"] {
+    [data-region="header-container"] > [data-region^="view-"],
+    [data-region="view-overview"] .section,
+    [data-region="view-overview"] [data-region="toggle"],
+    [data-region="view-overview-search-input"] {
+        background-color: $salek-surface !important;
+    }
+}
+/* stylelint-enable declaration-no-important */

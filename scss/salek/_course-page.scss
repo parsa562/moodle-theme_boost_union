@@ -130,12 +130,14 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
         border: 0;
         background-color: transparent;
 
-        .sectionname {
+        .sectionname,
+        .sectionname a { // (Moodle 5.3 sizes the link itself.)
             font-size: 1rem;
         }
     }
 
     .course-section.delegated-section .icons-collapse-expand {
+        font-size: .875rem; // The arrow's size in Moodle 5.0 (5.3 makes icon buttons 16px).
         width: 24px;
         height: 24px;
         margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .me-3.
@@ -278,7 +280,8 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
 body.path-course-view #region-main {
     // "Collapse all / Expand all" in the General title row: a small outlined button that does
     // not make the row taller.
-    #collapsesections {
+    #collapsesections,
+    .section-collapsemenu {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -605,5 +608,86 @@ body.path-course-view #region-main .course-content {
     // A little more space at the bottom of an open section card.
     .section-list > li.course-section:has(> .section-item > .course-section-header .icons-collapse-expand[aria-expanded="true"]):has(li.activity) {
         padding-bottom: 20px;
+    }
+}
+
+/* Moodle 5.3 draws every activity on the course page as a separate card (grey fill, border,
+   20px padding, a gap above). Salek keeps the rows of Moodle 5.0: no fill or border, 12px
+   padding and a hairline between the rows. Subsections keep their own card (see above). */
+.course-content {
+    .activity {
+        padding-top: .25rem;
+        margin-top: .25rem;
+        border-top: 1px solid $salek-line;
+    }
+
+    .section .activity:first-child,
+    .editing & .activity {
+        padding-top: 0;
+        margin-top: 0;
+        border-top: 0;
+    }
+
+    .activity:not(.subsection) > .activity-item:not(.activityinline) {
+        padding: .75rem;
+        border: 0;
+
+        &:not(:hover) {
+            background-color: transparent;
+        }
+    }
+}
+
+// Moodle 5.3 wraps each section's summary and activities in a grey, bordered, padded box
+// (.section-content-inner); Salek keeps them directly on the white section card, as in 5.0.
+.course-content .course-section .course-content-item-content .section-content-inner {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+// Moodle 5.3 renders "Collapse all / Expand all" as its own row above the sections (a button
+// with icons) instead of inside the General title row. Keep it in that row as before: the row
+// above the list takes no space, and the button sits over the first section's title row.
+body.path-course-view #region-main div:has(> .section-collapsemenu) {
+    position: relative;
+    height: 0;
+    margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */ // The gap 5.0 had above the sections.
+
+    .section-collapsemenu {
+        position: absolute;
+        z-index: 1;
+        top: 35px; // (Measured: centred on the first section's title row.)
+        inset-inline-end: 29px;
+        line-height: 21px;
+
+        .icon {
+            display: none;
+        }
+    }
+}
+
+// Moodle 5.3 indents the section summary to line up with the section title (64px at the start,
+// 16px at the end); Salek keeps the summary box across the full width of the section, as in 5.0.
+.course-content .course-section .course-content-item-content > [data-for="sectioninfo"] {
+    padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */ // Moodle: physical left/right, also :has() ~ rules.
+    // (16px above and below the summary, as 5.0's .my-3; 5.3 has 12px and 12px + 16px.)
+    margin-block: 16px;
+    padding-bottom: 0;
+
+    &:empty {
+        display: none;
+    }
+}
+
+// Moodle 5.3 gives subsections (lessons) a grey fill and no space around them; Salek's lessons
+// are not boxed (see "Level 2" above) and keep the 8px around them of Moodle 5.0.
+.course-content .activity.subsection > .activity-item {
+    margin-block: 8px;
+
+    &,
+    &:hover {
+        background-color: transparent;
     }
 }
