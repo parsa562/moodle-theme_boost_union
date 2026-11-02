@@ -19,3 +19,13 @@ $bu-smartmenu-menubar-height: 40px;
    viewport. */
 $bu-smartmenu-dropdown-gap: 1rem;
 
+
+// Salek: the base font size of Moodle 5.0 (15px). Moodle 5.3's Boost preset no longer sets it, so
+// Bootstrap's 16px applied and all text, buttons, fields and headings grew by about 7%.
+$font-size-base: 0.9375rem;
+
+// Salek: off-white (#fcfcfd) content surfaces, not grey as in Moodle 5.3. Moodle 5.3's Boost preset sets the body background
+// variable to $gray-100, which Moodle uses for the content sheet (#region-main), the navbar and more.
+// (The page background behind the sheets is Salek's own, see scss/salek/.)
+$body-bg: #fcfcfd; // Salek's box white ($salek-surface); ($white is only defined later, by the preset.)
+$card-bg: #fcfcfd; // (5.3: var(--bs-white).)

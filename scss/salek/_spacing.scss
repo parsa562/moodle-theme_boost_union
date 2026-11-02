@@ -94,3 +94,13 @@ body:not(.pagelayout-course) .page-context-header:has(> .page-header-headings:on
         margin-top: $navbar-height;
     }
 }
+
+/* Desktop: the approved Salek spacing has 40px more under the navbar than Moodle's: in 5.0 Boost
+   Union added its smart menu bar height to the page offset whenever smart menus existed (even
+   without a menu bar; phones remove it, above). Boost Union 5.3 adds only the real menu bar height,
+   so keep the 40px here. */
+@include media-breakpoint-up(md) {
+    body:not(:has(.boost-union-menubar)) .navbar.fixed-top ~ #page.drawers {
+        margin-top: calc(#{$navbar-height} + 40px);
+    }
+}

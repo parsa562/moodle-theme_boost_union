@@ -174,3 +174,23 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
         }
     }
 }
+
+// Moodle 5.3 draws a line above every .table and .generaltable; 5.0 had none (Salek's tables
+// draw their own lines).
+#region-main table.generaltable,
+#region-main table.table {
+    border-top: 0;
+}
+
+// Activity icons in table cells (activity report, …): 24px high as in Moodle 5.0 (.icon-size-4),
+// not Moodle 5.3's 32px .smaller, which makes every row 8px taller.
+#region-main td .activityiconcontainer.smaller {
+    width: 30px;
+    height: 24px;
+
+    .activityicon,
+    .icon {
+        width: 30px;
+        height: 24px;
+    }
+}

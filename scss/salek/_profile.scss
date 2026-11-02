@@ -54,7 +54,8 @@ body:not(.pagelayout-login) #page-header:has(.page-header-image .userpicture) {
             padding-inline-end: $salek-space-inset;
         }
 
-        > [class~="d-flex"]:last-child {
+        // (The second row: Moodle 5.3 adds an extras row after it, see _page-header.scss.)
+        > [class~="d-flex"]:nth-child(2) {
             grid-row: 2;
             grid-column: 1;
             padding: 20px $salek-space-inset;

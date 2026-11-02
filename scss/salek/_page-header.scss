@@ -694,3 +694,9 @@ body:not(.pagelayout-login) #region-main > .tertiary-navigation:has(> .navitem:o
         transform: scaleX(-1);
     }
 }
+
+// Moodle 5.3 adds a row for header extras at the end of every page header; hide it while it is
+// empty, so it takes no place in the header's rows.
+#page-header .header-extras-container:not(:has(*)) {
+    display: none;
+}
