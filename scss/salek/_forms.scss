@@ -104,14 +104,15 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
 
     // A field after the sections (e.g. "Send content change notification"): the band below
     // draws the line.
-    > .fitem:has(+ .fitem[data-groupname="buttonar"]) {
+    // (Moodle 5.3 gives the sections, fieldsets, the class fitem too: rows only.)
+    > .fitem:not(fieldset):has(+ .fitem[data-groupname="buttonar"]) {
         background: none !important; /* stylelint-disable-line declaration-no-important */
     }
 
     // Rows: one field each, a hairline between them (Moodle's 16px gap below each row instead).
     // The line stops at the content edges (the row is 12px wider on each side), so the lines
     // inside a section read differently from the full-width lines between sections.
-    > .fitem:not([data-groupname="buttonar"]),
+    > .fitem:not(fieldset):not([data-groupname="buttonar"]),
     > fieldset > .fcontainer > .fitem {
         margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
         padding-block: 12px;
@@ -394,5 +395,100 @@ body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:last-chil
         border-bottom-color: transparent;
         border-end-start-radius: $salek-radius;
         border-end-end-radius: $salek-radius;
+    }
+}
+
+/* Moodle 5.3 puts the buttons of some forms (course settings, profile, activity settings) into a
+   bar fixed at the window's bottom (#sticky-footer, rendered at the end of the form). Salek keeps
+   them where they were in Moodle 5.0, also on phones: on a band across the sheet at the form's
+   end, now white, a line above it, the buttons under the fields (the label column empty, the
+   "Required" note in it), as high as the fields, small text, 8px apart. */
+/* stylelint-disable declaration-no-important */
+#region-main #sticky-footer:has([data-groupname="buttonar"]) {
+    @include salek-sheet-bleed;
+    position: static !important;
+    z-index: auto !important;
+    width: auto !important;
+    margin-top: 0;
+    padding-block: 16px;
+    border-top: 1px solid $salek-form-section-line !important;
+    background-color: $salek-surface !important;
+    box-shadow: none !important;
+
+    &,
+    .sticky-footer-content-wrapper,
+    .sticky-footer-content {
+        min-height: 0 !important; // (5.3: as high as the bar, 64px.)
+        height: auto !important;
+    }
+
+    .sticky-footer-content-wrapper,
+    .sticky-footer-content {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0 !important;
+        justify-content: flex-start !important;
+    }
+
+    // The label column of the rows above (a quarter of the form) stays empty.
+    @include media-breakpoint-up(md) {
+        .sticky-footer-content {
+            padding-inline-start: calc(25% - var(--salek-sheet-pad) + 38px) !important; // (Measured: under the fields.)
+        }
+    }
+
+    [data-groupname="buttonar"] {
+        margin: 0 !important;
+
+        [class~="fitem"] {
+            margin: 0 !important;
+        }
+
+        > [data-fieldtype="group"] > [class~="d-flex"] {
+            gap: 8px;
+        }
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            margin: 0 !important;
+            font-size: .875rem;
+        }
+    }
+}
+/* stylelint-enable declaration-no-important */
+
+// The page keeps no room for the bar at the window's bottom then.
+#page.hasstickyfooter:has(#region-main #sticky-footer [data-groupname="buttonar"]) {
+    margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// "Required": in the band's empty label column (under the band on phones), as before. When the form
+// ends the page, the band reaches the sheet's bottom edge with its rounded corners (see section 27).
+#region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> #sticky-footer [data-groupname="buttonar"]) {
+    margin-bottom: calc(-1 * var(--salek-sheet-pad));
+
+    > #sticky-footer {
+        border-end-start-radius: $salek-radius;
+        border-end-end-radius: $salek-radius;
+    }
+}
+
+#region-main form.mform:has(> #sticky-footer [data-groupname="buttonar"]) {
+    position: relative;
+
+    > .fdescription.required {
+        @include media-breakpoint-up(md) {
+            position: absolute;
+            inset-block-end: 0;
+            inset-inline-start: 0;
+            width: 25%;
+            height: calc(32px + #{$salek-control-height}); // The band: 16px + the buttons + 16px.
+            padding-top: 0;
+        }
+
+        @include media-breakpoint-down(md) {
+            padding-block: 0 16px;
+        }
     }
 }
