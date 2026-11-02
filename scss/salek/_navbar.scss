@@ -517,7 +517,7 @@
 .theme-boost-union-smartmenu #page-wrapper #page #page-footer .navbar.boost-union-bottom-menu {
     padding-top: 0; // Moodle 5.3 gives .navbar a top padding.
     padding-bottom: env(safe-area-inset-bottom);
-    background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
     box-shadow: 0 -6px 24px rgb(15 23 42 / 12%);
 
     /* Boost Union fixes the height on .moremenu only; stretch the list and
@@ -760,7 +760,7 @@ body.path-grade-report-grader {
         padding-top: 14px;
         padding-bottom: 14px;
 
-        background: rgb(255 255 255);
+        background: $salek-surface;
     }
 
     .qbank-sticky-scroll-zone
@@ -775,13 +775,13 @@ body.path-grade-report-grader {
         .qbank-sticky-scroll-zone {
             padding-top: 1px;
             padding-bottom: 8px;
-            background: rgb(255 255 255);
+            background: $salek-surface;
         }
 
         .qbank-sticky-scroll-zone
         .boost-union-qbank-top-scroll {
             margin: 0;
-            background: rgb(255 255 255);
+            background: $salek-surface;
             border: 0;
             box-shadow: none;
 

@@ -40,7 +40,7 @@ body#page-course-overview #page.drawers #region-main {
         margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
         padding: 0 !important; /* stylelint-disable-line declaration-no-important */
         border-radius: $salek-card-radius !important; /* stylelint-disable-line declaration-no-important */
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: $salek-card-shadow;
 
         > .d-flex {
@@ -131,7 +131,7 @@ body#page-course-overview #page.drawers #region-main {
             padding: 0 12px;
             border: 1px solid $salek-control-border;
             border-radius: 999px;
-            background-color: #fff;
+            background-color: $salek-surface;
             color: $salek-text;
             font-size: .75rem;
             font-weight: 500;

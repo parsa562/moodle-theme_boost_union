@@ -152,7 +152,7 @@ body.page-mycourses {
                 }
 
                 .coursemenubtn {
-                    background-color: #fff;
+                    background-color: $salek-surface;
                 }
                 // The name on as many lines as it needs; no category (the site's categories are
                 // for its own organisation).
@@ -273,7 +273,7 @@ body.page-mycourses {
                 height: 36px;
                 border: 1px solid $salek-line;
                 border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
-                background-color: #fff;
+                background-color: $salek-surface;
                 color: $salek-text;
 
                 &:hover {

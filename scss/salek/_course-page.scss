@@ -21,7 +21,7 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
         padding: 12px 16px;
         border: 1px solid transparent;
         border-radius: $salek-radius;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: $salek-card-shadow;
         transition: border-color .15s ease;
 
@@ -167,7 +167,7 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
     }
 
     .delegated-section .activity-item:not(.activityinline):hover {
-        background-color: #fff;
+        background-color: $salek-surface;
     }
 }
 
@@ -290,7 +290,7 @@ body.path-course-view #region-main {
         border: 1px solid $salek-control-border;
         // Moodle's button focus styles otherwise force a 4px radius.
         border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
-        background-color: #fff;
+        background-color: $salek-surface;
         color: var(--bs-primary);
         font-size: .8125rem;
         font-weight: 500;
@@ -319,7 +319,7 @@ body.path-course-view #region-main {
         padding: 3px 12px;
         border: 1px solid #dfe5ee;
         border-radius: 999px;
-        background-color: #fff;
+        background-color: $salek-surface;
         color: $salek-text;
         font-size: .75rem;
         font-weight: 500;
@@ -471,7 +471,7 @@ body.path-course-view #region-main {
         padding: 0 12px;
         border: 1px solid $salek-control-border;
         border-radius: 999px;
-        background-color: #fff;
+        background-color: $salek-surface;
         color: $salek-text;
         font-size: .75rem;
         font-weight: 500;
@@ -514,7 +514,7 @@ body.path-course-view #region-main {
         padding: 0 12px;
         border: 1px solid $salek-control-border;
         border-radius: 999px;
-        background-color: #fff;
+        background-color: $salek-surface;
         color: $salek-text;
         font-size: .75rem;
         font-weight: 500;

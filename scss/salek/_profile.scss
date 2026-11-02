@@ -20,7 +20,7 @@ body:not(.pagelayout-login) #page-header:has(.page-header-image .userpicture) {
             grid-column: 1 / -1;
             align-self: stretch;
             border-radius: $salek-card-radius;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: $salek-card-shadow;
         }
 
@@ -150,7 +150,7 @@ body:not(.pagelayout-login) #page-header:has(.page-header-image .userpicture) {
    with a small title (no frames: the columns and the space between them set them apart). (The admin SCSS makes this page's content area see-through and its groups
    half-white cards with a shadow.) */
 body#page-user-preferences #page.drawers #region-main {
-    background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
 
     div[role="main"] .col-md-4 > .card {
         border: 0 !important; /* stylelint-disable-line declaration-no-important */

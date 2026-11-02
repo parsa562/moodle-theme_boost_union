@@ -199,7 +199,7 @@ body.path-question #region-main {
             padding: 0 12px;
             border: 1px solid #cfd6e0;
             border-radius: 9px;
-            background-color: #fff;
+            background-color: $salek-surface;
             color: #334155;
             font-weight: 500;
             text-decoration: none;
@@ -325,7 +325,7 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
             padding-inline: 28px 32px;
             border-color: $salek-control-border;
             border-radius: 999px;
-            background-color: #fff;
+            background-color: $salek-surface;
             background-image: radial-gradient(circle, $salek-accent-yellow 3.5px, transparent 4px), escape-svg($form-select-indicator);
             /*rtl:ignore*/
             background-position: left 10px center, right 12px center;
@@ -455,7 +455,7 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
         padding: 14px $salek-card-pad;
         border: 1px solid $salek-card-border;
         border-radius: $salek-card-radius-lg $salek-card-radius-lg 0 0;
-        background-color: #fff;
+        background-color: $salek-surface;
 
         > div {
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */
@@ -502,7 +502,7 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
             height: 36px;
             border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */
             border-color: $salek-control-border;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: none;
         }
     }
@@ -512,7 +512,7 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
         border: 1px solid $salek-card-border;
         border-top: 0;
         border-radius: 0 0 $salek-card-radius-lg $salek-card-radius-lg;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: $salek-card-shadow-lg;
 
         @include salek-bottom-scrollbar($salek-card-pad);
@@ -563,7 +563,7 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
             padding: 0;
             border: 1px solid #cfd6e0;
             border-radius: 9px;
-            background-color: #fff;
+            background-color: $salek-surface;
             color: #475569;
 
             .icon {
@@ -880,7 +880,7 @@ body.cm-type-qbank {
         padding-top: 14px;
         padding-bottom: 14px;
 
-        background: rgb(255 255 255);
+        background: $salek-surface;
     }
 
     .qbank-sticky-scroll-zone
@@ -895,13 +895,13 @@ body.cm-type-qbank {
         .qbank-sticky-scroll-zone {
             padding-top: 1px;
             padding-bottom: 8px;
-            background: rgb(255 255 255);
+            background: $salek-surface;
         }
 
         .qbank-sticky-scroll-zone
         .boost-union-qbank-top-scroll {
             margin: 0;
-            background: rgb(255 255 255);
+            background: $salek-surface;
             border: 0;
             box-shadow: none;
 

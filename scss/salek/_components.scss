@@ -149,7 +149,7 @@
                 padding: 8px;
                 border: 1px solid $salek-card-border;
                 border-radius: 12px;
-                background-color: #fff;
+                background-color: $salek-surface;
 
                 @include media-breakpoint-down(lg) {
                     height: 220px;
@@ -217,7 +217,7 @@
                 // Remove: red outline, as it unenrols people.
                 #remove {
                     border: 1px solid #f3c4c4;
-                    background-color: #fff;
+                    background-color: $salek-surface;
                     color: #dc2626;
 
                     &:hover {
@@ -337,7 +337,7 @@
         padding: 8px 14px;
         border: 1px solid $salek-card-border;
         border-radius: 12px;
-        background-color: #fff;
+        background-color: $salek-surface;
         cursor: pointer;
         transition: border-color .15s ease, background-color .15s ease;
 
@@ -444,7 +444,7 @@
         overflow-y: auto;
         border: 1px solid $salek-card-border;
         border-radius: 12px;
-        background-color: #fff;
+        background-color: $salek-surface;
 
         @include media-breakpoint-down(lg) {
             height: 260px;
@@ -669,7 +669,7 @@
         padding: 16px;
         border: 1px solid $salek-card-border;
         border-radius: 12px;
-        background-color: #fff;
+        background-color: $salek-surface;
         visibility: visible; // (Moodle hides it until its animation ends.)
 
         .form-check {

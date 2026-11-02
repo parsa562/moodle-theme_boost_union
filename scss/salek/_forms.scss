@@ -42,7 +42,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
             border: 1px solid $salek-control-border;
             // Moodle's link focus styles otherwise force a 4px radius.
             border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
-            background-color: #fff;
+            background-color: $salek-surface;
             color: var(--bs-primary);
             font-size: .8125rem;
             font-weight: 500;
@@ -68,7 +68,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
         margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
         padding-block: 12px;
         border-top: 1px solid $salek-form-section-line;
-        background-color: #fff;
+        background-color: $salek-surface;
 
         &:has(.fheader[aria-expanded="true"]) {
             background-color: rgba(var(--bs-primary-rgb), .06);

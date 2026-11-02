@@ -282,7 +282,7 @@ body#page-course-view-participants #page.drawers #region-main {
                 height: 30px;
                 border: 1px solid #cfd6e0;
                 border-radius: 8px;
-                background-color: #fff;
+                background-color: $salek-surface;
                 color: #475569;
 
                 .icon {
@@ -333,7 +333,7 @@ body#page-course-view-participants #page.drawers #region-main {
 
     .userlist .buttons .form-select {
         border-color: $salek-control-border;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: none;
     }
 

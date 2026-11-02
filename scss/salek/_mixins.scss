@@ -45,7 +45,7 @@
 
     &.collapsed {
         color: var(--bs-primary);
-        background-color: #fff;
+        background-color: $salek-surface;
         border-color: #c3ccd9 !important; /* stylelint-disable-line declaration-no-important */
 
         &:hover {
@@ -139,7 +139,7 @@
 @mixin salek-card {
     border: 1px solid $salek-card-border;
     border-radius: $salek-card-radius-lg;
-    background-color: #fff;
+    background-color: $salek-surface;
     box-shadow: $salek-card-shadow-lg;
 }
 
@@ -191,7 +191,7 @@
     margin: 0;
     border: 1.5px solid #b6c0ce;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: $salek-surface;
     vertical-align: middle;
     cursor: pointer;
 
@@ -199,7 +199,7 @@
         content: "";
         width: 10px;
         height: 10px;
-        background-color: #fff;
+        background-color: $salek-surface;
         mask: $salek-icon-check center / contain no-repeat;
         transform: scale(0);
         transition: transform .12s ease-in-out;
@@ -267,7 +267,7 @@
 
         .form-autocomplete-input .form-control {
             padding-inline-start: 36px;
-            background: $salek-icon-search no-repeat 12px center / 16px #fff;
+            background: $salek-icon-search no-repeat 12px center / 16px $salek-surface;
             /*rtl:ignore*/
             background-position: left 12px center;
         }
@@ -283,7 +283,7 @@
         .form-autocomplete-input .form-control {
             border-color: transparent;
             border-radius: $salek-field-radius;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
             font-weight: 500;
 
@@ -295,7 +295,7 @@
             // A condition's kind ("Category") is fixed once chosen; it reads as its name, not as a
             // disabled field.
             &:disabled {
-                background-color: #fff;
+                background-color: $salek-surface;
                 color: $salek-text-strong;
             }
         }
@@ -360,7 +360,7 @@
                 padding: 3px 16px;
                 border: 1px solid rgba(var(--bs-primary-rgb), .45);
                 border-radius: 999px;
-                background-color: #fff;
+                background-color: $salek-surface;
                 line-height: 1.4;
             }
         }
@@ -461,7 +461,7 @@
     .filter-group-header {
         padding: 14px $salek-card-pad;
         border-bottom: 1px solid $salek-card-border;
-        background-color: #fff;
+        background-color: $salek-surface;
     }
 
     :is(.filter-group, table) input[type="checkbox"]:not([role="switch"]):not(.form-switch *) {
@@ -683,7 +683,7 @@
         margin: 0;
         border: 1px solid $salek-control-border;
         border-radius: 50%;
-        background: escape-svg($form-select-indicator) center / 14px no-repeat, #fff;
+        background: escape-svg($form-select-indicator) center / 14px no-repeat, $salek-surface;
         box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
         transition: transform .15s ease-in-out;
     }
@@ -751,7 +751,7 @@
     padding: 0 !important; /* stylelint-disable-line declaration-no-important */
     border: 1px solid #cfd6e0;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: $salek-surface;
     color: #475569;
 
     .icon {

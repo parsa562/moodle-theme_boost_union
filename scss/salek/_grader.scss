@@ -45,7 +45,7 @@ body#page-grade-report-grader-index #page.drawers #region-main {
         [class~="btn"].dropdown-toggle:not([role="combobox"]) {
             border-color: $salek-control-border;
             border-radius: 10px;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: none;
         }
     }
@@ -162,7 +162,7 @@ body#page-grade-report-grader-index #page.drawers #region-main {
 
         // Students: white rows, a faint hover, names with coloured initials.
         tr.userrow > * {
-            background-color: #fff;
+            background-color: $salek-surface;
         }
 
         tr.userrow:hover > * {

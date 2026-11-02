@@ -29,7 +29,7 @@ body#page-course-management #region-main {
         overflow: hidden;
         border: 1px solid $salek-card-border !important; /* stylelint-disable-line declaration-no-important */ // (Over the site's borderless cards.)
         border-radius: 16px;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: none;
 
         display: flex;
@@ -126,7 +126,7 @@ body#page-course-management #region-main {
             padding: 0 12px;
             border: 1px solid $salek-field-border;
             border-radius: 12px;
-            background-color: #fff;
+            background-color: $salek-surface;
             color: $salek-text;
             font-size: .8125rem;
             font-weight: 500;
@@ -447,7 +447,7 @@ body#page-course-management #region-main {
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .my-1.)
             padding: 0 18px;
             border-radius: 12px;
-            background-color: #fff;
+            background-color: $salek-surface;
             font-size: .8125rem;
             font-weight: 600;
             box-shadow: 0 0 0 1px $salek-field-border;

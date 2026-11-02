@@ -390,12 +390,12 @@
 
 /* Search/header background */
 #page-message-index .message-app.main .panel-header-container .previous .d-flex.align-items-center {
-    background: #ffffff !important;
+    background: $salek-surface !important;
 }
 
 /* Left panel cards background */
 #page-message-index .message-app.main .conversationcontainer .section.card {
-    background: #ffffff !important;
+    background: $salek-surface !important;
 }
 
 #page-message-index .message-app.main .conversationcontainer .card-header {
@@ -404,12 +404,12 @@
 
 /* Right panel header background */
 #page-message-index .message-app.main .header-container {
-    background: #ffffff !important;
+    background: $salek-surface !important;
 }
 
 /* Message body container */
 #page-message-index .message-app.main .body-container {
-    background: #ffffff !important;
+    background: $salek-surface !important;
 }
 
 /* Active panels / views background */
@@ -435,7 +435,7 @@
 
 /* Active tab: White background + dark readable text */
 #page-message-index .message-app.main .nav-pills .nav-link.active {
-    background-color: #ffffff !important;
+    background-color: $salek-surface !important;
     color: #0f172a !important;
     font-weight: 600 !important;
     box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;

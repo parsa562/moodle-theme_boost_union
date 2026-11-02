@@ -67,7 +67,7 @@ body .tox.tox-tinymce {
 
         &:hover:not(:disabled),
         &.tox-mbtn--active {
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
         }
     }
@@ -200,7 +200,7 @@ body .tox.tox-tinymce {
     .tox-edit-area {
         border-radius: 12px;
         overflow: hidden;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
 
         // TinyMCE's ring while writing: the brand colour, on the sheet's corners.

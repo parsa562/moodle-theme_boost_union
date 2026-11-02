@@ -161,7 +161,7 @@ body.salek-participants-page #region-main div[role="main"] {
             padding: 8px;
             border: 1px solid $salek-card-border;
             border-radius: 12px;
-            background-color: #fff;
+            background-color: $salek-surface;
         }
 
         [class~="btn"] {
@@ -199,7 +199,7 @@ body.salek-participants-page #region-main div[role="main"] {
             padding: 8px;
             border: 1px solid $salek-card-border;
             border-radius: 12px;
-            background-color: #fff;
+            background-color: $salek-surface;
         }
     }
 

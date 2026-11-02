@@ -59,7 +59,7 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     min-height: 150px;
     border: 1px solid $salek-card-border;
     border-radius: 12px;
-    background-color: #fff;
+    background-color: $salek-surface;
 }
 
 // The tools: each a white button ("Add…" in the brand colour); the views as one white pill.
@@ -102,7 +102,7 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     gap: 2px;
     padding: 3px;
     border-radius: 12px;
-    background-color: #fff;
+    background-color: $salek-surface;
     box-shadow: $salek-files-shadow;
 
     [class~="btn"] {
@@ -150,7 +150,7 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     padding-top: 76px;
     border: 1.5px dashed $salek-files-drop-line;
     border-radius: 12px;
-    background-color: #fff;
+    background-color: $salek-surface;
     box-shadow: none;
     color: $salek-text-muted;
     font-size: .875rem;

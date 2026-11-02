@@ -47,7 +47,7 @@ $salek-icon-rows: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
         overflow: visible !important; /* stylelint-disable-line declaration-no-important */ // (The teachers' list opens over the card's edge.)
         border: 0;
         border-radius: $salek-card-radius;
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: $salek-card-shadow;
         transition: box-shadow .2s ease, transform .2s ease;
 
@@ -273,7 +273,7 @@ $salek-icon-rows: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
             max-width: calc(100% + 16px);
             padding: 6px;
             border-radius: 14px;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: 0 12px 32px -8px rgb(15 23 42 / 22%), 0 0 0 1px rgb(15 23 42 / 4%);
 
             // (Each row from the same start: the site's older rules overlap the avatars.)
@@ -386,7 +386,7 @@ body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card
     margin-bottom: 24px;
     padding: 8px;
     border-radius: $salek-card-radius;
-    background-color: #fff;
+    background-color: $salek-surface;
     box-shadow: $salek-card-shadow;
 
     .salek-courses-search {
@@ -402,7 +402,7 @@ body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card
             font-size: .875rem;
 
             &:focus {
-                background-color: #fff;
+                background-color: $salek-surface;
             }
         }
     }
@@ -481,7 +481,7 @@ body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card
         }
 
         &[aria-pressed="true"] {
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
             color: var(--bs-primary);
         }
@@ -522,7 +522,7 @@ body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card
 body #page .salek-courses-bar {
     .salek-courses-search .form-control:focus,
     .salek-courses-choice:focus-within {
-        background-color: #fff;
+        background-color: $salek-surface;
         box-shadow: 0 0 0 1px var(--bs-primary), 0 0 0 4px rgba(var(--bs-primary-rgb), .15) !important; /* stylelint-disable-line declaration-no-important */
     }
 

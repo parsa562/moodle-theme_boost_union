@@ -17,7 +17,7 @@
 // The Dashboard's calendar block: a white card like the other blocks (its colour variable is
 // transparent).
 #block-region-content .block_calendar_month {
-    background-color: #fff;
+    background-color: $salek-surface;
 }
 
 // The calendar page has no white sheet: the calendar is a card of its own.
@@ -439,7 +439,7 @@ body#page-calendar-view .maincalendar {
             gap: 8px;
             padding: 8px 12px;
             border-radius: 12px;
-            background-color: #fff;
+            background-color: $salek-surface;
             box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
             color: $salek-text-strong;
             font-size: .875rem;
@@ -576,7 +576,7 @@ body#page-calendar-view .maincalendar {
             background-color: transparent;
 
             &:hover {
-                background-color: #fff;
+                background-color: $salek-surface;
                 box-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
             }
         }
