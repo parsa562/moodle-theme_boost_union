@@ -24,6 +24,7 @@
 body#page-calendar-view .maincalendar {
     @include salek-card;
     padding: $salek-space-inset;
+    border: 0; // (As the other cards: the shadow only.)
 
     @include media-breakpoint-down(md) {
         padding: $salek-space-inset-sm;
@@ -240,18 +241,39 @@ body#page-calendar-view .maincalendar {
             }
         }
 
-        // Events in a day: small soft pills.
+        // Events in a day: small soft pills, a long name cut with "…" at the end of the line
+        // (the page's direction).
         ul li > a {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            min-width: 0;
             max-width: 100%;
             margin-top: 4px;
             padding: 2px 8px;
+            overflow: hidden;
             border-radius: 8px;
             background-color: $salek-field-bg;
             color: $salek-text;
             font-size: .75rem;
+        }
+
+        ul li .eventname {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        // The event's colour: a small filled dot that keeps its size (Moodle's ring, squeezed by
+        // a long name, looked like a "0").
+        ul li .calendar-circle {
+            flex: none;
+            box-sizing: border-box;
+            width: 8px;
+            height: 8px;
+            border-width: 4px;
+            border-radius: 50%;
         }
     }
 }
@@ -267,6 +289,11 @@ body#page-calendar-view .maincalendar {
             color: var(--bs-primary);
             font-size: .75rem;
             font-weight: 700;
+        }
+
+        // (Today's events fill a small day: the number and its tint say it is today.)
+        table.calendarmonth td.today:has([data-region="event-item"])::after {
+            display: none;
         }
     }
 }
@@ -298,6 +325,14 @@ body#page-calendar-view .maincalendar {
     }
 }
 
+/* Until theme JS calendarpanel has arranged the month (a moment after the page is drawn), Moodle's
+   plain month showed and then jumped into the layout below: the month waits for it (at most 3s,
+   so it still shows if the script fails). */
+body.jsenabled#page-calendar-view .maincalendar [id^="calendar-month-"]:not(:has(> .salek-calpanel)),
+body.jsenabled #block-region-content .block_calendar_month .maincalendar [id^="calendar-month-"]:not(:has(> .salek-calpanel)) {
+    animation: salek-filters-wait 3s step-end;
+}
+
 /* Step 2 (theme JS calendarpanel): a side panel for today on the dotted card colour (the
    label, the weekday, today's number large, the month, today's events and "New event" at the
    bottom), the view and course filter in the month's row, "Today" between the arrows, the
@@ -321,6 +356,17 @@ body#page-calendar-view .maincalendar {
                 padding: $salek-space-inset-sm;
             }
         }
+
+        // (The same while the blocks drawer takes room beside the page.)
+        @media (max-width: 1299.98px) {
+            &:is(#page.show-drawer-right *) {
+                grid-template-columns: minmax(0, 1fr);
+
+                > .salek-calmain {
+                    padding: $salek-space-inset-sm;
+                }
+            }
+        }
     }
 
     &:has(.salek-calpanel) {
@@ -342,6 +388,13 @@ body#page-calendar-view .maincalendar {
         @include media-breakpoint-down(lg) {
             border-start-end-radius: $salek-card-radius;
             border-end-start-radius: 0;
+        }
+
+        @media (max-width: 1299.98px) {
+            &:is(#page.show-drawer-right *) {
+                border-start-end-radius: $salek-card-radius;
+                border-end-start-radius: 0;
+            }
         }
     }
 
@@ -536,7 +589,28 @@ body#page-calendar-view .maincalendar {
             margin-top: 16px;
         }
 
-        // Phones: the month's name on its own line, the filter and the arrows under it.
+        // Phones, and the month beside the panel on a narrow screen: the month's name on its own
+        // line, the filter and the arrows under it.
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            grid-template-columns: auto minmax(0, 1fr);
+            row-gap: 12px;
+
+            .calendar-controls .current {
+                grid-column: 1 / -1;
+            }
+
+            > .header {
+                grid-row: 2;
+                grid-column: 1;
+            }
+
+            .salek-cal-nav {
+                grid-row: 2;
+                grid-column: 2;
+                justify-self: end;
+            }
+        }
+
         @include media-breakpoint-down(md) {
             grid-template-columns: auto minmax(0, 1fr);
             row-gap: 12px;
@@ -661,3 +735,415 @@ body#page-calendar-view .maincalendar:has(.salek-calpanel) {
     }
 }
 
+
+
+// "Events key" (the calendar's filter block): each kind a row, its colour as a dot (as in the
+// month), its name in the text colour, an eye at the row's end to hide or show it (crossed out,
+// the row faded, while hidden). (Moodle: blue links behind a coloured box with the eye in it.)
+
+.block .calendar_filters {
+    margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    li {
+        margin: 0;
+    }
+
+    li > a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 36px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        color: $salek-ink;
+        font-size: .875rem;
+        text-decoration: none;
+
+        &:hover {
+            background-color: $salek-soft;
+
+            .eventname {
+                text-decoration: none;
+            }
+        }
+
+        // The eye: at the end.
+        &::after {
+            @include salek-mask-icon($salek-icon-eye, 16px);
+            margin-inline-start: auto;
+            color: $salek-text-muted;
+        }
+
+        // (Moodle writes "true" while hidden, "false" or nothing while shown.)
+        &[data-eventtype-hidden="true"] {
+            color: $salek-text-muted;
+
+            &::after {
+                mask-image: $salek-icon-eye-off;
+            }
+
+            > span[class^="calendar_event_"] {
+                opacity: .4;
+            }
+        }
+
+        // (Moodle's space between the box and the name.)
+        > span:not([class]) {
+            display: none;
+        }
+    }
+
+    // The kind's colour: a dot (Moodle's box with the eye in it).
+    li > a > span[class^="calendar_event_"] {
+        flex: none;
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        font-size: 0;
+
+        .icon {
+            display: none;
+        }
+    }
+
+    .calendar_event_site { background-color: #2b8713; }
+    .calendar_event_category { background-color: #9e619f; }
+    .calendar_event_course { background-color: #d34600; }
+    .calendar_event_group { background-color: #9a6e02; }
+    .calendar_event_user { background-color: #4e7c91; }
+    .calendar_event_other { background-color: #687889; }
+}
+
+// "Upcoming events": the title at the start of the first line, the view, the course filter and
+// "New event" at its end (on phones under the title); the events under them (below). (Moodle: a
+// centred title under the buttons.)
+$salek-up-line: #e6eaf0;
+
+body#page-calendar-view .maincalendar [id^="calendar-upcoming-"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+
+    > .calendarwrapper {
+        display: contents;
+    }
+
+    > .calendarwrapper > h2.current {
+        grid-row: 1;
+        grid-column: 1;
+        margin: 0;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > .header {
+        flex-wrap: nowrap !important; /* stylelint-disable-line declaration-no-important */
+        align-items: center;
+        grid-row: 1;
+        grid-column: 2;
+        gap: 8px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > *,
+        > [data-region="view-selector"] > .btn {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [data-action="new-event-button"] {
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+            white-space: nowrap;
+        }
+    }
+
+    > .calendarwrapper > .eventlist,
+    > .calendarwrapper > .overlay-icon-container {
+        grid-column: 1 / -1;
+    }
+
+    @include media-breakpoint-down(lg) {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 16px;
+
+        > .header {
+            flex-wrap: wrap !important; /* stylelint-disable-line declaration-no-important */
+            grid-row: 2;
+            grid-column: 1;
+        }
+    }
+}
+
+// "Day": the same first line as "Upcoming events": the day at the start, the view, the course
+// filter, "New event" and the previous and next day's arrows at its end (on narrower screens the
+// day on a line of its own). (Moodle's wrappers around the title and the arrows give their parts
+// to the line.)
+body#page-calendar-view .maincalendar [id^="calendar-day-"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    column-gap: 8px;
+
+    > .calendarwrapper,
+    > .calendarwrapper > .controls,
+    > .calendarwrapper > .controls > .calendar-controls {
+        display: contents;
+    }
+
+    .calendar-controls .current {
+        grid-row: 1;
+        grid-column: 1;
+        min-height: 0;
+        margin-inline-end: 8px;
+    }
+
+    // (Moodle's hidden separators and the clearfix's box: not parts of the line.)
+    .calendar-controls > .hide,
+    > .calendarwrapper > .controls::after {
+        display: none;
+    }
+
+    > .header {
+        flex-wrap: nowrap !important; /* stylelint-disable-line declaration-no-important */
+        align-items: center;
+        grid-row: 1;
+        grid-column: 2;
+        gap: 8px;
+        margin: 0 8px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > *,
+        > [data-region="view-selector"] > .btn {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [data-action="new-event-button"] {
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+            white-space: nowrap;
+        }
+    }
+
+    .calendar-controls .previous {
+        grid-row: 1;
+        grid-column: 3;
+    }
+
+    .calendar-controls .next {
+        grid-row: 1;
+        grid-column: 4;
+    }
+
+    > .calendarwrapper > .eventlist,
+    > .calendarwrapper > .overlay-icon-container {
+        grid-column: 1 / -1;
+    }
+
+    @include media-breakpoint-down(lg) {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        row-gap: 16px;
+
+        .calendar-controls .current {
+            grid-column: 1 / -1;
+        }
+
+        > .header {
+            flex-wrap: wrap !important; /* stylelint-disable-line declaration-no-important */
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .calendar-controls .previous {
+            grid-row: 2;
+            grid-column: 2;
+        }
+
+        .calendar-controls .next {
+            grid-row: 2;
+            grid-column: 3;
+        }
+    }
+}
+
+// The events in "Upcoming events" and "Day": framed cards on a light grey (they stand apart from
+// the white calendar card): the kind's icon in a circle tinted by its colour, the name, edit and
+// delete small round buttons at the end; the time and the kind as quiet lines under the name.
+// (Moodle: each event under a band of its kind's colour, the buttons above the name on phones.)
+body#page-calendar-view .maincalendar .eventlist {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    .event {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > .card {
+            overflow: clip;
+            border: 1px solid $salek-up-line;
+            border-radius: 16px !important; /* stylelint-disable-line declaration-no-important */
+            background-color: #f5f7fa;
+            box-shadow: none;
+        }
+
+        // The name's line: the icon, the name, the buttons.
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px 6px;
+            border: 0;
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+
+            &::after {
+                display: none; // (Moodle's clearfix.)
+            }
+
+            > .d-inline-block {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > .d-inline-block:has(> .icon, > img) {
+                display: inline-flex !important; /* stylelint-disable-line declaration-no-important */
+                flex: none;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: var(--salek-up-tint, #edf0f3);
+                color: var(--salek-up-colour, #687889);
+
+                .icon {
+                    width: auto;
+                    height: auto;
+                    margin: 0;
+                    color: inherit;
+                    font-size: 1rem;
+                }
+
+                img.icon {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            > .d-inline-block:has(> h3) {
+                flex: 1;
+                min-width: 0;
+            }
+
+            h3.name {
+                display: block !important; /* stylelint-disable-line declaration-no-important */
+                margin: 0;
+                color: $salek-text-strong;
+                font-size: 1rem;
+                font-weight: 600;
+                line-height: 1.6;
+                overflow-wrap: anywhere;
+            }
+
+            .commands {
+                display: flex;
+                order: 3;
+                gap: 2px;
+                float: none !important; /* stylelint-disable-line declaration-no-important */
+
+                a {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+                    color: $salek-text-muted;
+                    text-decoration: none;
+
+                    &:hover {
+                        background-color: $salek-soft;
+                        color: $salek-text-strong;
+                    }
+
+                    &[data-action="delete"]:hover {
+                        background-color: #fdecec;
+                        color: #b42318;
+                    }
+
+                    .icon {
+                        margin: 0;
+                        font-size: .875rem;
+                    }
+                }
+            }
+        }
+
+        // Its details: quiet lines under the name, a small icon before each.
+        .card-body {
+            padding: 0 20px 16px;
+            padding-inline-start: 72px; // (Under the name: the icon's 40px and the gap.)
+            color: $salek-text-muted;
+            font-size: .8125rem;
+
+            > .row {
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: baseline;
+                gap: 8px;
+                margin: 4px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+
+                > [class^="col-"] {
+                    width: auto;
+                    max-width: none;
+                    flex: 0 1 auto;
+                    padding: 0;
+                }
+
+                .icon {
+                    margin: 0;
+                    color: #94a3b8;
+                    font-size: .8125rem;
+                }
+            }
+
+            a {
+                color: $salek-text-strong;
+                text-decoration: none;
+
+                &:hover {
+                    color: var(--bs-primary);
+                }
+            }
+
+            .date {
+                color: inherit;
+            }
+
+            @include media-breakpoint-down(md) {
+                padding-inline-start: 20px;
+            }
+        }
+
+        // Each kind's colour (as the month's dots).
+        .calendar_event_site { --salek-up-tint: #e4f5df; --salek-up-colour: #2b8713; }
+        .calendar_event_category { --salek-up-tint: #f3e8f3; --salek-up-colour: #9e619f; }
+        .calendar_event_course { --salek-up-tint: #ffeadf; --salek-up-colour: #d34600; }
+        .calendar_event_group { --salek-up-tint: #fbf0d3; --salek-up-colour: #9a6e02; }
+        .calendar_event_user { --salek-up-tint: #e3edf2; --salek-up-colour: #4e7c91; }
+    }
+}
+
+// The link under the calendar ("Manage subscriptions").
+body#page-calendar-view .maincalendar > .bottom {
+    margin-top: 20px;
+    font-size: .8125rem;
+}
