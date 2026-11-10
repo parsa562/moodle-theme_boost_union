@@ -1,0 +1,1003 @@
+// Salek: the question preview page (question/bank/previewquestion/preview.php).
+
+/* The page's parts keep their content; only their look changes. One card:
+   - On top, a tinted band: the type's icon, the version and the ID number as small white pills,
+     the name under them; "Close preview" as a round × at the band's corner.
+   - The question: its number, mark and state on one quiet line, its text and answer on a light
+     band, the buttons as plain words on a white line ("Submit and finish" in blue).
+   - The rest on a grey ground in white boxes, in two columns: the comments and the display
+     options at the start, the preview options and the technical information at the end; each
+     box a title with an arrow at its end, its rows split by hairlines.
+   - The custom fields as a box too, the download link at the end of its title's line. */
+$salek-preview: "body#page-question-bank-previewquestion-preview";
+$salek-preview-line: #e6eaf0;
+$salek-preview-ground: #f7f8fa;
+$salek-preview-box-radius: 18px; // (A little rounder than the fields inside, 14px.)
+$salek-preview-row-line: #f0f2f5; // (The rows' lines inside a box: lighter than the line under its title.)
+
+// A box's open/close arrow: down when closed, up when open.
+@mixin salek-preview-arrow {
+    content: "";
+    width: 14px;
+    height: 14px;
+    background-color: var(--bs-primary);
+    transform: rotate(90deg);
+    transition: transform .2s;
+    mask: $salek-icon-chevron no-repeat center / contain;
+}
+
+// Plain-word buttons and links: a soft background on hover (the padding outside the words, so
+// they stay in line with what is around them).
+@mixin salek-preview-word-button {
+    padding: 6px 12px !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */
+    text-decoration: none !important; /* stylelint-disable-line declaration-no-important */
+    transition: background-color .15s;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(var(--bs-primary-rgb), .08) !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// A question (Moodle's .que), shared by the question preview and the quiz's pages: its number,
+// mark and state on one white line (anything else, as the quiz's flag, at the line's end); its
+// text and answer on a light band; after it is answered, the feedback in Moodle's colours on a
+// band too, its title (which Moodle hides) on a white line as the question's.
+// $pad: the space at the sides; $band-pad: the space above and below the light band's content.
+@mixin salek-question($pad, $band-pad) {
+    display: block;
+
+    .info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 12px;
+        float: none;
+        width: auto;
+        margin: 0;
+        padding: 15px $pad;
+        border: 0;
+        border-radius: 0;
+        background: $salek-surface;
+
+        > * {
+            margin: 0;
+            padding: 0;
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        .no {
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 700;
+
+            .qno {
+                font-size: inherit;
+            }
+        }
+
+        .grade {
+            order: 1;
+        }
+
+        > :is(.questionflag, .editquestion, .badge) {
+            order: 3;
+        }
+
+        .state {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            order: 2;
+            margin-inline-end: auto; // (Anything else, as the quiz's flag, at the line's end.)
+            color: var(--salek-question-state-text, var(--salek-question-state, #{$salek-text-muted}));
+            font-weight: 500;
+
+            // (Its dot, in the state's colour.)
+            &::after {
+                content: "";
+                order: -1;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: var(--salek-question-state, #94a3b8);
+            }
+        }
+
+        // (A short dash between them.)
+        .grade::before,
+        .state::before {
+            content: "";
+            order: -2;
+            display: inline-block;
+            width: 7px;
+            height: 1px;
+            margin-inline-end: 12px;
+            vertical-align: middle;
+            background-color: #94a3b8;
+        }
+    }
+
+    &:is(.notyetanswered, .invalidanswer) {
+        --salek-question-state: #f59e0b;
+        --salek-question-state-text: #b45309; // (The amber, darker for text.)
+    }
+
+    &.answersaved {
+        --salek-question-state: var(--bs-primary);
+    }
+
+    &:is(.correct, .complete) {
+        --salek-question-state: #16a34a;
+    }
+
+    &:is(.incorrect, .notanswered) {
+        --salek-question-state: #dc2626;
+    }
+
+    &.partiallycorrect {
+        --salek-question-state: #f59e0b;
+        --salek-question-state-text: #b45309;
+    }
+
+    .content {
+        margin: 0;
+    }
+
+    .formulation {
+        margin: 0;
+        padding-block: $band-pad;
+        padding-inline: $pad;
+        border: 0;
+        border-block: 1px solid $salek-preview-line;
+        border-radius: 0;
+        background-color: #f1f6fa;
+        color: $salek-ink;
+    }
+
+    .ablock {
+        gap: 10px;
+        margin-top: 24px;
+
+        > label {
+            color: $salek-text-strong;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 240px;
+            max-width: 100%;
+            height: $salek-control-height;
+            background-color: #fff;
+        }
+    }
+
+    // (The fields of an answer, anywhere in the question (in its text too, as the gaps of a
+    // cloze): rounder, as the site's fields; over Moodle's .form-control 6px.)
+    .formulation :is(input:is([type="text"], [type="number"], :not([type])), select) {
+        border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // (After it is answered: the feedback in Moodle's colours, a band across the card too; its
+    // title, which Moodle hides, on a white line as the question's.)
+    .content > :not(.formulation) {
+        margin: 0;
+        padding: 0 $pad 20px;
+        border-width: 0 0 1px;
+        border-style: solid;
+        border-color: $salek-preview-line;
+        border-radius: 0;
+
+        > H4.accesshide:first-child {
+            position: static !important; /* stylelint-disable-line declaration-no-important */
+            width: auto !important; /* stylelint-disable-line declaration-no-important */
+            height: auto !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 calc(-1 * #{$pad}) 20px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 15px $pad !important; /* stylelint-disable-line declaration-no-important */
+            overflow: visible !important; /* stylelint-disable-line declaration-no-important */
+            clip: auto !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 1px solid $salek-preview-line !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-surface;
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 700;
+            line-height: 1.5;
+            white-space: normal !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // (The response history: a band as the others, without Bootstrap's frame (.border, a darker
+    // line under it); its table a little less round, inside the card.)
+    .content > .history {
+        padding: 20px $pad !important; /* stylelint-disable-line declaration-no-important */
+        border-width: 0 0 1px !important; /* stylelint-disable-line declaration-no-important */
+        border-color: $salek-preview-line !important; /* stylelint-disable-line declaration-no-important */
+
+        table {
+            border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+
+            > thead > tr:first-child > :first-child {
+                border-start-start-radius: 11px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > thead > tr:first-child > :last-child {
+                border-start-end-radius: 11px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > tbody:last-child > tr:last-child > :first-child {
+                border-end-start-radius: 11px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > tbody:last-child > tr:last-child > :last-child {
+                border-end-end-radius: 11px !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+#{$salek-preview} {
+    // (The popup page has no navbar: no room kept for it.)
+    #page {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    #region-main {
+        --salek-preview-pad: 34px;
+        position: relative;
+        max-width: 1190px;
+        margin: 48px auto !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: clip;
+        border: 0;
+        border-radius: 32px !important; /* stylelint-disable-line declaration-no-important */ // (Over Boost Union's .5rem.)
+        background-color: $salek-preview-ground;
+        // (Even on all sides: a faint edge and a soft glow.)
+        box-shadow: 0 0 0 1px rgb(15 23 42 / 7%), 0 0 28px rgb(15 23 42 / 11%);
+
+        // (The skip link's 1px target above the band: out of the flow.)
+        > #maincontent {
+            position: absolute;
+        }
+
+        @include media-breakpoint-down(md) {
+            --salek-preview-pad: 16px;
+            margin: 20px auto !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 20px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The parts: the question's form across the card, the boxes in two columns under it.
+    // (Explicit rows: the comments' title and field share one, so the display options start
+    // right under them; the preview options' extra height goes to the next one, so the
+    // technical information starts right under them; the display options' extra height goes to
+    // the last one, a 1fr one, which the sizing of the other rows leaves out.)
+    #region-main div[role="main"] {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: repeat(5, auto) 1fr;
+        column-gap: 14px;
+        padding: 0 var(--salek-preview-pad) 40px;
+
+        > * {
+            grid-column: 1 / -1;
+            min-width: 0;
+        }
+
+        > br {
+            display: none;
+        }
+
+        > form.mform {
+            display: contents;
+        }
+
+        > #responseform {
+            grid-row: 1;
+        }
+
+        > form.mform > .collapsible-actions {
+            grid-row: 2;
+            grid-column: 1 / -1;
+        }
+
+        > a[aria-controls="commentcollapse"] {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        > #commentcollapse {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        > form.mform > #id_attemptoptionsheader {
+            grid-row: 3 / span 2;
+            grid-column: 2;
+        }
+
+        > form.mform > #id_displayoptionsheader {
+            grid-row: 4 / span 3;
+            grid-column: 1;
+        }
+
+        > #techinfo {
+            grid-row: 5;
+            grid-column: 2;
+        }
+
+        > a[aria-controls="commentcollapse"],
+        > #commentcollapse,
+        > form.mform > fieldset,
+        > #techinfo {
+            align-self: start;
+        }
+
+        // (The comments open and the preview options closed: the comments are the taller, so the
+        // same rows the other way round: the technical information starts right under the
+        // preview options and takes the last row's extra height, the display options start right
+        // under the comments.)
+        &:has(> a[aria-controls="commentcollapse"][aria-expanded="true"]):has(#id_attemptoptionsheader .fheader.collapsed) {
+            > a[aria-controls="commentcollapse"],
+            > #commentcollapse {
+                grid-row: 3 / span 2;
+            }
+
+            > form.mform > #id_attemptoptionsheader {
+                grid-row: 3;
+            }
+
+            > #techinfo {
+                grid-row: 4 / span 3;
+            }
+
+            > form.mform > #id_displayoptionsheader {
+                grid-row: 5;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows: none;
+
+            > *,
+            > form.mform > * {
+                grid-area: auto !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > #responseform {
+                order: -2;
+            }
+
+            > form.mform > .collapsible-actions {
+                order: -1;
+            }
+        }
+    }
+
+    // The top: a tinted band with the pills on one line and the name under them.
+    #responseform {
+        display: grid;
+        grid-template-columns: auto auto auto minmax(0, 1fr);
+        align-items: center;
+        column-gap: 8px;
+        margin: 0 calc(-1 * var(--salek-preview-pad));
+        padding: 0 var(--salek-preview-pad);
+        background-color: $salek-surface;
+
+        &::before {
+            content: "";
+            grid-row: 1 / 3;
+            grid-column: 1 / -1;
+            align-self: stretch;
+            margin: 0 calc(-1 * var(--salek-preview-pad));
+            border-bottom: 1px solid $salek-preview-line;
+            background: $salek-card-gradient;
+
+            [dir="rtl"] & {
+                background: $salek-card-gradient-rtl;
+            }
+        }
+
+        > [class~="d-flex"] {
+            display: contents !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > br,
+        > div:has(> input[type="hidden"]) {
+            display: none;
+        }
+
+        // The pills.
+        > [class~="d-flex"] > H2:first-child,
+        > [class~="d-flex"] > H3,
+        > [class~="d-flex"] > [class~="bg-primary"] {
+            grid-row: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 24px !important; /* stylelint-disable-line declaration-no-important */
+            margin: 44px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 10px !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 999px;
+            background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-ink !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .75rem;
+            font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        > [class~="d-flex"] > H2:first-child {
+            grid-column: 1;
+        }
+
+        > [class~="d-flex"] > H3 {
+            grid-column: 2;
+        }
+
+        > [class~="d-flex"] > [class~="bg-primary"] {
+            grid-column: 3;
+        }
+
+        // (Its name: added by the theme's renderer, see classes/output/qbank_previewquestion_renderer.php.)
+        .salek-qtype-name {
+            color: #6941c6;
+            font-weight: 600;
+        }
+
+        > [class~="d-flex"] > H2:first-child .icon {
+            width: 14px;
+            height: 14px;
+            margin: 0;
+        }
+
+        > [class~="d-flex"] > H3 .badge {
+            padding: 0;
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+            color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+            font-size: inherit;
+            font-weight: 600;
+        }
+
+        // The ID number.
+        > [class~="d-flex"] > [class~="bg-primary"] {
+            justify-self: start;
+            font-family: $font-family-monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        // The name.
+        > [class~="d-flex"] > H2 + H2 {
+            grid-row: 2;
+            grid-column: 1 / -1;
+            margin: 34px 0 52px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-strong;
+            font-size: 1.625rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        // "A newer version exists": under the band.
+        > .alert {
+            grid-row: 3;
+            grid-column: 1 / -1;
+            margin: 16px 0;
+        }
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: auto minmax(0, 1fr);
+            row-gap: 6px;
+
+            > [class~="d-flex"] > H2:first-child,
+            > [class~="d-flex"] > H3 {
+                margin-top: 64px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > [class~="d-flex"] > H3 {
+                grid-column: 2;
+                justify-self: start;
+            }
+
+            > [class~="d-flex"] > [class~="bg-primary"] {
+                grid-row: 2;
+                grid-column: 1 / -1;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &::before {
+                grid-row: 1 / 4;
+            }
+
+            > [class~="d-flex"] > H2 + H2 {
+                grid-row: 3;
+                margin: 18px 0 32px !important; /* stylelint-disable-line declaration-no-important */
+                font-size: 1.375rem;
+            }
+
+            > .alert {
+                grid-row: 4;
+            }
+        }
+    }
+
+    // "Close preview": a round × at the band's corner.
+    #previewcontrols > :is(#close-previewquestion-page, a) {
+        position: absolute;
+        top: 40px;
+        inset-inline-end: var(--salek-preview-pad);
+        width: 36px;
+        height: 36px;
+        min-height: 0;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: hidden;
+        border: 0;
+        border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+        background: #fff;
+        box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
+        color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-color: $salek-ink;
+            mask: $salek-icon-close no-repeat center / 16px 16px;
+        }
+
+        &:hover {
+            background-color: $salek-soft;
+        }
+
+        // (An input can't have ::before: its × as a background.)
+        &#close-previewquestion-page {
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e293b' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") no-repeat center / 16px 16px;
+
+            &:hover {
+                background-color: $salek-soft;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            top: 16px;
+        }
+    }
+
+    // The question: its number, mark and state on one white line; its text and answer on a
+    // light band.
+    .que {
+        grid-row: 4;
+        grid-column: 1 / -1;
+        margin: 0 calc(-1 * var(--salek-preview-pad));
+
+        @include salek-question(var(--salek-preview-pad), 40px 52px);
+    }
+
+    // The buttons: plain words on a white line.
+    #previewcontrols {
+        grid-row: 5;
+        grid-column: 1 / -1;
+        position: static; // (Bootstrap's .input-group is where the × would be put against.)
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+        width: auto;
+        margin: 0 calc(-1 * var(--salek-preview-pad));
+        padding: 9px calc(var(--salek-preview-pad) - 12px);
+        border-bottom: 1px solid $salek-preview-line;
+        background-color: $salek-surface;
+
+        > input[type="submit"] {
+            @include salek-preview-word-button;
+            min-height: 36px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0;
+            background: none;
+            box-shadow: none;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 500;
+
+            // (Those that can't be used now: before an answer "Start again", after it the rest.)
+            &:disabled {
+                display: none;
+            }
+        }
+
+        > #id_finish_question_preview:not(:disabled) {
+            color: var(--bs-primary);
+            font-weight: 700;
+        }
+    }
+
+    // "Expand all": plain words at the end, above the boxes (its hover background's edge in line
+    // with theirs).
+    #region-main div[role="main"] > form.mform > .collapsible-actions {
+        position: static;
+        justify-content: flex-end;
+        margin: 36px 0 12px;
+
+        .collapseexpand {
+            @include salek-preview-word-button;
+            min-height: 0;
+            border: 0;
+            background: none;
+            font-size: .9375rem;
+            font-weight: 700;
+        }
+    }
+
+    // The boxes.
+    #region-main div[role="main"] {
+        > a[aria-controls="commentcollapse"],
+        > #commentcollapse,
+        > form.mform > fieldset,
+        > #techinfo {
+            margin: 0 0 14px;
+            overflow: clip;
+            border: 1px solid $salek-preview-line;
+            border-radius: $salek-preview-box-radius !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's links' focus radius.)
+            background-color: #fff;
+        }
+
+        // (Their titles: a soft background on hover.)
+        > a[aria-controls="commentcollapse"]:hover,
+        > form.mform > fieldset > [class~="d-flex"]:has(> .ftoggler):hover,
+        > #techinfo #techinfo_caption > a:hover::before {
+            background-color: $salek-subtle !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Their titles: the arrow at the end.
+        > a[aria-controls="commentcollapse"],
+        #techinfo_caption > a,
+        > form.mform > fieldset H3 {
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        // The comments: the title is the box's top, the comment field its body.
+        > a[aria-controls="commentcollapse"] {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 58px; // (As the others: a 56px title and the box's border.)
+            padding: 0 18px;
+
+            > .icon {
+                display: none;
+            }
+
+            &::after {
+                @include salek-preview-arrow;
+            }
+
+            &[aria-expanded="true"] {
+                margin-bottom: 0;
+                border-bottom-color: $salek-preview-line;
+                // (Over Moodle's links' focus radius.)
+                border-radius: $salek-preview-box-radius $salek-preview-box-radius 0 0 !important; /* stylelint-disable-line declaration-no-important */
+
+                &::after {
+                    transform: rotate(-90deg);
+                }
+            }
+        }
+
+        > #commentcollapse {
+            margin-top: 58px; // (In the title's grid row, under it: the title is 58px high.)
+            border-top: 0;
+            border-radius: 0 0 $salek-preview-box-radius $salek-preview-box-radius !important; /* stylelint-disable-line declaration-no-important */
+
+            @include media-breakpoint-down(md) {
+                margin-top: 0;
+            }
+
+            &.collapsing {
+                margin-bottom: 14px;
+            }
+
+            .comment-ctrl {
+                display: block !important; /* stylelint-disable-line declaration-no-important */
+                padding: 18px;
+            }
+
+            .comment-area {
+                width: auto;
+                max-width: none;
+                margin: 0;
+
+                .db {
+                    width: auto;
+                    margin: 0;
+                }
+
+                textarea {
+                    width: 100%;
+                    min-height: 88px;
+                    padding: 10px 12px;
+                    border: 0;
+                    border-radius: 10px;
+                    background-color: $salek-field-bg;
+                }
+
+                .fd {
+                    width: auto;
+                    margin: 8px -6px 0 !important; /* stylelint-disable-line declaration-no-important */
+                    text-align: end;
+
+                    a {
+                        @include salek-preview-word-button;
+                        display: inline-block;
+                        font-size: .9375rem;
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+
+        // The options' sections.
+        > form.mform > fieldset {
+            > [class~="d-flex"]:has(> .ftoggler) {
+                min-height: 56px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 18px !important; /* stylelint-disable-line declaration-no-important */
+                border: 0 !important; /* stylelint-disable-line declaration-no-important */
+                background: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .ftoggler {
+                flex: 1;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .ftoggler > .fheader {
+                order: 1;
+                width: 14px;
+                height: 14px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0;
+                border: 0 !important; /* stylelint-disable-line declaration-no-important */
+                background: none !important; /* stylelint-disable-line declaration-no-important */
+
+                > :is(.expanded-icon, .collapsed-icon) {
+                    display: none;
+                }
+
+                &::before {
+                    @include salek-preview-arrow;
+                    display: block;
+                    width: 14px !important; /* stylelint-disable-line declaration-no-important */
+                    height: 14px !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                &:not(.collapsed)::before {
+                    transform: rotate(-90deg);
+                }
+            }
+
+            > .fcontainer {
+                margin: 0;
+                padding: 0 0 10px;
+                border-top: 1px solid $salek-preview-line;
+            }
+
+            // The settings' note.
+            .fcontainer > .col-form-label:not(.fitem) {
+                margin: 14px 0 6px !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 18px;
+                color: $salek-text-muted;
+                font-size: .8125rem;
+                line-height: 1.6;
+            }
+
+            // A setting: its label at the start, its field at the end, a hairline under it.
+            .fitem {
+                --bs-gutter-x: 0;
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 12px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 8px 18px;
+                border-bottom: 1px solid $salek-preview-row-line;
+                background: none !important; /* stylelint-disable-line declaration-no-important */ // (The forms' own inset line.)
+
+                > .col-md-3 {
+                    flex: 1;
+                    width: auto;
+                    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+                    color: $salek-ink;
+                    font-size: .875rem;
+                }
+
+                > .col-md-9 {
+                    flex: none;
+                    justify-content: flex-end;
+                    width: auto;
+                    padding: 0;
+                }
+
+                // (The site's own field look; a common width so they line up, wider for a long
+                // choice, on one line.)
+                :is(select, input[type="text"]) {
+                    width: auto;
+                    min-width: 180px;
+                    max-width: 100%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            // The section's button: plain words at the end.
+            .fitem.femptylabel {
+                padding-top: 14px;
+                border-bottom: 0;
+
+                > .col-md-3 {
+                    display: none !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                > .col-md-9 {
+                    flex: 1;
+                }
+
+                > .col-md-9 {
+                    margin-inline-end: -12px;
+                }
+
+                [class~="btn"] {
+                    @include salek-preview-word-button;
+                    min-height: 0;
+                    border: 0;
+                    background: none;
+                    box-shadow: none;
+                    color: var(--bs-primary);
+                    font-size: .9375rem;
+                    font-weight: 700;
+                }
+            }
+        }
+
+        // The technical information: the help icon after its title, its lines as rows.
+        > #techinfo {
+            position: relative;
+            isolation: isolate; // (The title's hover background goes under the help icon.)
+
+            #techinfo_sizer {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0 6px;
+            }
+
+            #techinfo_caption > a {
+                display: flex;
+                align-items: center;
+                min-height: 56px;
+                padding-inline-start: 18px;
+
+                > img.icon {
+                    display: none;
+                }
+
+                // (The whole title row: clickable, and its hover background.)
+                &::before {
+                    content: "";
+                    position: absolute;
+                    z-index: -1;
+                    top: 0;
+                    inset-inline: 0;
+                    height: 56px;
+                }
+
+                &::after {
+                    @include salek-preview-arrow;
+                    position: absolute;
+                    top: 21px;
+                    inset-inline-end: 18px;
+                }
+            }
+
+            &:not(.collapsed) #techinfo_caption > a::after {
+                transform: rotate(-90deg);
+            }
+
+            .collapsibleregionextracontent {
+                display: flex;
+            }
+
+            .collapsibleregioninner {
+                flex: 0 0 100%;
+                padding: 0 0 6px;
+                border-top: 1px solid $salek-preview-line;
+            }
+
+            p.notifytiny {
+                margin: 0;
+                padding: 9px 18px;
+                border-bottom: 1px solid $salek-preview-row-line;
+                color: $salek-ink;
+                font-size: .8125rem;
+                line-height: 1.6;
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+            }
+        }
+
+        // The custom fields: a box as the others, its title on top; the download link at the end
+        // of that title's line. (Explicit rows: under the boxes.)
+        > H3:not(:first-child) {
+            grid-row: 7;
+            display: flex;
+            align-items: center;
+            min-height: 58px;
+            margin: 0 0 14px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 18px;
+            border: 1px solid $salek-preview-line;
+            border-radius: $salek-preview-box-radius;
+            background-color: #fff;
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 600;
+
+            // (With fields: they go on in the same box.)
+            &:has(~ .customfield) {
+                margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+                border-radius: $salek-preview-box-radius $salek-preview-box-radius 0 0;
+            }
+
+            ~ H4,
+            ~ .customfield {
+                margin: 0;
+                padding: 9px 18px;
+                border: 1px solid $salek-preview-line;
+                border-block-width: 0 1px;
+                border-bottom-color: $salek-preview-row-line;
+                background-color: #fff;
+                font-size: .875rem;
+            }
+
+            ~ H4 {
+                padding-top: 14px;
+                color: $salek-text-muted;
+                font-size: .8125rem;
+                font-weight: 700;
+            }
+
+            ~ .customfield:not(:has(~ .customfield)) {
+                margin-bottom: 14px;
+                border-bottom-color: $salek-preview-line;
+                border-radius: 0 0 $salek-preview-box-radius $salek-preview-box-radius;
+            }
+        }
+
+        > div:has(> a[href*="exporttoxml"]) {
+            grid-row: 7;
+            align-self: start;
+            justify-self: end;
+            margin: 12px 6px 0;
+
+            > a {
+                @include salek-preview-word-button;
+                display: inline-block;
+                font-size: .9375rem;
+                font-weight: 700;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            > div:has(> a[href*="exporttoxml"]) {
+                margin: 0;
+                margin-inline-end: -12px;
+            }
+        }
+    }
+}

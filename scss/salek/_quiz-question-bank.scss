@@ -109,10 +109,19 @@
             }
         }
 
-        // Name and text may wrap, so the table fits the dialogue and the preview column shows.
-        td.questionnametext,
-        td.questionnametext * {
+        // The name cell as on the question bank page: the name, its ID number and its tags on one
+        // line (at most three tags, then "…"; the name itself may wrap, so the table fits the
+        // dialogue), the question's text quiet on one line under them.
+        td.questionnametext {
             white-space: normal !important; /* stylelint-disable-line declaration-no-important */
+
+            > div {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 4px 6px;
+                min-width: 0;
+            }
         }
 
         .questionname {
@@ -120,8 +129,54 @@
             font-weight: 500;
         }
 
+        td.questionnametext .tag_list {
+            display: inline-flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-inline.)
+            min-width: 0;
+            max-width: 100%;
+
+            ul.inline-list {
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 4px;
+                margin: 0;
+                padding: 0;
+
+                > li {
+                    margin: 0;
+                    white-space: nowrap;
+                }
+
+                > li:nth-child(n + 4) {
+                    display: none;
+                }
+
+                &:has(> li:nth-child(4))::after {
+                    content: "…";
+                    color: $salek-text-muted;
+                }
+            }
+        }
+
         .questiontext {
+            flex-basis: 100%;
+            min-width: 0;
+            overflow: hidden;
             color: $salek-text-muted;
+            font-size: .8125rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        // Sortable titles (links) as large as the others (the quiz sets .8em on their box).
+        > thead .sorters {
+            font-size: inherit;
+            font-weight: inherit;
+
+            > a {
+                font-size: inherit;
+                font-weight: inherit;
+            }
         }
 
         th.checkbox .header-text {

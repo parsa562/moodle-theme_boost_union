@@ -1015,6 +1015,12 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) .tertiary-na
 
 #page.hasstickyfooter:has(#sticky-footer #bulkactionsui-container) {
     margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    // The help button (?) at the window's bottom corner stays down there too (Moodle lifts it
+    // above the bar while there is one).
+    .btn-footer-popover {
+        bottom: 2rem;
+    }
 }
 
 // The actions themselves: soft buttons with the icon beside the text (5.3: icon above), after a

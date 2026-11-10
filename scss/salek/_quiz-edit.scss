@@ -1,0 +1,732 @@
+// Salek: the quiz's Questions page (mod/quiz/edit.php), in the design of the user's mockup.
+
+/* The page's parts keep their content; only their look changes:
+   - The counts and the quiz's state as pills under the title, the maximum grade and "Save" at
+     the end of that line, the tools (Repaginate, Select multiple items) as soft buttons below.
+   - Each page: a small dark number badge, "Page N", and "+ Add" at the end of its line.
+   - Each question: a soft card: the drag handle, the number in a white square, the type's icon
+     in a tinted square, the name and its labels (the bank, a missing category) as pills, and at
+     the end the mark in a white pill and square buttons (edit, preview, delete).
+   - The page break buttons between the questions centred under the cards, with their text.
+   - "Shuffle" as a switch at the end of the line above the questions.
+   The page's title is in the header already (with its menu), so the second title is not shown. */
+#page-mod-quiz-edit #region-main {
+    $card-line: #e3e8ef;
+    $card-bg: #f5f7fb;
+
+    .mod-quiz-edit-content > H2 {
+        display: none;
+    }
+
+    // "You cannot add or remove questions": the site's warning message.
+    .statusdisplay {
+        position: relative;
+        margin: 0 0 16px;
+        padding: 16px 18px !important; /* stylelint-disable-line declaration-no-important */
+        padding-inline-start: 50px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid #f7de9c;
+        border-radius: 16px;
+        background-color: #fff8e6;
+        color: #5c3d00;
+        font-size: .875rem;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            inset-inline-start: 18px;
+            width: 20px;
+            height: 20px;
+            background-color: #d99a00;
+            mask: $salek-icon-warning center / contain no-repeat;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        a {
+            color: inherit;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+    }
+
+    // The lines above the questions: one grid (the counts and the total, the maximum grade at
+    // the end; the tools below).
+    .mod_quiz-edit-top-controls {
+        display: grid;
+        grid-template-columns: auto auto 1fr auto;
+        align-items: center;
+        gap: 16px 8px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid $salek-line; // (The tools apart from the list.)
+
+        > [class~="d-flex"] {
+            display: contents !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > [class~="d-flex"]:first-child > :first-child {
+            grid-column: 1;
+        }
+
+        .maxgrade {
+            grid-column: 4;
+            grid-row: 1;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            fieldset {
+                gap: 10px;
+            }
+
+            label {
+                color: $salek-text-muted;
+                font-size: .875rem;
+            }
+
+            input.form-control {
+                width: 84px !important; /* stylelint-disable-line declaration-no-important */
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            [class~="btn"] {
+                --bs-btn-color: #fff;
+                --bs-btn-bg: var(--bs-primary);
+                --bs-btn-hover-color: #fff;
+                --bs-btn-hover-bg: #0d5fa8;
+                min-height: $salek-control-height;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding-inline: 18px;
+                border: 0;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+        }
+
+        .edit-toolbar {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .btn-group's joined buttons.)
+            flex-wrap: wrap;
+            grid-column: 1 / -1;
+            gap: 10px;
+
+            justify-self: start;
+
+            [class~="btn"] {
+                flex: none;
+                min-height: 42px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding-inline: 18px;
+                border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */ // (Over .btn-group's joined corners.)
+                font-weight: 600;
+            }
+        }
+
+        > [class~="d-flex"]:nth-child(2) > [class~="d-flex"] {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .selectmultiplecommand,
+        .btn-toolbar {
+            grid-column: 1 / -1;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The counts as pills (the "|" between them is not shown).
+    .statusbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0;
+    }
+
+    .statusbar > span,
+    .totalpoints {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background-color: $salek-soft;
+        color: $salek-text;
+        font-size: .8125rem;
+        font-weight: 500;
+    }
+
+    .totalpoints .mod_quiz_summarks {
+        color: $salek-ink;
+        font-weight: 700;
+    }
+
+    // The list.
+    ul.slots > li.section > .content {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    ul.slots ul.section {
+        counter-reset: salek-quiz-page;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // "Shuffle": a switch at the end of the line above the questions.
+    .section-heading {
+        display: flex;
+        align-items: center;
+        min-height: 32px;
+        margin: 0;
+        padding: 0 18px; // (In line with the cards' content.)
+
+        .help-icon {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-2.)
+        }
+
+        .instanceshufflequestions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0; // (Moodle's 20px at the end.)
+            margin-inline-start: auto;
+            color: $salek-text-muted;
+            font-size: .875rem;
+
+            label {
+                order: -1;
+                margin: 0;
+            }
+
+            input[type="checkbox"] {
+                appearance: none;
+                position: relative;
+                width: 38px;
+                height: 22px;
+                margin: 0;
+                border: 1px solid #d3dae4;
+                border-radius: 999px;
+                background-color: #e8ecf2;
+                cursor: pointer;
+                transition: background-color .15s ease;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 2px;
+                    inset-inline-start: 2px;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background-color: #fff;
+                    box-shadow: 0 1px 2px rgb(15 23 42 / 25%);
+                    transition: inset-inline-start .15s ease;
+                }
+
+                &:checked {
+                    border-color: var(--bs-primary);
+                    background-color: var(--bs-primary);
+
+                    &::after {
+                        inset-inline-start: 18px;
+                    }
+                }
+            }
+        }
+    }
+
+    // Each page's title: the number badge, "Page N", "+ Add" at the end.
+    ul.slots li.section li.activity.page {
+        counter-increment: salek-quiz-page;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0 10px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 18px !important; /* stylelint-disable-line declaration-no-important */ // (In line with the cards' content.)
+        background: none;
+
+        &::before {
+            content: counter(salek-quiz-page);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 5px;
+            border-radius: 6px;
+            background-color: $salek-ink;
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 700;
+        }
+
+        h4 {
+            margin: 0;
+            color: $salek-ink;
+            font-size: .8125rem;
+            font-weight: 700;
+        }
+
+        .add-menu-outer {
+            position: static;
+            margin-inline-start: auto;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (Moodle's form for adding a question here: only hidden fields, but a place in the row.)
+        > form.addnewquestion {
+            position: absolute;
+        }
+    }
+
+    // "+ Add" (each page's and the last one).
+    .page-add-actions .dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--bs-primary);
+        font-size: .875rem;
+        font-weight: 600;
+        text-decoration: none;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-plus-white, 12px);
+        }
+
+        > b.caret,
+        &::after {
+            display: none;
+        }
+    }
+
+    // The last "+ Add": a soft button in the middle under the list.
+    .last-add-menu {
+        display: flex;
+        justify-content: center;
+        margin: 24px 0 0;
+
+        .add-menu-outer {
+            position: static;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .dropdown-toggle {
+            min-height: 44px;
+            padding: 0 22px;
+            border-radius: 12px;
+            background-color: $salek-soft;
+        }
+    }
+
+    // The questions: soft cards.
+    ul.slots li.section li.activity.slot {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+
+        + li.activity.slot {
+            margin-top: 10px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > div {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 88px;
+            padding: 16px 18px;
+            border: 1px solid $card-line;
+            border-radius: 16px;
+            background-color: $card-bg;
+        }
+
+        &.qtype_missingtype > div {
+            border-color: #f6cfcf;
+            background-color: #fdf4f4;
+        }
+
+        // The drag handle: dots.
+        .editing_move {
+            position: static;
+            flex: none;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: #9aa6b8;
+
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-grip, 16px);
+                display: block;
+            }
+        }
+
+        .mod-indent-outer {
+            flex: 1;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .mod-indent {
+            display: none;
+        }
+
+        .actions {
+            display: flex;
+            flex: none;
+            align-items: center;
+            gap: 8px;
+            margin-inline-start: auto;
+
+            // The place of the edit pencil.
+            &::before {
+                content: "";
+                width: 36px;
+                height: 36px;
+            }
+
+            a.preview {
+                order: 1;
+            }
+
+            a.editing_delete {
+                order: 2;
+            }
+        }
+
+        // (How far the pencil is from the end: the buttons after it.)
+        &:not(:has(.actions a.preview)),
+        &:not(:has(.actions a.editing_delete)) {
+            --salek-quiz-after: 44px;
+        }
+
+        &:not(:has(.actions a.preview)):not(:has(.actions a.editing_delete)) {
+            --salek-quiz-after: 0px;
+        }
+
+        // (The lock that makes a question wait for the one before: in the gap above the card,
+        // at its end, as Moodle places it between the questions.)
+        .question_dependency_wrapper {
+            top: -22px;
+            right: auto;
+            inset-inline-end: 12px;
+        }
+    }
+
+    // The question's number in a white square.
+    .slotnumber {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        margin: 0;
+        padding: 0 6px;
+        border: 1px solid $card-line;
+        border-radius: 12px;
+        background-color: #fff;
+        color: var(--bs-primary);
+        font-size: .9375rem;
+        font-weight: 700;
+
+        &.shuffled {
+            display: none;
+        }
+
+        .quickeditlink {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        // (A number that can be changed: its pencil shows with the pointer over it.)
+        .quickediticon {
+            display: none;
+        }
+
+        &:hover .quickediticon {
+            display: inline;
+        }
+
+        .quickediticon .icon {
+            margin: 0;
+            color: rgba(var(--bs-primary-rgb), .5);
+            font-size: .625rem;
+        }
+    }
+
+    // The name, its text and the labels.
+    // A grid: the type's icon in the first column, on the middle of the name and the labels
+    // (and so of the card, as the number beside it); the name and its link on the first row, the
+    // labels under them. (The name's row and its link are dissolved into the grid.)
+    ul.slots .activityinstance {
+        display: grid;
+        flex: 1;
+        grid-template-columns: 36px auto 1fr;
+        align-items: center;
+        gap: 6px 10px;
+        min-width: 0;
+
+        > div:first-child,
+        > div:first-child > a {
+            display: contents;
+        }
+
+        .instancename {
+            grid-column: 2 / -1;
+        }
+
+        .questionname {
+            grid-column: 2;
+        }
+
+        .mod_quiz_random_qbank_link {
+            grid-column: 3;
+            justify-self: start;
+        }
+
+        &:has(> .sharedbank) img.activityicon {
+            grid-row: 1 / span 2;
+        }
+
+        img.activityicon {
+            grid-column: 1;
+            box-sizing: content-box;
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            padding: 8px;
+            border-radius: 10px;
+            background-color: #efeafd;
+        }
+
+        .questionname {
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 600;
+        }
+
+        .questiontext {
+            margin-inline-start: 6px;
+            color: $salek-text-muted;
+            font-size: .875rem;
+        }
+
+        .mod_quiz_random_qbank_link {
+            color: var(--bs-primary);
+            font-size: .8125rem;
+            font-weight: 500;
+        }
+
+        // The labels under the name, from its start (after the type's icon).
+        .sharedbank {
+            grid-column: 2 / -1;
+            margin: 0;
+
+            a {
+                text-decoration: none;
+            }
+        }
+
+        // The question's edit pencil: a square button at the end, before preview and delete
+        // (the place kept for it in the buttons' row, see below).
+        a > .fa-pen,
+        .instancename > .fa-pen {
+            position: absolute;
+            top: 50%;
+            inset-inline-end: calc(21px + var(--salek-quiz-after, 88px)); // (The card's padding, and the middle of the place kept for it.)
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px !important; /* stylelint-disable-line declaration-no-important */ // (Over the icon size.)
+            max-width: none !important; /* stylelint-disable-line declaration-no-important */ // (Moodle caps icons at 30 x 24px.)
+            height: 36px !important; /* stylelint-disable-line declaration-no-important */
+            max-height: none !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 1px solid $card-line;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #334155;
+            font-size: .875rem;
+            transform: translateY(-50%);
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: auto !important; /* stylelint-disable-line declaration-no-important */ // (Over .h-50.)
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: .75rem;
+            font-weight: 600;
+
+            &[class~="bg-primary"] {
+                border: 1px solid #c6d9f3;
+                background-color: #e4eefb !important; /* stylelint-disable-line declaration-no-important */
+                color: #1a4a91 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &[class~="bg-danger"] {
+                border: 1px solid #f3c1c1;
+                background-color: #fde6e6 !important; /* stylelint-disable-line declaration-no-important */
+                color: #b4232a !important; /* stylelint-disable-line declaration-no-important */
+
+                &::before {
+                    @include salek-mask-icon($salek-icon-warning, 12px);
+                }
+            }
+        }
+    }
+
+    // At the end: the mark in a white pill, then square buttons.
+    ul.slots .instancemaxmarkcontainer {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        order: -1;
+        height: 36px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 10px;
+        border: 1px solid $card-line;
+        border-radius: 10px;
+        background-color: #fff;
+
+        .instancemaxmark {
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 700;
+        }
+
+        .editicon {
+            margin: 0;
+            color: #9aa6b8;
+            font-size: .6875rem;
+        }
+    }
+
+    ul.slots .actions .version-selection {
+        order: -2;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    ul.slots .actions :is(a.preview, a.editing_delete) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid $card-line;
+        border-radius: 10px;
+        background-color: #fff;
+        color: #334155;
+
+        .icon {
+            margin: 0;
+            color: inherit;
+            font-size: .875rem;
+        }
+
+        &:hover {
+            border-color: #c9d3e0;
+            color: var(--bs-primary);
+        }
+    }
+
+    ul.slots .actions a.editing_delete:hover {
+        color: #c0262d;
+    }
+
+    // The page break buttons between the questions: under the card, in the middle, with their
+    // text (Moodle's title of the button).
+    ul.slots li.section li.activity.slot .page_split_join_wrapper {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin: 6px 0 0;
+
+        .page_split_join {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .75rem;
+
+            &::after {
+                content: attr(title);
+            }
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    // Phones: the number and the question on one line, the buttons on a line of their own
+    // under it (Moodle's phone rules stack every part on its own line), the pencil among them.
+    @include media-breakpoint-down(md) {
+        ul.slots li.section li.activity.slot > div {
+            align-items: flex-start;
+            padding: 14px;
+        }
+
+        ul.slots li.section li.activity.slot .mod-indent-outer {
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        ul.slots li.section li.activity.slot .activityinstance {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */
+            flex: 1 1 0;
+        }
+
+        ul.slots li.section li.activity.slot .actions {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        ul.slots .activityinstance .sharedbank {
+            margin-inline-start: 0;
+        }
+
+        // (The pencil in its place in the buttons' line, which is the card's last line here.)
+        ul.slots .activityinstance a > .fa-pen,
+        ul.slots .activityinstance .instancename > .fa-pen {
+            top: auto;
+            bottom: 14px;
+            inset-inline-end: calc(14px + var(--salek-quiz-after, 88px));
+            transform: none;
+        }
+
+        .mod_quiz-edit-top-controls > [class~="d-flex"]:nth-child(2) > [class~="d-flex"] {
+            justify-self: start;
+        }
+
+        .mod_quiz-edit-top-controls {
+            grid-template-columns: 1fr;
+
+            > [class~="d-flex"]:first-child > :first-child,
+            > [class~="d-flex"]:nth-child(2) > [class~="d-flex"],
+            .maxgrade {
+                grid-column: 1;
+                grid-row: auto;
+            }
+        }
+    }
+}

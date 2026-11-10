@@ -1,0 +1,1373 @@
+// Salek: the questions on the quiz's pages (attempt, review, a question's review), as on the
+// question preview page.
+
+/* A question: its number, mark and state on one white line, the flag (small) and the version at
+   that line's end; its text and answer on a light band; the feedback after it in Moodle's
+   colours, with its title on a white line; at the bottom a white line with "Check" at its start
+   and the edit link at its end (on phones: the edit link on the first line too, "Check" under the
+   answer).
+   The shared parts are the salek-question mixin (in _question-preview.scss).
+   - On the attempt page the title area (a tinted card with "Back" and the quiz's name) and each
+     question are cards of their own on the page's ground, "Previous page" and "Next page" under
+     them; on the review, the summary and each question.
+   - Elsewhere (the review) each question is a card of its own. */
+$salek-quiz-que-line: #e6eaf0;
+$salek-quiz-ground: #f7f8fa;
+
+body.path-mod-quiz .que {
+    --salek-quiz-que-pad: 24px;
+    margin: 0 0 24px;
+    overflow: clip;
+    border: 1px solid $salek-quiz-que-line;
+    border-radius: 18px;
+    background-color: #fff;
+
+    @include media-breakpoint-down(md) {
+        --salek-quiz-que-pad: 16px;
+    }
+
+    @include salek-question(var(--salek-quiz-que-pad), 28px 32px);
+
+    // (The lines between the parts: one each.)
+    .formulation {
+        border-top: 1px solid $salek-quiz-que-line;
+        border-bottom: 0;
+    }
+
+    .content > :not(.formulation) {
+        border-width: 1px 0 0;
+        border-color: $salek-quiz-que-line;
+    }
+
+    // (The response history too: its line above, none under it, where the bottom line has one.)
+    .content > .history {
+        border-width: 1px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The flag and the edit link: plain words with a soft background on hover.
+    .info :is(.questionflag, .editquestion) {
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                background-color: rgba(var(--bs-primary-rgb), .08);
+            }
+        }
+
+        .icon {
+            margin: 0;
+        }
+    }
+
+    // The flag: small and quiet, on the question's first line.
+    .info .questionflag {
+        a {
+            gap: 4px;
+            padding: 3px 8px;
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        .icon {
+            width: 14px;
+            height: 14px;
+            font-size: 14px;
+        }
+    }
+
+    // The version: a soft pill.
+    .info .badge {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background-color: rgba(var(--bs-primary-rgb), .1) !important; /* stylelint-disable-line declaration-no-important */
+        color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
+        font-size: .6875rem;
+        font-weight: 600;
+    }
+
+    // "Check" and the like.
+    .im-controls {
+        margin-top: 20px;
+
+        [class~="btn"] {
+            min-height: 36px;
+            margin: 0;
+            padding: 6px 12px;
+            border: 0;
+            border-radius: 10px;
+            background: none;
+            box-shadow: none;
+            color: var(--bs-primary);
+            font-size: .9375rem;
+            font-weight: 700;
+
+            &:hover {
+                background-color: rgba(var(--bs-primary-rgb), .08);
+            }
+        }
+    }
+
+    // The bottom line (wider screens): the question's parts in a grid, the info line's and the
+    // content's own boxes dissolved; "Check" put on that line from its place under the answer.
+    @include media-breakpoint-up(md) {
+        &:has(.questionflag, .editquestion, .im-controls) {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto auto auto minmax(0, 1fr) auto auto;
+            grid-template-rows: minmax(54px, auto);
+            align-items: center;
+            gap: 0 12px; // (No row gap: the empty rows before the bottom line.)
+
+            // (The bottom line's ground; a late row, after any number of the content's parts.)
+            &::before {
+                content: "";
+                grid-row: 20;
+                grid-column: 1 / -1;
+                align-self: stretch;
+                min-height: 56px;
+                border-top: 1px solid $salek-quiz-que-line;
+                background-color: #fff;
+            }
+
+            > .info,
+            > .content {
+                display: contents;
+            }
+
+            .info > * {
+                grid-row: 1;
+            }
+
+            .info > .no {
+                grid-column: 1;
+                margin-inline-start: var(--salek-quiz-que-pad);
+            }
+
+            .info > .grade {
+                grid-column: 2;
+            }
+
+            .info > .state {
+                grid-column: 3;
+            }
+
+            .info > .badge {
+                grid-column: 6;
+                justify-self: end;
+                margin-inline-end: var(--salek-quiz-que-pad);
+            }
+
+            .info > .questionflag {
+                grid-column: 5;
+                justify-self: end;
+            }
+
+            .info > .editquestion {
+                grid-row: 20;
+                grid-column: 5 / 7;
+                justify-self: end;
+                margin-inline-end: calc(var(--salek-quiz-que-pad) - 12px);
+            }
+
+            .content > * {
+                grid-column: 1 / -1;
+            }
+
+            .formulation {
+                position: static; // (Moodle's relative: "Check" is placed against the card.)
+            }
+
+            .im-controls {
+                position: absolute;
+                bottom: 28px; // (The middle of the 56px bottom line.)
+                transform: translateY(50%);
+                inset-inline-start: calc(var(--salek-quiz-que-pad) - 12px);
+                margin: 0;
+            }
+        }
+    }
+}
+
+// The attempt page: the title area and each question (with its feedback) a card of its own on
+// the page's ground; "Previous page" and "Next page" under them, on the ground too.
+$salek-quiz-card-shadow: 0 0 0 1px rgb(15 23 42 / 7%), 0 0 24px rgb(15 23 42 / 9%);
+
+@mixin salek-quiz-card {
+    overflow: clip;
+    border: 0;
+    border-radius: 28px;
+    background-color: #fff;
+    box-shadow: $salek-quiz-card-shadow;
+
+    @include media-breakpoint-down(md) {
+        border-radius: 20px;
+    }
+}
+
+body#page-mod-quiz-attempt,
+body#page-mod-quiz-review {
+    #page.drawers #region-main {
+        --salek-quiz-pad: 28px; // (As the summary's rows.)
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0;
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none;
+        box-shadow: none;
+
+        @include media-breakpoint-down(md) {
+            --salek-quiz-pad: 16px;
+        }
+
+        > #maincontent {
+            position: absolute;
+        }
+
+        // (The parts' own side margins: the cards go across the content's width.)
+        > div[role="main"] {
+            padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > * {
+                margin-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    // The title area: a tinted card with "Back" and the quiz's name (added by the theme's
+    // renderer, see classes/output/mod_quiz_renderer.php).
+    #region-main > div[role="main"] > .tertiary-navigation {
+        @include salek-quiz-card;
+        margin: 0 0 20px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 22px var(--salek-quiz-pad) 34px !important; /* stylelint-disable-line declaration-no-important */
+        background: $salek-card-gradient;
+
+        [dir="rtl"] & {
+            background: $salek-card-gradient-rtl;
+        }
+
+        > .row {
+            margin: 0;
+            margin-inline-start: -12px; // (The hover background outside the word.)
+        }
+
+        .salek-quiz-title {
+            margin: 14px 0 0;
+            color: $salek-text-strong;
+            font-size: 1.625rem;
+            font-weight: 700;
+            line-height: 1.3;
+
+            @include media-breakpoint-down(md) {
+                font-size: 1.375rem;
+            }
+        }
+
+        .navitem {
+            margin: 0;
+            padding: 0;
+        }
+
+        [class~="btn"] {
+            @include salek-preview-word-button;
+            min-height: 36px;
+            border: 0;
+            background: none;
+            box-shadow: none;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 500;
+        }
+    }
+
+    // The timer: in the title card, on the line of "Back", at its end; still sticky while the
+    // page scrolls (so across the title card's and the questions' rows).
+    #region-main > div[role="main"]:has(> #quiz-timer-wrapper) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+
+        > .tertiary-navigation {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        > #quiz-timer-wrapper {
+            z-index: 2;
+            grid-row: 1 / 3;
+            grid-column: 1;
+            align-self: start;
+            justify-self: end;
+            top: 104px; // (Under the navbar, floating 16px from the top.)
+            margin: 22px var(--salek-quiz-pad) 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            @include media-breakpoint-down(md) {
+                top: 72px;
+            }
+        }
+
+        > #responseform {
+            grid-row: 2;
+            grid-column: 1;
+        }
+    }
+
+    // The questions: a card each.
+    .que {
+        @include salek-quiz-card;
+        --salek-quiz-que-pad: var(--salek-quiz-pad);
+        margin: 0 0 20px;
+    }
+
+    // At the bottom, on the ground: "Previous page" and "Next page", in line with the cards' edges.
+    .submitbtns {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 0;
+        padding: 4px 0 0; // (The buttons' edges in line with the cards'.)
+
+        > * {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .mod_quiz-prev-nav {
+            @include salek-preview-word-button;
+            border: 0;
+            background: none;
+            box-shadow: none;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 500;
+        }
+
+        // (Only "Next page": still at the end.)
+        .mod_quiz-next-nav {
+            margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+// The quiz's page: the "Start attempt" form waits hidden until it opens in its dialogue. (Moodle's
+// rule hides it only inside .quizattempt; on 5.3 it is in the tertiary navigation, so it showed
+// beside the button while the page loaded.)
+body#page-mod-quiz-view #region-main #mod_quiz_preflight_form {
+    display: none;
+}
+
+// The quiz's timer: a white pill with a clock and a blue ring, the time in bold; "Hide" a white
+// pill too (both float over the questions while the page scrolls). Red in the last 100 seconds.
+body.path-mod-quiz #quiz-timer-wrapper {
+    align-items: center;
+    gap: 6px;
+
+    // (One line of text, so "Time left" and the bigger time share a baseline.)
+    #quiz-timer {
+        display: inline-block;
+        height: 36px;
+        line-height: 36px;
+        margin: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-inline: 12px 14px !important; /* stylelint-disable-line declaration-no-important */
+        border: 0;
+        border-radius: 999px;
+        background-color: #fff;
+        box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .3), 0 4px 14px rgba(var(--bs-primary-rgb), .18);
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        white-space: nowrap;
+
+        &::before {
+            content: "";
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-inline-end: 6px;
+            vertical-align: -3px;
+            background-color: var(--bs-primary);
+            mask: $salek-icon-clock no-repeat center / contain;
+        }
+
+        // (Only the clock and the time on phones.)
+        @include media-breakpoint-down(md) {
+            font-size: 0;
+        }
+    }
+
+    #quiz-time-left {
+        margin-inline-start: 2px;
+        color: $salek-text-strong;
+        font-size: .9375rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #quiz-timer[class*="timeleft"] {
+        background-color: #fdecec;
+        box-shadow: 0 0 0 1px rgb(220 38 38 / 25%), 0 2px 8px rgb(220 38 38 / 18%);
+        color: #b42318;
+
+        &::before {
+            background-color: #dc2626;
+        }
+
+        #quiz-time-left {
+            color: #b42318;
+        }
+    }
+
+    #toggle-timer {
+        height: 36px;
+        min-height: 0;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 14px;
+        border: 0;
+        border-radius: 999px;
+        background-color: #fff;
+        box-shadow: 0 0 0 1px rgba(var(--bs-primary-rgb), .16), 0 2px 8px rgb(15 23 42 / 8%);
+        color: $salek-ink;
+        font-size: .8125rem;
+        font-weight: 500;
+
+        &:hover:not(:disabled) {
+            background-color: $salek-soft;
+        }
+    }
+}
+
+// The quiz navigation (the blocks drawer): no box of its own, on the drawer's ground. The
+// questions' buttons as an even grid of rounded squares with a thin edge; their state in their
+// colour (answered: blue; in the review: green, red or amber, with Moodle's small mark at the
+// corner), this page's with a blue ring, a flagged one with a red dot. "Finish attempt ..." and "Start a new preview" as soft
+// buttons across the drawer.
+body.path-mod-quiz #mod_quiz_navblock {
+    // (Over the drawer's blocks' box.)
+    &.card {
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+        > .card-body {
+            padding: 4px 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .qn_buttons {
+        display: grid;
+        // (The buttons share the drawer's width.)
+        grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+        gap: 12px;
+        margin: 0;
+
+        // (Over the blocks drawer's buttons: their gap side by side, the grid's is enough; their
+        // 6px corners, the ring of this page's would be rounder than the button.)
+        > .qnbutton {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 14px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (All the questions on one page, as in a review: no ring, all would have it.)
+        &.allquestionsononepage > .qnbutton.thispage {
+            outline: 0;
+        }
+
+        // (Moodle's clearfix: not a grid item.)
+        &::after {
+            display: none;
+        }
+    }
+
+    .mod_quiz-section-heading {
+        margin: 16px 0 8px;
+        padding: 0;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    .qnbutton {
+        --salek-qn-edge: rgba(var(--bs-primary-rgb), .22);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        float: none;
+        width: auto;
+        height: auto;
+        aspect-ratio: 1.1;
+        // (Over the site's buttons' padding.)
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: visible; // (A mark's badge, half out of the button.)
+        border: 0;
+        border-radius: 14px;
+        background: #eef1f5;
+        box-shadow: inset 0 0 0 1px var(--salek-qn-edge);
+        color: $salek-ink;
+        font-size: .875rem;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+        transition: box-shadow .15s;
+        outline-offset: 2px;
+
+        &:is(a):hover {
+            box-shadow: inset 0 0 0 1px var(--salek-qn-edge), 0 0 0 2px rgba(var(--bs-primary-rgb), .25);
+            text-decoration: none;
+        }
+
+        .thispageholder {
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 14px;
+            background-image: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (This page's: a blue ring around it, a little apart.)
+        &.thispage {
+            outline: 2px solid var(--bs-primary);
+        }
+
+
+        // (The mark of a marked question: a small soft badge on the button's edge at its bottom
+        // corner, half out of it, the drawer's ground around it; a thin tick or cross in the
+        // state's colour, instead of Moodle's icons.)
+        .trafficlight {
+            inset: auto -5px -5px auto;
+            inset-inline: auto -5px;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            border: 0;
+            border-radius: 50%;
+            background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+            background-position: center;
+            background-size: 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:is(.correct, .incorrect, .notanswered, .partiallycorrect) .trafficlight {
+            box-shadow: 0 0 0 2px #fcfcfc;
+        }
+
+        &.correct .trafficlight {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23dcf3e4'/%3E%3Cpath d='m5 8.2 2 2 4-4.2' fill='none' stroke='%2316a34a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        }
+
+        &:is(.incorrect, .notanswered) .trafficlight {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23fbdcdc'/%3E%3Cpath d='m5.8 5.8 4.4 4.4m0-4.4-4.4 4.4' fill='none' stroke='%23dc2626' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+        }
+
+        &.partiallycorrect .trafficlight {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23fdecc8'/%3E%3Cpath d='M8 4a4 4 0 0 1 0 8z' fill='%23d97706'/%3E%3Ccircle cx='8' cy='8' r='3.5' fill='none' stroke='%23d97706' stroke-width='1.2'/%3E%3C/svg%3E");
+        }
+
+        // A flagged question: a red dot on the edge at the top corner (instead of Moodle's corner
+        // image).
+        &.flagged::after {
+            content: "";
+            position: absolute;
+            top: -3px;
+            inset-inline-end: -3px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background-color: #dc2626;
+            box-shadow: 0 0 0 2px #fcfcfc;
+        }
+
+        &.flagged:not(.correct, .incorrect, .notanswered, .partiallycorrect, .blocked, .invalidanswer) .trafficlight {
+            background-image: none;
+        }
+
+        &:is(.answersaved, .complete, .requiresgrading) {
+            --salek-qn-edge: rgba(var(--bs-primary-rgb), .4);
+            background: rgba(var(--bs-primary-rgb), .14);
+            color: var(--bs-primary);
+        }
+
+        &.correct {
+            --salek-qn-edge: rgb(22 163 74 / 40%);
+            background: #e3f6ea;
+            color: #0f6b37;
+        }
+
+        &:is(.incorrect, .notanswered) {
+            --salek-qn-edge: rgb(220 38 38 / 32%);
+            background: #fdecec;
+            color: #b42318;
+        }
+
+        &.partiallycorrect {
+            --salek-qn-edge: rgb(217 119 6 / 40%);
+            background: #fff4da;
+            color: #8a5a00;
+        }
+
+        &.blocked {
+            background: $salek-soft;
+            color: #94a3b8;
+        }
+    }
+
+    // Under the buttons, with space and a line above: the other actions as plain words, "Finish
+    // attempt ..." / "Finish review" last, a blue button across the drawer.
+    .othernav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 32px -16px 0; // (The line to the drawer's edges: its 16px padding.)
+        padding: 24px 16px 0;
+        border-top: 1px solid $salek-line;
+
+        > * {
+            margin: 0;
+        }
+
+        .autosave_info {
+            order: -1;
+            margin-bottom: 6px;
+            color: $salek-text-muted;
+            font-size: .75rem;
+
+            &:empty {
+                display: none;
+            }
+        }
+
+        > a,
+        .singlebutton [class~="btn"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 44px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over the drawer's .btn + .btn.)
+            padding: 6px 12px !important; /* stylelint-disable-line declaration-no-important */
+            border: 0;
+            border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-soft;
+            box-shadow: none;
+            color: $salek-ink;
+            font-size: .875rem !important; /* stylelint-disable-line declaration-no-important */ // (Over the drawer's buttons' 12px.)
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+
+            &:hover {
+                background-color: #e2e7ee;
+            }
+        }
+
+        .singlebutton,
+        .singlebutton form {
+            display: block;
+            margin: 0;
+        }
+
+        // ("Finish review": the link to go on, .mod_quiz-next-nav.)
+        > a:is(.endtestlink, .mod_quiz-next-nav) {
+            justify-content: center;
+            order: 10;
+            background-color: var(--bs-primary);
+            box-shadow: 0 6px 16px -8px var(--bs-primary); // (As the pages' main buttons.)
+            color: #fff;
+            font-weight: 600;
+
+            &:hover {
+                background-color: #0d5fa8;
+            }
+        }
+    }
+}
+
+// The blocks drawer when it holds the quiz navigation (or a book's table of contents, see
+// _book-toc.scss): the drawer's own top (only a close button, the course index's small round one)
+// put at the end of the block's title line, a line under that across the drawer.
+#theme_boost-drawers-blocks:has(#mod_quiz_navblock, .block_book_toc) {
+    // (Edit mode: "Add a block" after the blocks, not above them, so the block's title stays on the
+    // drawer's top line, beside the close button.)
+    .drawercontent > .d-print-none:has(> [data-region="add-block-button"]) {
+        display: flex;
+        flex-direction: column;
+
+        > [data-region="add-block-button"] {
+            order: 2;
+            margin-top: 16px;
+        }
+    }
+
+    .drawerheader {
+        position: absolute;
+        z-index: 2;
+        top: 43px; // (On the title's middle, the navbar's.)
+        inset-inline-end: 16px;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none;
+
+        .drawerheadertop {
+            min-height: 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 0;
+        }
+
+        .drawertoggle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: rgb(255 255 255 / 85%) !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: 0 1px 3px rgb(15 23 42 / 8%), 0 0 0 1px rgb(15 23 42 / 4%);
+            color: $salek-ink;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-close, 10px);
+            }
+
+            &:hover {
+                background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // (Moodle puts the focus on it when the drawer opens: its shadow kept then, the
+            // keyboard's focus ring only for the keyboard.)
+            &:focus:not(:focus-visible) {
+                box-shadow: 0 1px 3px rgb(15 23 42 / 8%), 0 0 0 1px rgb(15 23 42 / 4%) !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    :is(#mod_quiz_navblock, .block_book_toc) {
+        > .card-body > .content {
+            margin-top: 28px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (As tall as the navbar beside it: the title on its middle, the line at its bottom.)
+        .block-header {
+            margin: -20px -16px 0;
+            padding: 42px 56px 29px 16px;
+            padding-inline: 16px 56px;
+            border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+
+            [class~="card-title"] {
+                margin: 0;
+                font-size: 1rem !important; /* stylelint-disable-line declaration-no-important */
+                font-weight: 700 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+// The summary of an attempt (on its review), a card: the grade and the marks big on its first line
+// (a line between them), the state as a pill at its end; the times on a grey line under them, a
+// line between each; the feedback on a cream line at the bottom. (Each row's name is a class, from
+// classes/output/mod_quiz_renderer.php.) When a teacher reviews someone's attempt, that person and
+// the list of their attempts on lines of their own at the top.
+body.path-mod-quiz table.salek-quiz-summary {
+    display: block;
+    width: 100%;
+    margin: 0 0 24px;
+    overflow: clip;
+    border: 1px solid $salek-quiz-que-line !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 18px;
+    background: #fff !important; /* stylelint-disable-line declaration-no-important */
+    box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+    > tbody {
+        display: flex;
+        flex-wrap: wrap;
+
+        // (The end of the first line: the times start a line of their own.)
+        &::before {
+            content: "";
+            flex-basis: 100%;
+            order: 5;
+        }
+    }
+
+    > tbody > tr {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        order: 9;
+        margin: 0;
+        padding: 14px 28px;
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+
+        > * {
+            width: auto !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+            text-align: start;
+        }
+
+        > th {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        > td {
+            color: $salek-text-strong;
+            font-size: .875rem;
+            font-weight: 600;
+        }
+    }
+
+    // The person whose attempt it is, and the list of their attempts.
+    .salek-qs-user,
+    .salek-qs-attemptlist {
+        flex: 0 0 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        order: 0;
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .salek-qs-attemptlist {
+        order: 1;
+    }
+
+    // The grade and the marks: big.
+    .salek-qs-grade,
+    [class*="salek-qs-marks"] {
+        flex: 0 0 auto;
+        order: 2;
+        padding: 20px 28px 22px;
+        padding-inline-end: 32px;
+
+        > th {
+            font-size: .8125rem;
+        }
+    }
+
+    [class*="salek-qs-marks"] {
+        order: 3;
+        margin-block: 20px;
+        padding-block: 0;
+        border-inline-start: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .salek-grade {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: 6px;
+    }
+
+    .salek-grade-value {
+        color: $salek-text-strong;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .salek-grade-max {
+        color: $salek-text-muted;
+        font-size: 1.0625rem;
+        font-weight: 600;
+    }
+
+    .salek-grade-percent {
+        flex-basis: 100%;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 500;
+    }
+
+    // ("Not yet graded" and the like.)
+    .salek-qs-grade > td:not(:has(.salek-grade)) {
+        font-size: 1.125rem;
+    }
+
+    // The state: a pill at the first line's end, its colour from the state.
+    .salek-qs-state {
+        --salek-qs-state: #64748b;
+        --salek-qs-state-bg: #f1f5f9;
+        justify-content: center;
+        order: 4;
+        margin-inline-start: auto;
+        padding-inline: 28px;
+
+        > th {
+            position: absolute !important; /* stylelint-disable-line declaration-no-important */
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+        }
+
+        > td {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 999px;
+            background: var(--salek-qs-state-bg) !important; /* stylelint-disable-line declaration-no-important */
+            color: var(--salek-qs-state);
+            font-size: .8125rem;
+
+            &::before {
+                content: "";
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: currentcolor;
+            }
+        }
+    }
+
+    .salek-qs-state-finished {
+        --salek-qs-state: #0f6b37;
+        --salek-qs-state-bg: #e3f6ea;
+    }
+
+    .salek-qs-state-inprogress,
+    .salek-qs-state-submitted {
+        --salek-qs-state: var(--bs-primary);
+        --salek-qs-state-bg: rgba(var(--bs-primary-rgb), .1);
+    }
+
+    .salek-qs-state-overdue {
+        --salek-qs-state: #8a5a00;
+        --salek-qs-state-bg: #fff4da;
+    }
+
+    // The times (and anything else): a grey line under the first, a line between each.
+    .salek-qs-startedon,
+    .salek-qs-completedon,
+    .salek-qs-timetaken,
+    .salek-qs-overdue,
+    > tbody > tr:not([class*="salek-qs-"]) {
+        flex: 1 1 0;
+        min-width: 150px;
+        border-top: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+        background: #f8fafc !important; /* stylelint-disable-line declaration-no-important */
+
+        + :is(.salek-qs-completedon, .salek-qs-timetaken, .salek-qs-overdue) {
+            border-inline-start: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .salek-qs-startedon {
+        order: 6;
+    }
+
+    .salek-qs-completedon {
+        order: 7;
+    }
+
+    .salek-qs-timetaken {
+        order: 8;
+    }
+
+    .salek-qs-overdue {
+        order: 8;
+
+        > td {
+            color: #b42318;
+        }
+    }
+
+    // The feedback: a cream line at the bottom.
+    .salek-qs-feedback {
+        flex: 0 0 100%;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 24px;
+        order: 20;
+        border-top: 1px solid #f6e3c6 !important; /* stylelint-disable-line declaration-no-important */
+        background: #fdf6ea !important; /* stylelint-disable-line declaration-no-important */
+
+        > th {
+            flex: none;
+            color: #8a5a00;
+            font-weight: 600;
+        }
+
+        > td {
+            font-weight: 500;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        // (The grade and the marks side by side, smaller.)
+        .salek-qs-grade,
+        [class*="salek-qs-marks"] {
+            flex: 1 1 0;
+            min-width: 0;
+            padding-inline: 18px;
+        }
+
+        .salek-grade-value {
+            font-size: 1.5rem;
+        }
+
+        .salek-grade-max {
+            font-size: .9375rem;
+        }
+
+        .salek-qs-state {
+            flex-basis: 100%;
+            align-items: flex-start;
+            order: 4;
+            margin: 0;
+            padding: 0 18px 16px;
+        }
+
+        > tbody > tr {
+            padding-inline: 18px;
+        }
+    }
+
+    // (No grade or marks yet, as while it is in progress: the state, alone, at the grey line's end
+    // instead of on a first line of its own.)
+    &:not(:has(.salek-qs-grade, [class*="salek-qs-marks"])) .salek-qs-state {
+        flex: 0 0 auto;
+        flex-basis: auto;
+        align-items: center;
+        order: 10;
+        margin: 0;
+        margin-inline-start: auto;
+        padding: 14px 24px;
+        border-top: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+        background: #f8fafc !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            padding-inline: 18px;
+        }
+    }
+}
+
+// (On the review, the summary a card on the page's ground as the questions.)
+body#page-mod-quiz-review table.salek-quiz-summary {
+    @include salek-quiz-card;
+    margin-bottom: 0;
+    border: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 28px !important; /* stylelint-disable-line declaration-no-important */ // (Over the tables' 16px.)
+
+    @include media-breakpoint-down(md) {
+        border-radius: 20px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    box-shadow: $salek-quiz-card-shadow !important; /* stylelint-disable-line declaration-no-important */
+}
+
+body#page-mod-quiz-review #region-main div[role="main"] > .mb-3:has(> .salek-quiz-summary) {
+    margin-bottom: 20px !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// The quiz's page: its list of the attempts, a card each (as the summary on the review, in a
+// frame on the page's sheet): the attempt's name and its review link on a line, its summary under
+// them (classes/output/mod_quiz_renderer.php).
+body#page-mod-quiz-view .salek-quiz-attempts {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0 0 24px;
+    padding: 0;
+
+    .salek-quiz-attempt {
+        overflow: clip;
+        border: 1px solid $salek-quiz-que-line;
+        border-radius: 18px;
+        background-color: #fff;
+    }
+
+    .salek-quiz-attempt-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 12px;
+        min-height: 56px;
+        padding-block: 8px;
+        padding-inline: 24px 16px;
+        border-bottom: 1px solid $salek-line;
+        background-color: $salek-surface;
+
+        @include media-breakpoint-down(md) {
+            padding-inline: 18px 10px;
+        }
+    }
+
+    .salek-quiz-attempt-name {
+        margin: 0;
+        color: $salek-text-strong;
+        font-size: .9375rem;
+        font-weight: 700;
+    }
+
+    .salek-quiz-attempt-review {
+        color: $salek-text-muted;
+        font-size: .875rem;
+
+        a {
+            @include salek-preview-word-button;
+            display: inline-flex;
+            align-items: center;
+            color: var(--bs-primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+    }
+
+    table.salek-quiz-summary {
+        margin: 0;
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// The quiz's page, the part under its button, without boxes: the settings (grading method, time
+// limit, ...) and the number of attempts on one line of small words; the result (from
+// classes/output/mod_quiz_renderer.php) as the summary's grade: what it is called, the grade big;
+// the teacher's comment and the overall feedback under it with their titles; the messages at the
+// bottom ("No more attempts are allowed", ...) as plain words.
+body#page-mod-quiz-view #region-main div[role="main"] {
+    // (Inline, so both go on one line.)
+    > .quizinfo,
+    > .quizattemptcounts {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 4px 24px;
+        margin: 0 0 4px;
+        margin-inline-end: 24px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        vertical-align: top;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    > .quizinfo > p {
+        margin: 0;
+    }
+
+    > .quizattemptcounts > a {
+        font-weight: 600;
+    }
+
+    > h3 {
+        margin: 32px 0 14px;
+        color: $salek-text-strong;
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    > .salek-quiz-result {
+        margin: 28px 0 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .salek-quiz-result-grade {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .salek-quiz-result-label {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    .salek-quiz-result .salek-grade {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: 6px;
+    }
+
+    .salek-quiz-result .salek-grade-value {
+        color: $salek-text-strong;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .salek-quiz-result .salek-grade-max {
+        color: $salek-text-muted;
+        font-size: 1.0625rem;
+        font-weight: 600;
+    }
+
+    .salek-quiz-result .salek-grade-percent {
+        flex-basis: 100%;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 500;
+    }
+
+    .salek-quiz-result-note {
+        margin: 10px 0 0;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+    }
+
+    .salek-quiz-result-row {
+        margin-top: 20px;
+
+        > .salek-quiz-result-title {
+            margin: 0 0 6px;
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 700;
+        }
+
+        > div {
+            color: $salek-ink;
+            font-size: .9375rem;
+
+            > :last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    > .quizattempt {
+        margin: 24px 0 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        &:empty {
+            display: none;
+        }
+
+        p {
+            margin: 0 0 6px;
+            color: $salek-text-muted;
+            font-size: .9375rem;
+        }
+    }
+}
+
+// "Make comment or override mark" (the quiz's comment window, the manual grading report): the
+// mark a field as the site's (Moodle's is a bare 3-letter box), white on the comment's band, "out of
+// 1.00" beside it; its name above it, as the comment's.
+body.path-mod-quiz .que .comment .fitem {
+    margin-top: 16px;
+
+    .fitemtitle {
+        margin-bottom: 6px;
+
+        label {
+            margin: 0;
+            font-weight: 600;
+        }
+    }
+
+    .felement {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        color: $salek-ink;
+        font-size: .9375rem;
+    }
+
+    input[type="text"] {
+        width: 96px;
+        height: $salek-control-height;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 12px;
+        background-color: #fff;
+        color: $salek-text-strong;
+        font-weight: 600;
+
+        &:focus {
+            outline: 0;
+            box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .35);
+        }
+    }
+}
+
+// The quiz navigation's count and key (classes/output/mod_quiz_renderer.php): "Answered" and "3 out
+// of 20" on a line above the buttons; under them, a small square in each state's colours with the
+// state's name (only the states in this attempt).
+body.path-mod-quiz #mod_quiz_navblock {
+    .salek-qn-summary {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 14px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 500;
+    }
+
+    .salek-qn-count {
+        color: $salek-text-strong;
+        font-size: .875rem;
+        font-weight: 700;
+    }
+
+    .salek-qn-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        margin: 18px 0 0;
+        color: $salek-text-muted;
+        font-size: .75rem;
+        font-weight: 500;
+    }
+
+    .salek-qn-key-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .salek-qn-swatch {
+        flex: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        background: #eef1f5;
+        box-shadow: inset 0 0 0 1px rgba(var(--bs-primary-rgb), .22);
+    }
+
+    :is(.answersaved, .complete, .requiresgrading) > .salek-qn-swatch {
+        background: rgba(var(--bs-primary-rgb), .14);
+        box-shadow: inset 0 0 0 1px rgba(var(--bs-primary-rgb), .4);
+    }
+
+    .correct > .salek-qn-swatch {
+        background: #e3f6ea;
+        box-shadow: inset 0 0 0 1px rgb(22 163 74 / 40%);
+    }
+
+    :is(.incorrect, .notanswered) > .salek-qn-swatch {
+        background: #fdecec;
+        box-shadow: inset 0 0 0 1px rgb(220 38 38 / 32%);
+    }
+
+    .partiallycorrect > .salek-qn-swatch {
+        background: #fff4da;
+        box-shadow: inset 0 0 0 1px rgb(217 119 6 / 40%);
+    }
+
+    // (Flagged: the buttons' red dot.)
+    .flagged > .salek-qn-swatch {
+        width: 8px;
+        height: 8px;
+        margin-inline: 2px;
+        border-radius: 50%;
+        background: #dc2626;
+        box-shadow: none;
+    }
+}
