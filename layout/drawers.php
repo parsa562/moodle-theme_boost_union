@@ -263,6 +263,16 @@ if ($courseindex || strpos($PAGE->pagetype, 'course-view-') === 0) {
     $PAGE->requires->js_call_amd('theme_boost_union/dragimage', 'init');
 }
 
+// The messages page: on phones, a way back from a conversation to the list.
+if ($PAGE->pagetype === 'message-index') {
+    $PAGE->requires->js_call_amd('theme_boost_union/messagesback', 'init', [get_string('back')]);
+}
+
+// The messaging preferences: the settings in the page, not in the drawer over it.
+if ($PAGE->pagetype === 'message-edit') {
+    $PAGE->requires->js_call_amd('theme_boost_union/messageprefs', 'init');
+}
+
 // Every page: Moodle's reactions to a dropdown's change (filter conditions…) also with the theme's
 // dropdown lists.
 $PAGE->requires->js_call_amd('theme_boost_union/selectchange', 'init');

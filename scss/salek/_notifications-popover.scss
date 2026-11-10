@@ -1,0 +1,240 @@
+// Salek: the navbar's notifications (the bell's panel). A rounded white card with the menus'
+// soft shadow, as high as its list (Moodle: a fixed 500px box with sharp corners and a grey
+// frame). The title with its actions as small round buttons, a line under them; each
+// notification a row (the text, the time small and quiet under it, "View full notification"
+// small at the row's end), a hairline between the rows; the unread ones with a blue dot at
+// their start and their text a little stronger (Moodle: a grey row, all rows blue with white
+// text on hover); "See all" at the bottom, in the brand colour. Phones: the card across the
+// screen, between the navbar and the bottom bar.
+
+$salek-np-pad: 16px;
+
+.navbar .popover-region-notifications {
+    .popover-region-container {
+        display: flex;
+        flex-direction: column;
+        top: calc(#{$navbar-height} + 4px);
+        width: 380px;
+        height: auto;
+        max-height: min(560px, calc(100vh - #{$navbar-height} - 24px));
+        overflow: clip;
+        border: 0;
+        border-radius: 16px;
+        background-color: $salek-surface;
+        box-shadow: 0 0 0 1px rgb(15 23 42 / 5%), $salek-menu-shadow;
+    }
+
+    // (Moodle's little arrow from the bell to the box: none, the card has its shadow.)
+    .popover-region-toggle::before,
+    .popover-region-toggle::after {
+        display: none;
+    }
+
+    // (Closed: Moodle's height 0, as it was.)
+    &.collapsed .popover-region-container {
+        height: 0;
+    }
+
+    // The title and its actions.
+    .popover-region-header-container {
+        display: flex;
+        flex: none;
+        align-items: center;
+        gap: 8px;
+        height: auto;
+        padding: 12px 10px 12px $salek-np-pad;
+        border-bottom: 1px solid $salek-line;
+        line-height: normal;
+    }
+
+    .popover-region-header-text {
+        flex: 1;
+        float: none;
+        margin: 0;
+        color: $salek-text-strong;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .popover-region-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        float: none;
+
+        > * {
+            min-width: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [class~="btn"] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border: 0;
+            border-radius: 50%;
+            color: $salek-text-muted;
+            font-size: 14px;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-soft;
+                color: $salek-text-strong;
+            }
+
+            .icon {
+                margin: 0;
+                font-size: inherit;
+            }
+        }
+    }
+
+    // The list.
+    .popover-region-content-container {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0;
+    }
+
+    .popover-region-content-container .empty-message {
+        padding: 40px $salek-np-pad;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        text-align: center;
+    }
+
+    .content-item-container {
+        padding: 12px $salek-np-pad 12px 34px;
+        padding-inline: 34px $salek-np-pad;
+        border-bottom: 1px solid $salek-preview-row-line;
+        background-color: transparent;
+        color: $salek-text;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+        &:hover {
+            background-color: $salek-soft;
+            color: $salek-text;
+
+            .content-item-footer .timestamp {
+                color: $salek-text-muted;
+            }
+
+            .view-more {
+                color: var(--bs-primary);
+            }
+        }
+
+        .context-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .content-item-body {
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            width: auto;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .content-item-footer {
+            text-align: start;
+        }
+
+        .content-item-footer .timestamp {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            line-height: 1.5;
+        }
+
+        // "View full notification": small, on the time's line at the row's end.
+        .view-more {
+            bottom: 12px;
+            right: auto;
+            inset-inline-end: $salek-np-pad;
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        // Unread: a blue dot at the start, the text a little stronger, a faint blue tint.
+        &.unread {
+            background-color: rgba(var(--bs-primary-rgb), .035);
+
+            &:hover {
+                background-color: rgba(var(--bs-primary-rgb), .07);
+            }
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 19px;
+                inset-inline-start: 15px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: var(--bs-primary);
+            }
+
+            .notification-message {
+                color: $salek-text-strong;
+                font-weight: 600;
+            }
+        }
+    }
+
+    // "See all".
+    .see-all-link {
+        flex: none;
+        text-decoration: none;
+
+        &:hover .popover-region-footer-container {
+            background-color: $salek-soft;
+        }
+    }
+
+    .popover-region-footer-container {
+        height: auto;
+        padding: 12px;
+        border-top: 1px solid $salek-line;
+        background-color: transparent;
+        text-align: center;
+    }
+
+    .popover-region-seeall-text {
+        color: var(--bs-primary);
+        font-size: .875rem;
+        font-weight: 600;
+    }
+
+    // Phones: across the screen, under the navbar, above the bottom bar.
+    @include media-breakpoint-down(md) {
+        .popover-region-container {
+            position: fixed;
+            top: calc(#{$navbar-height} + 4px);
+            right: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's -70px.)
+            bottom: auto; // (Moodle's 0 under 480px: the card as high as the screen.)
+            left: 8px !important; /* stylelint-disable-line declaration-no-important */
+            width: auto;
+            max-height: calc(100vh - #{$navbar-height} - 60px - 20px);
+        }
+    }
+}

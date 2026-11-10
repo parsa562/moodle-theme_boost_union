@@ -1,13 +1,31 @@
-// Salek: Message drawer and the messages page.
+// Salek: messaging, in the navbar's drawer and on the messages page ("See all", message/index.php).
+// One design for both (the same parts inside):
+// - the top: the search field as the site's fields (the magnifier inside it), settings a small
+//   round button beside it, "Contacts" a soft pill under them;
+// - the lists (Starred, Group, Private): no cards; each list's name a quiet line with its count
+//   and the unread number as a small blue pill, a hairline between the lists; each conversation a
+//   row (the picture, the name, the last message quiet and cut to one line, the time and the
+//   unread number at the end), a soft grey on hover; Moodle's arrows in the rows left out;
+// - a conversation: its header (back, the picture, the name and status, the menu), the day as a
+//   small pill in the middle, the messages as bubbles (the others' grey at the start with the
+//   sender's name small over the text, yours light blue at the end with the time under the text),
+//   the writing field rounded with the emoji and send buttons round beside it.
+// The page: a white card with the lists in a column at the start and the conversation beside it
+// (a quiet sign and "Select a conversation" while none is open); under md one at a time (the
+// lists, or the open conversation with its back button).
+// (Moodle: grey card headers, framed rows with arrows, the name and picture over every message,
+// boxes with tails, the page's two columns squeezed on phones.)
 
-/* Salek: message drawer visual design.
- * Scoped only to Moodle's messaging drawer rendered via core/drawer.
- * Does not affect blocks, course index, or primary drawers.
- */
+$salek-msg-line: #e6eaf0;
+$salek-msg-received: #eef1f5;
+$salek-msg-sent: #e3edfb;
+$salek-msg-pad: 16px;
+
+// --- The drawer's own frame ------------------------------------------------------------------
 
 [data-region="right-hand-drawer"].drawer:has([data-region="message-drawer"]) {
-    background-color: $salek-message-surface !important;
-    border-left: 1px solid $salek-message-border;
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+    border-inline-start: 1px solid $salek-msg-line;
     z-index: 1052;
 
     &:not(.hidden) {
@@ -21,439 +39,868 @@
     }
 }
 
-[data-region="right-hand-drawer"] [data-region="message-drawer"].message-app {
-    height: 100%;
-    background-color: $salek-message-surface;
-    color: $salek-message-title;
-}
-
-[data-region="right-hand-drawer"] [data-region="header-container"] > [data-region^="view-"] {
-    background: $salek-message-panel;
-    border-bottom: 1px solid $salek-message-border;
-    padding-inline: 12px;
-}
-
-[data-region="right-hand-drawer"] .closewidget {
-    background: #f8fafc;
-    border-bottom: 1px solid $salek-message-border-soft;
-    padding: 8px 12px;
-    margin-bottom: 6px;
-}
-
-[data-region="right-hand-drawer"] .closewidget .btn-link,
-[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link,
-[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"] {
-    border-radius: 8px;
-}
-
-[data-region="right-hand-drawer"] .closewidget .btn-link:hover,
-[data-region="right-hand-drawer"] .closewidget .btn-link:focus,
-[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link:hover,
-[data-region="right-hand-drawer"] [data-region="header-container"] .btn-link:focus,
-[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"]:hover,
-[data-region="right-hand-drawer"] [data-region="header-container"] [role="button"]:focus {
-    background-color: #f1f5f9;
-    text-decoration: none;
-}
-
-[data-region="right-hand-drawer"] [data-region="body-container"] > [data-region^="view-"] {
-    background-color: $salek-message-surface;
-}
-
-[data-region="right-hand-drawer"] [data-region="footer-container"] > [data-region^="view-"] {
-    background: $salek-message-panel;
-    border-top: 1px solid $salek-message-border;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-conversation"] textarea {
-    border: 1px solid $salek-message-border;
-    border-radius: 8px;
-    padding: 8px 10px;
-    background-color: $salek-message-panel;
-}
-
-[data-region="right-hand-drawer"] .simplesearchform {
-    background: $salek-message-panel;
-    border: 1px solid $salek-message-border;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 8px 0 10px;
-}
-
-[data-region="right-hand-drawer"] .simplesearchform:focus-within {
-    border-color: #cbd5e1;
-    box-shadow: 0 0 0 2px rgb(15 23 42 / 8%);
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview-search-input"],
-[data-region="right-hand-drawer"] [data-region="view-search"] [data-region="search-input"] {
+// The close button: a small round one at the end of its line, as the other drawers'.
+[data-region="right-hand-drawer"] [data-region="message-drawer"] > .closewidget {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 12px 0 !important; /* stylelint-disable-line declaration-no-important */
     border: 0;
-    min-height: 38px;
-    box-shadow: none;
-    background: $salek-message-panel;
-    color: $salek-message-title;
-    font-size: 13.5px;
-}
+    background: none;
 
-[data-region="right-hand-drawer"] .simplesearchform .btn-submit {
-    border: 0;
-    background: $salek-message-panel;
-    color: $salek-message-muted;
-    padding-inline: 10px;
-}
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */
+        text-decoration: none;
 
-[data-region="right-hand-drawer"] [data-region="view-overview"] .section,
-[data-region="right-hand-drawer"] [data-region="view-overview-favourites"],
-[data-region="right-hand-drawer"] [data-region="view-overview-group-messages"],
-[data-region="right-hand-drawer"] [data-region="view-overview-messages"] {
-    background: $salek-message-panel;
-    border: 1px solid $salek-message-border-soft !important; /* stylelint-disable-line declaration-no-important */
-    border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
-    box-shadow: $salek-message-card-shadow;
-    margin: 0 12px 12px;
-    overflow: hidden;
-}
+        &:hover {
+            background-color: $salek-soft !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-strong !important; /* stylelint-disable-line declaration-no-important */
+        }
 
-[data-region="right-hand-drawer"] [data-region="view-overview"] [data-region="toggle"] {
-    background: $salek-message-panel;
-    border-bottom: 1px solid $salek-message-border-soft;
-    padding: 0;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle {
-    color: $salek-message-title;
-    padding: 12px 14px;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle .fw-bold {
-    font-size: 13.5px;
-    font-weight: 600;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] [data-region="section-total-count-container"] {
-    color: $salek-message-muted;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle:hover,
-[data-region="right-hand-drawer"] [data-region="view-overview"] .overview-section-toggle:focus {
-    background: #f8fafc;
-    color: $salek-message-title;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item,
-[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item,
-[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item,
-[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item {
-    background-color: $salek-message-panel;
-    border-top-color: $salek-message-border-soft;
-    border-bottom-color: $salek-message-border-soft;
-    border-radius: 8px;
-    margin: 2px 8px;
-    padding: 10px 12px;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item:hover,
-[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item:hover,
-[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item:hover,
-[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item:hover,
-[data-region="right-hand-drawer"] [data-region="view-overview"] .list-group-item:focus,
-[data-region="right-hand-drawer"] [data-region="view-search"] .list-group-item:focus,
-[data-region="right-hand-drawer"] [data-region="view-contacts"] .list-group-item:focus,
-[data-region="right-hand-drawer"] [data-region="view-contact"] .list-group-item:focus {
-    background-color: #f1f5f9;
-    color: $salek-message-title;
-}
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .text-muted,
-[data-region="right-hand-drawer"] [data-region="view-search"] .text-muted,
-[data-region="right-hand-drawer"] [data-region="view-settings"] .text-muted {
-    color: $salek-message-muted !important; /* stylelint-disable-line declaration-no-important */
-}
-/* Salek: message drawer first card and footer spacing. */
-
-[data-region="right-hand-drawer"] [data-region="view-overview"] .section:first-of-type,
-[data-region="right-hand-drawer"] [data-region="view-overview-favourites"]:first-of-type {
-    margin-top: 12px !important;
-}
-
-[data-region="right-hand-drawer"] [data-region="footer-container"] a,
-[data-region="right-hand-drawer"] [data-region="footer-container"] .btn-link {
-    display: inline-block !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-}
-
-/* Salek: message index page ("See all") visual alignment.
- * Scoped to the full messages page only.
- */
-#page-message-index [data-region="message-index"].message-app.main,
-#page-message-index .message-app.main {
-    background-color: $salek-message-surface !important;
-    border: 1px solid $salek-message-border !important;
-    border-radius: 14px;
-    box-shadow: $salek-message-card-shadow;
-    overflow: hidden;
-}
-
-#page-message-index [data-region="message-index"].message-app.main > .container-fluid,
-#page-message-index .message-app.main > .container-fluid {
-    padding: 0;
-}
-
-#page-message-index [data-region="message-index"] .conversationcontainer .border-end,
-#page-message-index .message-app.main .conversationcontainer .border-end {
-    border-inline-end: 1px solid $salek-message-border !important; /* stylelint-disable-line declaration-no-important */
-}
-
-#page-message-index [data-region="message-index"] .panel-header-container > [data-region^="view-"],
-#page-message-index [data-region="message-index"] [data-region="header-container"] > [data-region^="view-"],
-#page-message-index .message-app.main .panel-header-container > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="header-container"] > [data-region^="view-"] {
-    background: $salek-message-panel;
-    border-bottom: 1px solid $salek-message-border;
-    padding-inline: 12px;
-}
-
-#page-message-index [data-region="message-index"] [data-region="body-container"] > [data-region^="view-"],
-#page-message-index [data-region="message-index"] [data-region="panel-body-container"] > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="body-container"] > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="panel-body-container"] > [data-region^="view-"] {
-    background-color: $salek-message-surface;
-}
-
-#page-message-index [data-region="message-index"] [data-region="footer-container"] > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="footer-container"] > [data-region^="view-"] {
-    background: $salek-message-panel;
-    border-top: 1px solid $salek-message-border;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
-#page-message-index [data-region="message-index"] .simplesearchform,
-#page-message-index .message-app.main .simplesearchform {
-    background: $salek-message-panel;
-    border: 1px solid $salek-message-border;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 8px 0 10px;
-}
-
-#page-message-index [data-region="message-index"] .simplesearchform:focus-within,
-#page-message-index .message-app.main .simplesearchform:focus-within {
-    border-color: #cbd5e1;
-    box-shadow: 0 0 0 2px rgb(15 23 42 / 8%);
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview-search-input"],
-#page-message-index [data-region="message-index"] [data-region="view-search"] [data-region="search-input"],
-#page-message-index .message-app.main [data-region="view-overview-search-input"],
-#page-message-index .message-app.main [data-region="view-search"] [data-region="search-input"] {
-    border: 0;
-    min-height: 38px;
-    box-shadow: none;
-    background: $salek-message-panel;
-    color: $salek-message-title;
-    font-size: 13.5px;
-}
-
-#page-message-index [data-region="message-index"] .simplesearchform .btn-submit,
-#page-message-index .message-app.main .simplesearchform .btn-submit {
-    border: 0;
-    background: $salek-message-panel;
-    color: $salek-message-muted;
-    padding-inline: 10px;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .section,
-#page-message-index [data-region="message-index"] [data-region="view-overview-favourites"],
-#page-message-index [data-region="message-index"] [data-region="view-overview-group-messages"],
-#page-message-index [data-region="message-index"] [data-region="view-overview-messages"],
-#page-message-index .message-app.main [data-region="view-overview"] .section,
-#page-message-index .message-app.main [data-region="view-overview-favourites"],
-#page-message-index .message-app.main [data-region="view-overview-group-messages"],
-#page-message-index .message-app.main [data-region="view-overview-messages"] {
-    background: $salek-message-panel;
-    border: 1px solid $salek-message-border-soft !important; /* stylelint-disable-line declaration-no-important */
-    border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
-    box-shadow: $salek-message-card-shadow;
-    margin: 0 12px 12px;
-    overflow: hidden;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] [data-region="toggle"],
-#page-message-index .message-app.main [data-region="view-overview"] [data-region="toggle"] {
-    background: $salek-message-panel;
-    border-bottom: 1px solid $salek-message-border-soft;
-    padding: 0;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle,
-#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle {
-    color: $salek-message-title;
-    padding: 12px 14px;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle .fw-bold,
-#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle .fw-bold {
-    font-size: 13.5px;
-    font-weight: 600;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] [data-region="section-total-count-container"],
-#page-message-index .message-app.main [data-region="view-overview"] [data-region="section-total-count-container"] {
-    color: $salek-message-muted;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle:hover,
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .overview-section-toggle:focus,
-#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle:hover,
-#page-message-index .message-app.main [data-region="view-overview"] .overview-section-toggle:focus {
-    background: #f8fafc;
-    color: $salek-message-title;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .section:first-of-type,
-#page-message-index [data-region="message-index"] [data-region="view-overview-favourites"]:first-of-type,
-#page-message-index .message-app.main [data-region="view-overview"] .section:first-of-type,
-#page-message-index .message-app.main [data-region="view-overview-favourites"]:first-of-type {
-    margin-top: 12px;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .list-group-item,
-#page-message-index [data-region="message-index"] [data-region="view-search"] .list-group-item,
-#page-message-index [data-region="message-index"] [data-region="view-contacts"] .list-group-item,
-#page-message-index [data-region="message-index"] [data-region="view-contact"] .list-group-item,
-#page-message-index .message-app.main [data-region="view-overview"] .list-group-item,
-#page-message-index .message-app.main [data-region="view-search"] .list-group-item,
-#page-message-index .message-app.main [data-region="view-contacts"] .list-group-item,
-#page-message-index .message-app.main [data-region="view-contact"] .list-group-item {
-    background-color: $salek-message-panel;
-    border-top-color: $salek-message-border-soft;
-    border-bottom-color: $salek-message-border-soft;
-    border-radius: 8px;
-    margin: 2px 8px;
-    padding: 10px 12px;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .list-group-item:hover,
-#page-message-index [data-region="message-index"] [data-region="view-search"] .list-group-item:hover,
-#page-message-index [data-region="message-index"] [data-region="view-contacts"] .list-group-item:hover,
-#page-message-index [data-region="message-index"] [data-region="view-contact"] .list-group-item:hover,
-#page-message-index .message-app.main [data-region="view-overview"] .list-group-item:hover,
-#page-message-index .message-app.main [data-region="view-search"] .list-group-item:hover,
-#page-message-index .message-app.main [data-region="view-contacts"] .list-group-item:hover,
-#page-message-index .message-app.main [data-region="view-contact"] .list-group-item:hover {
-    background-color: #f1f5f9;
-    color: $salek-message-title;
-}
-
-#page-message-index [data-region="message-index"] [data-region="view-overview"] .text-muted,
-#page-message-index [data-region="message-index"] [data-region="view-search"] .text-muted,
-#page-message-index [data-region="message-index"] [data-region="view-settings"] .text-muted,
-#page-message-index .message-app.main [data-region="view-overview"] .text-muted,
-#page-message-index .message-app.main [data-region="view-search"] .text-muted,
-#page-message-index .message-app.main [data-region="view-settings"] .text-muted {
-    color: $salek-message-muted !important; /* stylelint-disable-line declaration-no-important */
-}
-
-/* ==================================================
-   Salek: Message app full page redesign ("See all")
-   Scoped only to full messaging page
-   ================================================== */
-
-/* Reset main content padding only on full message page */
-@media (min-width: 768px) {
-    #page-message-index div[role="main"] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        .icon {
+            margin: 0;
+        }
     }
 }
 
-/* Main messaging widget background */
-#page-message-index .message-app.main {
-    background-color: #f6f8fa !important;
+// --- The shared parts ------------------------------------------------------------------------
+
+// Small round icon buttons (settings, back, the conversation's menu, emoji, send).
+@mixin salek-msg-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+    background: none;
+    color: $salek-text-muted;
+    text-decoration: none;
+
+    &:hover {
+        background-color: $salek-soft;
+        color: $salek-text-strong;
+    }
+
+    .icon {
+        margin: 0;
+    }
 }
 
-/* Remove divider colors */
-#page-message-index .message-app.main .border-end,
-#page-message-index .message-app.main .border-bottom,
-#page-message-index .message-app.main .border-top {
-    border-color: transparent !important;
+@mixin salek-message-app {
+    background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+    color: $salek-text;
+
+    // (Moodle's grey and white bands, frames and lines inside: ours below.)
+    [class~="bg-white"],
+    [class~="bg-light"] {
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [class~="border-bottom"],
+    [class~="border-top"] {
+        border-color: $salek-msg-line !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The top: search, settings, contacts.
+    [data-region$="header-container"] > [data-region="view-overview"] {
+        padding: 18px $salek-msg-pad !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-msg-line;
+
+        > .d-flex {
+            gap: 6px;
+            padding: 0;
+        }
+
+        > .d-flex > .ms-2 {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            a {
+                @include salek-msg-icon-button;
+            }
+        }
+
+        // "Contacts": a soft pill.
+        > [class~="text-end"] {
+            margin-top: 10px !important; /* stylelint-disable-line declaration-no-important */
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+
+            a {
+                display: inline-flex;
+                flex-direction: row-reverse;
+                align-items: center;
+                gap: 6px;
+                min-height: 32px;
+                padding: 0 12px;
+                border-radius: 999px !important; /* stylelint-disable-line declaration-no-important */
+                background-color: #e2e7ee8f;
+                color: $salek-ink;
+                font-size: .8125rem;
+                font-weight: 500;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: $salek-button-soft-hover;
+                }
+
+                .icon {
+                    margin: 0;
+                    color: var(--bs-primary);
+                    font-size: .75rem;
+                }
+            }
+        }
+    }
+
+    // The search field (also in the search view): the site's field, the magnifier inside at its
+    // start.
+    .simplesearchform {
+        position: relative;
+        flex: 1;
+        flex-wrap: nowrap;
+        margin: 0;
+        overflow: visible;
+        border: 0;
+        background: none;
+
+        .form-control {
+            height: 40px;
+            min-height: 40px;
+            padding-inline: 38px 12px;
+            border: 1px solid $salek-field-border !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+            background-color: #fff;
+            box-shadow: none;
+            color: $salek-text-strong;
+            font-size: .875rem;
+
+            &:hover {
+                border-color: $salek-field-border-hover !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &:focus {
+                border-color: rgba(var(--bs-primary-rgb), .5) !important; /* stylelint-disable-line declaration-no-important */
+                box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .12);
+            }
+        }
+
+        .btn-submit {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            inset-inline-start: 0;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: #94a3b8;
+            pointer-events: none;
+
+            .icon {
+                margin: 0;
+                font-size: .8125rem;
+            }
+        }
+
+        // (In the search view the button is a real "search" one.)
+        button.btn-submit {
+            pointer-events: auto;
+        }
+    }
+
+    // The lists.
+    [data-region="view-overview"] .section {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-msg-line !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none;
+        overflow: visible;
+
+        > .card-header {
+            padding: 0;
+            border: 0;
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .lazy-load-list {
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .overview-section-toggle {
+        gap: 6px;
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 12px $salek-msg-pad !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text-strong !important; /* stylelint-disable-line declaration-no-important */
+        text-decoration: none;
+
+        &:hover {
+            background-color: $salek-subtle;
+        }
+
+        .icon {
+            margin: 0;
+            color: $salek-text-muted;
+            font-size: .6875rem;
+        }
+
+        .fw-bold {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .875rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [data-region="section-total-count-container"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        [data-region="section-unread-count-container"] {
+            min-width: 20px;
+            padding: 3px 6px;
+            font-size: .6875rem;
+            font-weight: 600;
+        }
+    }
+
+    // A conversation (also a contact, a search result) in a list.
+    [data-region$="body-container"] .list-group {
+        padding: 0 8px 8px;
+        gap: 2px;
+    }
+
+    [data-region$="body-container"] .list-group-item-action {
+        position: relative;
+        gap: 12px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 10px 8px !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent;
+        color: $salek-text;
+
+        &:hover,
+        &:focus {
+            background-color: $salek-soft;
+            color: $salek-text;
+        }
+
+        img.rounded-circle {
+            flex: none;
+            width: 42px;
+            height: 42px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            align-self: center !important; /* stylelint-disable-line declaration-no-important */
+            object-fit: cover;
+        }
+
+        > .w-100 {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline-end: 52px; // (The time's room.)
+        }
+
+        .d-flex > [class~="m-0"][class~="text-truncate"] { // (The name; not "strong", which other rules extend.)
+            color: $salek-text-strong;
+            font-size: .875rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .last-message {
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */
+            line-height: 1.6;
+        }
+
+        // The time at the top end, the unread number under it.
+        [data-region="last-message-date"] {
+            top: 12px;
+            right: auto !important; /* stylelint-disable-line declaration-no-important */
+            inset-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over the RTL copy of "right: auto".)
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .6875rem;
+            line-height: 1.5;
+        }
+
+        // (Placed against the row: Moodle's box around them is only as wide as the number.)
+        > .align-self-stretch {
+            position: static;
+
+            > .align-self-center {
+                position: absolute;
+                bottom: 12px;
+                inset-inline-end: 8px;
+            }
+        }
+
+        [data-region="unread-count"] {
+            min-width: 20px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 3px 6px;
+            font-size: .6875rem;
+            font-weight: 600;
+        }
+
+        .message-icon-forward {
+            display: none;
+        }
+
+        // An unread conversation: its last message as dark as its name.
+        &:has([data-region="unread-count"]:not(.hidden)) .last-message {
+            color: $salek-ink;
+            font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // A conversation: its header.
+    // (Also the headers of contacts, settings, search…; the overview's is above.)
+    [data-region$="header-container"] > [data-region]:not([data-region="view-overview"]) {
+        padding: 10px 12px !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-msg-line;
+
+        .d-flex.align-items-center {
+            gap: 4px;
+            padding: 0;
+        }
+
+        // Back (or close), the menu.
+        // (Moodle shows one of the two: back in the drawer, close on the page.)
+        [class^="icon-back-in-"] {
+            color: $salek-text-muted;
+
+            .icon {
+                margin: 0;
+            }
+        }
+
+        .align-self-stretch {
+            display: flex;
+            align-items: center;
+        }
+
+        .align-self-stretch > a {
+            justify-content: center;
+            width: 36px;
+            height: 36px !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+            background: none;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-soft;
+            }
+        }
+
+        // The menu, and the headers' icon links (search in the contacts…).
+        .dropdown > .btn-icon,
+        a[role="button"]:not([data-action="view-contact"]):not(.align-self-stretch > a) {
+            @include salek-msg-icon-button;
+            border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        img.rounded-circle {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+        .d-flex > [class~="m-0"][class~="text-truncate"] { // (The name; not "strong", which other rules extend.)
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 600;
+        }
+
+        p.fw-light {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // (Moodle's and the theme's focus colouring on links and buttons, and Moodle gives the back
+    // button the focus when a conversation opens: a thin ring in the brand colour, for the
+    // keyboard only.)
+    a,
+    button {
+        &:focus {
+            border-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+            outline: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:focus-visible {
+            background-color: $salek-soft;
+        }
+    }
+
+    // (The name in a conversation's header: Moodle gives it the focus too.)
+    a[data-action="view-contact"] {
+        border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        &:focus-visible {
+            background: none;
+        }
+    }
+
+    // The contacts' tabs (Contacts, Requests): two soft buttons, the one shown light blue.
+    .nav-pills {
+        gap: 8px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */ // (The theme's grey track for pills on phones.)
+
+        .nav-link {
+            min-height: 38px;
+            padding: 8px 12px;
+            border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-button-soft;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+
+            &:hover {
+                background-color: $salek-button-soft-hover;
+            }
+
+            &.active {
+                background-color: rgba(var(--bs-primary-rgb), .12);
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+        }
+    }
+
+    // The messages.
+    .content-message-container {
+        padding: 0 $salek-msg-pad !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [data-region="day-container"] {
+        margin-top: 16px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    h6.day {
+        display: table;
+        margin: 0 auto 12px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 3px 12px;
+        border-radius: 999px;
+        background-color: $salek-soft;
+        color: $salek-text-muted;
+        font-size: .6875rem;
+        font-weight: 500;
+    }
+
+    [data-region="day-messages-container"] {
+        gap: 4px;
+    }
+
+    .message {
+        width: fit-content;
+        min-width: 120px;
+        max-width: min(78%, 560px);
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 8px 14px 6px !important; /* stylelint-disable-line declaration-no-important */
+        border: 0;
+        border-radius: 18px !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none;
+        font-size: .875rem;
+        line-height: 1.75;
+
+        .tail {
+            display: none;
+        }
+
+        [data-region="text-container"] {
+            overflow-wrap: anywhere;
+
+            p:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .time {
+            color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .6875rem !important; /* stylelint-disable-line declaration-no-important */
+            line-height: 1.5;
+        }
+
+        // The sender's line: the name small, no picture (it is in the header); the time at its end.
+        > .d-flex.align-items-center {
+            gap: 10px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > div:first-child:has(> img) {
+                display: none;
+            }
+
+            .text-truncate {
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            h6 {
+                color: var(--bs-primary);
+                font-size: .75rem;
+                font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // Selected (to delete or star): a ring.
+        &.selected {
+            box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .5);
+        }
+    }
+
+    .message.received {
+        align-self: flex-start;
+        border-end-start-radius: 6px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-msg-received;
+        color: $salek-ink;
+    }
+
+    // Yours: at the end, light blue, the time under the text.
+    .message.send {
+        align-self: flex-end;
+        border-end-end-radius: 6px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-msg-sent;
+        color: $salek-ink;
+
+        > .d-flex.align-items-center {
+            order: 2;
+        }
+    }
+
+    // A message from the same person right after: closer.
+    .message.received + .message.received,
+    .message.send + .message.send {
+        margin-top: -1px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The writing field.
+    [data-region="footer-container"] > [data-region="view-conversation"] {
+        padding: 12px !important; /* stylelint-disable-line declaration-no-important */
+        border-top: 1px solid $salek-msg-line;
+
+        > div {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .d-flex.mt-sm-1 {
+            align-items: flex-end;
+            gap: 8px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        textarea {
+            height: 46px; // (Moodle's three lines.)
+            min-height: 46px;
+            max-height: 140px;
+            padding: 10px 14px;
+            border: 1px solid $salek-field-border;
+            border-radius: 14px;
+            background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: none;
+            font-size: .875rem;
+            line-height: 1.6;
+            resize: none;
+
+            &:focus {
+                border-color: rgba(var(--bs-primary-rgb), .5);
+                box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .12);
+            }
+        }
+
+        .position-relative.d-flex.flex-column {
+            flex-direction: row !important; /* stylelint-disable-line declaration-no-important */
+            gap: 2px;
+        }
+
+        .btn-icon {
+            @include salek-msg-icon-button;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            width: 40px;
+            height: 40px;
+        }
+
+        // Send: in the brand colour.
+        [data-action="send-message"] {
+            background-color: var(--bs-primary);
+            color: #fff;
+
+            &:hover {
+                background-color: var(--bs-primary);
+                color: #fff;
+                filter: brightness(.94);
+            }
+        }
+    }
+
+    // The drawer's "See all".
+    [data-region="footer-container"] > [data-region="view-overview"] {
+        padding: 12px !important; /* stylelint-disable-line declaration-no-important */
+        border-top: 1px solid $salek-msg-line;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 0 16px;
+            border-radius: 999px !important; /* stylelint-disable-line declaration-no-important */
+            color: var(--bs-primary);
+            font-size: .875rem;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                background-color: rgba(var(--bs-primary-rgb), .08);
+            }
+        }
+    }
+
+    .text-muted {
+        color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */
+    }
 }
 
-/* Left panel background */
-#page-message-index .message-app.main .conversationcontainer {
-    background: transparent !important;
+[data-region="right-hand-drawer"] [data-region="message-drawer"].message-app,
+#page-message-index #region-main div[role="main"] .message-app.main {
+    @include salek-message-app;
 }
 
-/* Search/header background */
-#page-message-index .message-app.main .panel-header-container .previous .d-flex.align-items-center {
-    background: $salek-surface !important;
+[data-region="right-hand-drawer"] [data-region="message-drawer"].message-app {
+    height: 100%;
 }
 
-/* Left panel cards background */
-#page-message-index .message-app.main .conversationcontainer .section.card {
-    background: $salek-surface !important;
+// --- The messages page -----------------------------------------------------------------------
+
+#page-message-index #region-main div[role="main"] .message-app.main {
+    height: min(720px, calc(100vh - 180px));
+    min-height: 480px;
+    overflow: clip;
+    border: 1px solid $salek-msg-line !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 20px;
+    box-shadow: none;
+
+    > .container-fluid {
+        height: 100%;
+        padding: 0;
+    }
+
+    .conversationcontainer > .border-end {
+        border-color: $salek-msg-line !important; /* stylelint-disable-line declaration-no-important */
+        background-color: #fbfcfd;
+    }
+
+    // The list's column a fixed width, the conversation the rest.
+    @include media-breakpoint-up(md) {
+        .row > .col-4 {
+            flex: 0 0 auto;
+            width: 360px;
+        }
+
+        .row > .col-8 {
+            flex: 1 1 0;
+            width: auto;
+            min-width: 0;
+        }
+    }
+
+    // No conversation open: a quiet sign and "Select a conversation" in the middle.
+    // (Nothing open: no view shown in its header, not a conversation, the contacts or the settings.)
+    .row > .col-8:not(:has(> [data-region="header-container"] > [data-region]:not(.hidden))) {
+        [data-region="body-container"] {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: $salek-text-muted;
+            font-size: .875rem;
+
+            > * {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-chat, 44px);
+                color: rgba(var(--bs-primary-rgb), .45);
+            }
+
+            &::after {
+                content: "Select a conversation to see its messages";
+
+                [lang|="fa"] & {
+                    content: "یک گفتگو را انتخاب کنید تا پیام‌هایش را ببینید";
+                }
+            }
+        }
+
+        [data-region="header-container"],
+        [data-region="footer-container"] {
+            display: none;
+        }
+    }
+
+    // Phones: one part at a time.
+    @include media-breakpoint-down(md) {
+        height: calc(100vh - 180px);
+
+        .row > .col-4,
+        .row > .col-8 {
+            flex: 0 0 100%;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        // (The list: while no conversation is open, or after "Back", the theme's button,
+        // amd/src/messagesback.js.)
+        .row:not(:has(> .col-8 > [data-region="header-container"] > [data-region]:not(.hidden))) > .col-8,
+        .row.salek-msg-list > .col-8 {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .row:not(.salek-msg-list):has(> .col-8 > [data-region="header-container"] > [data-region]:not(.hidden)) > .col-4 {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // "Back" at the start of the conversation's header (Moodle's own, when it shows one,
+        // closes the conversation: left out here).
+        .col-8 [data-region="header-container"] {
+            display: flex;
+            align-items: center;
+            padding-inline-start: 8px;
+            border-bottom: 1px solid $salek-msg-line;
+
+            > [data-region] {
+                flex: 1;
+                min-width: 0;
+                padding-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+                border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .align-self-stretch:has(.icon-back-in-app) {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        .salek-msg-back {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 0;
+            border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+            background: none;
+            color: $salek-text-muted;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-chevron, 16px);
+            }
+
+            &:hover {
+                background-color: $salek-soft;
+                color: $salek-text-strong;
+            }
+        }
+    }
+
+    // (Not on larger screens: both parts are shown.)
+    @include media-breakpoint-up(md) {
+        .salek-msg-back {
+            display: none;
+        }
+    }
 }
 
-#page-message-index .message-app.main .conversationcontainer .card-header {
-    background: transparent !important;
+// (The arrow of "Back" points to the start.)
+body#page-message-index:not(.dir-rtl) .salek-msg-back::before {
+    transform: scaleX(-1);
 }
 
-/* Right panel header background */
-#page-message-index .message-app.main .header-container {
-    background: $salek-surface !important;
+/* The messaging preferences page (message/edit.php): the settings in the page under its title
+   (theme JS, messageprefs.js), not in the drawer Moodle opens over the page; the drawer hidden
+   until they are moved, so it does not slide in and out. The groups ("Privacy", "Notification
+   preferences", "General") as the page's sections: a section's title, a line between them. */
+body#page-message-edit:not(.salek-msgprefs-moved) [data-region="right-hand-drawer"] {
+    visibility: hidden;
 }
 
-/* Message body container */
-#page-message-index .message-app.main .body-container {
-    background: $salek-surface !important;
-}
+body#page-message-edit #region-main .salek-msgprefs {
+    display: block !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's drawer hides its views when it changes view.)
+    height: auto !important; /* stylelint-disable-line declaration-no-important */
+    background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
 
-/* Active panels / views background */
-#page-message-index [data-region="message-index"] [data-region="body-container"] > [data-region^="view-"],
-#page-message-index [data-region="message-index"] [data-region="panel-body-container"] > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="body-container"] > [data-region^="view-"],
-#page-message-index .message-app.main [data-region="panel-body-container"] > [data-region^="view-"] {
-    background-color: #f6f6f6 !important;
-}
+    [data-region="settings"] {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text;
 
-/* Tabs track background */
-#page-message-index .message-app.main .nav-pills {
-    background: #e8e8e8 !important;
-    border-radius: 9999px !important;
-    padding: 4px !important;
-}
+        > h3,
+        [data-region="notification-preference-container"] > h3 {
+            margin: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-ink;
+            font-size: 1.05rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+        }
 
-/* Inactive tabs text color */
-#page-message-index .message-app.main .nav-pills .nav-link {
-    color: #64748b !important;
-    border-radius: 9999px !important;
-}
+        > h3:not(:first-child),
+        [data-region="notification-preference-container"] {
+            margin-top: 24px !important; /* stylelint-disable-line declaration-no-important */
+            padding-top: 24px;
+            border-top: 1px solid $salek-line;
+        }
 
-/* Active tab: White background + dark readable text */
-#page-message-index .message-app.main .nav-pills .nav-link.active {
-    background-color: $salek-surface !important;
-    color: #0f172a !important;
-    font-weight: 600 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
-}
+        [data-region="notification-preference-container"] + h3 {
+            margin-top: 24px !important; /* stylelint-disable-line declaration-no-important */
+        }
 
-/* Layout spacing for aligned flex rows */
-#page-message-index .message-app.main .d-flex.align-items-center {
-    padding: .6rem;
-    padding-bottom: .3rem;
-}
+        > p {
+            margin: 0 0 12px;
+            color: $salek-text-muted;
+            font-size: .875rem;
+        }
 
-/* Accessible focus state for buttons and links */
-#page-message-index .message-app.main button:focus,
-#page-message-index .message-app.main .btn:focus,
-#page-message-index .message-app.main .btn-link:focus,
-#page-message-index .message-app.main a:focus {
-    background-color: #eef5ff !important;
-    border-radius: 10px !important;
-    box-shadow: 0 0 0 3px rgba(19,109,221,.18) !important;
-    outline: none !important;
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 32px;
+            margin: 0 0 4px !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline-start: 0;
+
+            .form-check-input {
+                flex: none;
+                margin: 0;
+                float: none;
+            }
+
+            .form-check-label {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                font-size: .9375rem;
+            }
+        }
+
+        > div:last-child,
+        .mb-3 {
+            margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
 }
