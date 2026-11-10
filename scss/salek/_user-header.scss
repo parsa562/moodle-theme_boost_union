@@ -1,0 +1,291 @@
+// Salek: the person a page is about, on a line in the content (a person's reports: outline,
+// complete report, logs, notes, competencies; the user grade report), as on the profile page:
+// initials (or the picture) in a soft blue circle, the name, "Message" and "Add to contacts" as
+// soft buttons (icon only on the grade report, where Moodle writes no text), with the theme's
+// icons in the brand colour. (Moodle: a big grey circle, the name hidden by the site's rule for
+// page titles, black glyph icons.) The profile page's own header is _profile.scss.
+
+@mixin salek-user-avatar {
+    width: 64px;
+    height: 64px;
+    margin: 0;
+    border-radius: 50%;
+    background-color: #e3edfb;
+    color: #1859c9;
+    font-size: 1.25rem;
+    font-weight: 600;
+    object-fit: cover;
+}
+
+@mixin salek-user-button {
+    @include salek-button-soft;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: $salek-button-radius;
+    background-color: $salek-button-soft;
+    color: $salek-ink;
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+        background-color: $salek-button-soft-hover;
+    }
+}
+
+// The person's report pages: Moodle's page header with the picture, in the content.
+#region-main .page-context-header:has(> .page-header-image :is(.userinitials, .userpicture)) {
+    flex-wrap: nowrap !important; /* stylelint-disable-line declaration-no-important */
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 20px !important; /* stylelint-disable-line declaration-no-important */
+    padding: 0;
+
+    .page-header-image {
+        flex: none;
+        margin: 0;
+
+        :is(.userinitials, img) {
+            @include salek-user-avatar;
+        }
+    }
+
+    // (The site hides page titles beside an icon; here it is the person's name.)
+    .page-header-headings {
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+        min-width: 0;
+
+        :is(h1, h2, h3) {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+    }
+
+    .header-button-group {
+        display: flex !important; /* stylelint-disable-line declaration-no-important */
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        [class~="btn"] {
+            @include salek-user-button;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        flex-wrap: wrap !important; /* stylelint-disable-line declaration-no-important */
+
+        .header-button-group {
+            flex-basis: 100%;
+            margin-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+// The user grade report's person line (its own markup): the same, the buttons round, icon only.
+#region-main .user-heading {
+    gap: 16px;
+    margin: 0 0 20px;
+
+    > .d-flex:first-child {
+        margin: 0;
+
+        .userinitials,
+        img {
+            @include salek-user-avatar;
+        }
+    }
+
+    > .d-flex:nth-child(2) {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        h2 {
+            margin: 0;
+            line-height: 1;
+        }
+
+        a {
+            color: $salek-text-strong;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    > .d-inline-flex {
+        gap: 8px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+
+        [class~="btn"] {
+            @include salek-user-button;
+            width: 40px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 50%;
+        }
+    }
+}
+
+// "Message" and "Add to contacts", wherever they are (these lines, the profile page's header):
+// outline icons in the brand colour, the message one the navbar's rounded speech bubble; no
+// margin of their own, so they sit in the middle of the round buttons.
+:is(#region-main, #page-header) :is(#message-user-button, #toggle-contact-button) {
+    > span:not(.loading-icon, .header-button-title) {
+        display: inline-flex;
+    }
+
+    .icon:not(.fa-spin) {
+        width: auto;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: var(--bs-primary);
+        font-size: 16px;
+        font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */ // (Font Awesome's outline style.)
+        line-height: 1;
+    }
+}
+
+:is(#region-main, #page-header) #message-user-button .icon::before {
+    content: "#{$fa-var-comment}";
+}
+
+// "Add to contacts": the theme's person-with-plus line icon (Moodle's address card is too busy).
+// (Moodle's icon and the box around it hidden, not only the icon: the empty box pushed the new
+// icon off the button's middle.)
+:is(#region-main, #page-header) #toggle-contact-button {
+    > span:not(.loading-icon, .header-button-title),
+    .icon:not(.fa-spin) {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    &::before {
+        @include salek-mask-icon($salek-icon-user-plus, 16px);
+        color: var(--bs-primary);
+    }
+
+    // (Already a contact: "Remove from contacts".)
+    &[data-is-contact="1"]::before {
+        mask-image: $salek-icon-users;
+    }
+}
+
+// The person's report pages (outline and complete report, logs, notes), as the other pages: the
+// page's title first, "Back" at the end of its line, the sheet's line under them; then the person
+// and the report. (Moodle: "Back", the person, then a big title.)
+body:is(#page-report-outline-user, #page-report-log-user, #page-notes-index) #region-main div[role="main"]:has(> .page-context-header) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    > * {
+        grid-column: 1 / -1;
+    }
+
+    > h2:not(.page-context-header *) {
+        @include salek-title-line;
+        grid-row: 1;
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: 24px !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 18px;
+        color: $salek-text-strong;
+        font-size: 1.375rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    > .mb-3:has(> form > [class~="btn"]) {
+        z-index: 1;
+        grid-row: 1;
+        grid-column: 2;
+        align-self: start;
+        margin: -10px 0 0 !important; /* stylelint-disable-line declaration-no-important */ // (On the title's middle.)
+    }
+
+    > .page-context-header {
+        margin-bottom: 24px !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// Notes: each kind (site, course, personal) a titled group, a hairline between them.
+body#page-notes-index #region-main div[role="main"] > .generalbox {
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    .notestitle {
+        margin: 0;
+        padding: 18px 0 8px;
+        border-top: 1px solid $salek-line;
+        color: $salek-text-strong;
+        font-size: 1rem;
+        font-weight: 700;
+
+        &:first-child {
+            padding-top: 0;
+            border-top: 0;
+        }
+    }
+
+    .notesgroup {
+        margin: 0 0 18px;
+        color: $salek-text;
+        font-size: .875rem;
+
+        p {
+            margin: 0;
+        }
+
+        a {
+            font-weight: 500;
+        }
+    }
+}
+
+// The logs: "Select log reader" with its field, then the chart and the table, spaced as forms.
+body#page-report-log-user #region-main div[role="main"] > .singleselect {
+    margin-bottom: 20px;
+
+    label {
+        margin: 0;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+}
+
+// Competency breakdown: the person first, on the line of its own; the student and activity pickers
+// (Moodle's bordered box floating at the end, next to the buttons) on a line under it, without the
+// frame.
+body#page-report-competency-index #region-main .clearfix:has(> .float-end .user-competency-course-navigation) {
+    display: flex;
+    flex-direction: column;
+
+    > .page-context-header {
+        order: 1;
+    }
+
+    > .float-end {
+        order: 2;
+        float: none !important; /* stylelint-disable-line declaration-no-important */
+        margin: 0 0 24px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > p:empty {
+            display: none;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+    }
+}

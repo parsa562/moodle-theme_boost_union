@@ -1,0 +1,182 @@
+// Salek: My badges (badges/mybadges.php).
+
+/* The page's two parts ("My badges from this site", "My badges from other web sites") under each
+   other on the sheet, each with a section's title (as "Courses I am teaching" on the grades
+   overview, not Moodle's page-sized h2), a line between them; the search on one line (the field,
+   "Search", "Clear" as a quieter button); "Change backpack settings" under its text, not set in
+   under a column of nothing. */
+body#page-badges-mybadges #region-main div[role="main"] {
+    // (The help button right after the title's last word, also when the title takes two lines.)
+    > .generalbox > h2 {
+        margin: 0 0 16px;
+        color: $salek-ink;
+        font-size: 1.15rem;
+        font-weight: 600;
+        line-height: 1.4;
+
+        .help-icon {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
+            vertical-align: middle;
+        }
+    }
+
+    > .generalbox + .generalbox {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid $salek-line;
+    }
+
+    // The search.
+    #issued-badge-table > .box {
+        margin: 0 0 16px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        #fgroup_id_searchgroup {
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 12px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > .col-form-label {
+                flex: none;
+                width: auto;
+                max-width: none;
+                padding: 0;
+                color: $salek-text-muted;
+                font-size: .875rem;
+            }
+
+            > .felement {
+                flex: 1 1 auto;
+                width: auto;
+                max-width: none;
+                padding: 0;
+            }
+
+            fieldset > .d-flex {
+                flex-wrap: nowrap !important; /* stylelint-disable-line declaration-no-important */
+                gap: 8px;
+
+                > .fitem {
+                    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                > .fitem:first-child {
+                    flex: 1 1 auto;
+                    max-width: 360px;
+
+                    input {
+                        width: 100%;
+                    }
+                }
+            }
+
+            #id_clearsearch {
+                @include salek-button-soft;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            #fgroup_id_searchgroup {
+                flex-wrap: wrap;
+                gap: 8px;
+
+                > .col-form-label,
+                > .felement {
+                    flex-basis: 100%;
+                }
+
+                fieldset > .d-flex {
+                    flex-wrap: wrap !important; /* stylelint-disable-line declaration-no-important */
+                }
+
+                // (The field a line of its own, the buttons under it: beside them it was too narrow.)
+                fieldset > .d-flex > .fitem:first-child {
+                    flex-basis: 100%;
+                    max-width: none;
+                }
+            }
+        }
+    }
+
+    // "Change backpack settings".
+    > .box.row {
+        display: block;
+        margin: 16px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > :empty {
+            display: none;
+        }
+
+        > [class*="col-"] {
+            width: auto;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+/* Backpack settings (badges/mybackpack.php): "Connect to backpack" is the form's action but a row
+   of its own after the section (not Moodle's buttons group): on the forms' buttons band as their
+   "Save changes" (_forms.scss), with "Required" in the band's empty label column, the band
+   reaching the sheet's bottom. (It sat 7px out of line with the fields above it.) */
+body#page-badges-mybackpack #region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> #fitem_id_submitbutton) {
+    position: relative;
+    margin-bottom: -24px;
+
+    > #fitem_id_submitbutton {
+        @include salek-sheet-bleed;
+        padding-inline: calc(var(--salek-sheet-pad) - 12px);
+        margin-top: 0;
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-block: 16px;
+        border-top: 0; // (The section's last row draws the line above it.)
+        border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-subtle;
+        background-image: none !important; /* stylelint-disable-line declaration-no-important */ // (The form rows' line, drawn as a gradient, _forms.scss.)
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            font-size: .875rem;
+        }
+
+        @include media-breakpoint-up(md) {
+            border-end-start-radius: $salek-radius;
+            border-end-end-radius: $salek-radius;
+        }
+    }
+
+    // (The section right on the band.)
+    > fieldset:last-of-type {
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > .fcontainer {
+            margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > #fitem_id_submitbutton ~ .fdescription.required {
+        border-top: 0;
+
+        padding-top: 0;
+
+        @include media-breakpoint-up(md) {
+            position: absolute;
+            inset-block-end: 0;
+            inset-inline-start: 0;
+            width: 25%;
+            height: calc(32px + #{$salek-control-height});
+        }
+
+        @include media-breakpoint-down(md) {
+            @include salek-sheet-bleed;
+            padding-bottom: 16px;
+            border-end-start-radius: $salek-radius;
+            border-end-end-radius: $salek-radius;
+            background-color: $salek-subtle;
+        }
+    }
+}

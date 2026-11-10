@@ -45,11 +45,15 @@ body#page-admin-tool-lp-coursecompetencies #region-main div[role="main"] {
 
     [data-region="configurecoursecompetencies"] > .alert:not([class~="alert-info"]) {
         margin: 16px 0;
-        padding: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over the messages' padding.)
         border: 0;
         background: none;
         color: $salek-text-muted;
         font-size: .875rem;
+
+        &::before {
+            content: none;
+        }
     }
 
     table.managecompetencies:not(:has(tr)) {
@@ -70,5 +74,26 @@ body#page-admin-tool-lp-coursecompetencies #region-main div[role="main"] {
                 width: 100% !important; /* stylelint-disable-line declaration-no-important */
             }
         }
+    }
+}
+
+// Learning plans (admin/tool/lp/plans.php): "Prior learning evidence" under the table, 16px under
+// it as after the site's other tables (Moodle floats it, so it hung out of the sheet onto its
+// bottom edge); Moodle's empty float above the table left out.
+body#page-admin-tool-lp-plans #region-main [data-region="plans"] {
+    > .float-start {
+        float: none !important; /* stylelint-disable-line declaration-no-important */
+
+        &:empty,
+        &:not(:has(*)) {
+            display: none;
+        }
+    }
+
+    > table + .float-start,
+    > .table-responsive + .float-start,
+    > .salek-table-scroll + .float-start,
+    > .alert + .float-start {
+        margin-top: 16px;
     }
 }

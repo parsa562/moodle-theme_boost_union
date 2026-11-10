@@ -1,0 +1,161 @@
+// Salek: a person's outline report in a course (report/outline/user.php, "Outline report"). As the
+// other pages: the report's title first, "Back" at the end of its line, the sheet's line under
+// them; then the person (_user-header.scss). Each section a card: its name on a tinted line, its
+// activities as rows (icon in a circle tinted by the activity's purpose, name, views or grade, last
+// access), a hairline between them; a lesson inside a section a small titled group in the card,
+// its rows set in. Empty sections (as "General" here) are left out.
+
+$salek-ro-line: #e6eaf0;
+
+body#page-report-outline-user #region-main div[role="main"] {
+    // A section: a card.
+    .section:not(.subsection) {
+        margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        overflow: clip;
+        border: 1px solid $salek-ro-line;
+        border-radius: 18px;
+        background-color: #fff;
+
+        > h2 {
+            margin: 0;
+            padding: 14px 20px;
+            border-bottom: 1px solid $salek-ro-line;
+            background-color: $salek-subtle;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+
+    // (Nothing in it: left out.)
+    .section:not(:has(tr)) {
+        display: none;
+    }
+
+    .section > .content > table:not(:has(tr)) {
+        display: none;
+    }
+
+    // A lesson in a section: a small title, its rows set in.
+    .section.subsection {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0; // (Moodle's frame around it.)
+        border-top: 1px solid $salek-ro-line;
+        border-radius: 0;
+        background: none;
+
+        > h3 {
+            margin: 0;
+            padding: 12px 20px;
+            border-bottom: 1px solid $salek-preview-row-line;
+            background-color: #fbfcfd;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 700;
+        }
+
+        tr {
+            padding-inline-start: 36px;
+        }
+    }
+
+    // (The first lesson right under the section's title: one line between them.)
+    .section > .content > :is(table:not(:has(tr)), :first-child) + .subsection,
+    .section > .content > .subsection:first-child {
+        border-top: 0;
+    }
+
+    // The activities: rows (icon, name, views or grade, last access), Moodle's spacer cells left
+    // out.
+    table.table-reboot {
+        display: block;
+        width: 100%;
+        margin: 0;
+
+        > tbody {
+            display: block;
+        }
+
+        tr {
+            display: grid;
+            grid-template-columns: 36px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr);
+            align-items: center;
+            column-gap: 14px;
+            padding: 10px 20px;
+            border-bottom: 1px solid $salek-preview-row-line;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+
+            @include media-breakpoint-down(md) {
+                grid-template-columns: 36px minmax(0, 1fr);
+                row-gap: 2px;
+
+                > td:nth-child(n + 3) {
+                    grid-column: 2;
+                }
+            }
+        }
+
+        td {
+            width: auto !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0;
+            border: 0;
+            background: none;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            vertical-align: middle;
+            white-space: normal !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (Moodle's spacer cells: no valign.)
+        td:not([valign]) {
+            display: none;
+        }
+
+        td a {
+            color: $salek-text-strong;
+            font-size: .875rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        // The icon: in a circle tinted by the activity's purpose, as on the course page.
+        .activityiconcontainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            max-width: 36px;
+            height: 36px;
+            max-height: 36px;
+            margin: 0;
+            border-radius: 50%;
+            background-color: #eef2f7;
+
+            // (Over Moodle's .icon-size-4, 30px with !important: the icon nearly filled the circle.)
+            .activityicon {
+                width: 18px !important; /* stylelint-disable-line declaration-no-important */
+                max-width: 18px !important; /* stylelint-disable-line declaration-no-important */
+                height: 18px !important; /* stylelint-disable-line declaration-no-important */
+                max-height: 18px !important; /* stylelint-disable-line declaration-no-important */
+                margin: 0; // (Moodle's .icon margin put it off the middle.)
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's 10px at one side in lessons.)
+            }
+
+            &.assessment { background-color: #fdedf3; }
+            &.content { background-color: #e4f6f1; }
+            &.collaboration { background-color: #f1ecfe; }
+            &.communication { background-color: #eaf1fd; }
+            &.interactivecontent { background-color: #fff4da; }
+            &.administration { background-color: #eef2f7; }
+        }
+    }
+}

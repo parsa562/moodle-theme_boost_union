@@ -1,0 +1,83 @@
+// Salek: Search tags (tag/search.php).
+
+/* The search on one line at the start under the title (the field, "Search"), as the badges'
+   search, not a centred three-quarter box with the button under it on phones; the tag cloud as
+   soft pills at the start, one size (Moodle sized each tag by its use, from tiny to 2.5em, which
+   read as noise), the most used ones light blue; "Showing 150 most popular tags" a muted note. */
+body#page-tag-search #region-main div[role="main"] {
+    #tag-search-box {
+        width: auto !important; /* stylelint-disable-line declaration-no-important */ // (Over .w-75.)
+        margin: 0 0 24px !important; /* stylelint-disable-line declaration-no-important */ // (Over .m-auto.)
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .pt-3.)
+
+        form {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-grid.)
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 8px !important; /* stylelint-disable-line declaration-no-important */
+
+            input.form-control {
+                flex: 1 1 auto;
+                width: auto;
+                max-width: 420px;
+            }
+
+            [class~="btn"] {
+                flex: none;
+            }
+        }
+    }
+
+    .tag_cloud {
+        text-align: start;
+
+        ul.inline-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+
+            > li {
+                margin: 0;
+                padding: 0;
+            }
+
+            a {
+                display: inline-flex;
+                align-items: center;
+                min-height: 32px;
+                padding: 0 12px;
+                border-radius: 999px;
+                background-color: $salek-field-bg;
+                color: $salek-ink;
+                font-size: .8125rem !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's .s0–.s20 sizes.)
+                font-weight: 500;
+                line-height: 1.3;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: $salek-field-bg-hover;
+                    color: var(--bs-primary);
+                }
+            }
+
+            // (The most used: light blue.)
+            @for $i from 5 through 20 {
+                a.s#{$i} {
+                    background-color: #e3edfb;
+                    color: #1859c9;
+                }
+            }
+        }
+    }
+
+    .tag_overflow {
+        margin: 16px 0 0;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-style: normal;
+        text-align: start;
+    }
+}
