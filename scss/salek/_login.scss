@@ -1129,3 +1129,97 @@ html[dir="ltr"] body.pagelayout-login #page-wrapper {
     position: relative;
     z-index: 1;
 }
+
+/* Moodle 5.3 login form: the guest part (a heading and a button) in the style of the fields: a
+   small heading and a light pill button. */
+html body.pagelayout-login {
+    #login-method-guest {
+        .login-heading {
+            margin-bottom: 12px !important; /* stylelint-disable-line declaration-no-important */
+            font-size: 1rem !important; /* stylelint-disable-line declaration-no-important */
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+            line-height: 1.5 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Phones: the shape of the fields and the login button there (40px, 12px corners).
+        #loginguestbtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+            border: 1px solid $salek-field-border !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+            background: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+            color: #334155 !important; /* stylelint-disable-line declaration-no-important */
+            font-weight: 600;
+            box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+            @media (min-width: 768px) {
+                min-height: 50px;
+                border-color: rgb(203 213 225 / 90%) !important; /* stylelint-disable-line declaration-no-important */
+                border-radius: 25px !important; /* stylelint-disable-line declaration-no-important */
+                background: rgb(255 255 255 / 74%) !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .fa {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                color: #64748b;
+            }
+
+            &:hover {
+                border-color: #94a3b8 !important; /* stylelint-disable-line declaration-no-important */
+                background: #fff !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+/* Moodle 5.3 dropped some Moodle 5.0 login rules that the Salek design relies on: the language
+   menu as a row and the short vertical line between it and the cookies notice
+   (templates/core/loginform.mustache). Its site name also carries the .h2 class now, which the
+   small-heading rule for the login methods above caught; it keeps its 5.0 size. */
+body.pagelayout-login .loginform {
+    h1.login-heading {
+        font-size: 2rem !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .login-languagemenu {
+        display: flex;
+        justify-content: flex-start;
+
+        .dropdown-menu {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    }
+
+    > .d-flex > .divider {
+        width: $border-width;
+        height: $font-size-base * 2;
+        background-color: $gray-300;
+    }
+
+    .action-menu-trigger a {
+        margin: .5rem 0;
+    }
+}
+
+/* The password field is framed by its wrapper with the show/hide button, which Moodle's JS adds
+   after the page has loaded: until then the field had no frame for a moment. Frame the bare field
+   like the username field until it is wrapped (Moodle 5.0 and 5.3 markup). */
+body.pagelayout-login .login-form-password > #password,
+body.pagelayout-login .login-form-password .login-input-wrapper > #password {
+    // Phones: the username field's frame there.
+    height: 40px !important; /* stylelint-disable-line declaration-no-important */
+    border: 1px solid $salek-field-border !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 12px !important; /* stylelint-disable-line declaration-no-important */
+    background: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+
+    @media (min-width: 768px) {
+        height: 50px !important; /* stylelint-disable-line declaration-no-important */
+        border-color: rgb(203 213 225 / 90%) !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 25px !important; /* stylelint-disable-line declaration-no-important */
+        background: rgb(255 255 255 / 74%) !important; /* stylelint-disable-line declaration-no-important */
+    }
+}

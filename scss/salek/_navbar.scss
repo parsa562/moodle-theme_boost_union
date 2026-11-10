@@ -55,6 +55,13 @@
     }
 }
 
+// Until Moodle's React tabs replace it, the bar holds a plain tab list that also carries
+// .navigation, and so its own shadow: two shadows made the bar darker for a moment after a page
+// load. Only the bar keeps the shadow.
+#page.drawers .secondary-navigation .secondarynav-tabbar .navigation {
+    box-shadow: none;
+}
+
 // The first tab meets the bar's rounded corners.
 #page.drawers .secondary-navigation .secondarynav-tabbar .nav-item:first-child > .mds-nav-pill {
     border-start-start-radius: $salek-secondary-navbar-radius;
@@ -308,7 +315,7 @@
 /* Navbar user menu: use the same direction-aware dropdown alignment as
  * the standalone language selector instead of Moodle's forced end alignment.
  * The menu then grows towards the viewport edge, which only has enough room
- * on wide screens. Below 1680px, align it to the avatar's end edge instead
+ * on very wide screens. Below 1900px, align it to the avatar's end edge instead
  * (Moodle's default), so it opens towards the page and stays in view.
  */
 .navbar.fixed-top:not(.boost-union-menubar) {
@@ -316,11 +323,21 @@
         inset-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
         inset-inline-end: auto !important; /* stylelint-disable-line declaration-no-important */
 
-        @media (max-width: 1679.98px) {
+        @media (max-width: 1899.98px) {
             inset-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
             inset-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
             max-width: calc(100vw - 1rem);
         }
+    }
+}
+
+/* The same while a side drawer is open: the drawer moves the navbar, so there is no room left
+   beside it for the menu, even on wide screens. */
+#page-wrapper:has(#page.drawers.show-drawer-left),
+#page-wrapper:has(#page.drawers.show-drawer-right) {
+    .navbar.fixed-top:not(.boost-union-menubar) .usermenu > .dropdown > .dropdown-menu {
+        inset-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
     }
 }
 
@@ -349,6 +366,103 @@
             background: rgba(0, 0, 0, .035);
             box-shadow: none;
         }
+
+        /* On hover, the avatar grows a little instead. (An inline box cannot be scaled.) */
+        .avatar {
+            display: inline-block;
+            transition: transform .15s ease;
+
+            @media (prefers-reduced-motion: reduce) {
+                transition: none;
+            }
+        }
+
+        &:hover .avatar {
+            transform: scale(1.08);
+        }
+    }
+}
+
+/* User menu: the user's full name at the top (Boost Union setting "Show full name in the user
+   menu") as a soft card with the avatar, in the gradient of the course index's title section.
+   The card replaces the divider under it. */
+.navbar.fixed-top:not(.boost-union-menubar) #user-action-menu {
+    .loggedinas {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 6px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: $salek-card-gradient;
+
+        html[dir="rtl"] & {
+            background: $salek-card-gradient-rtl;
+        }
+
+        + .dropdown-divider {
+            display: none;
+        }
+    }
+
+    // Only the current user's avatar (when logged in as someone else, Moodle adds the real user's).
+    .salek-usermenu-avatar {
+        flex: none;
+        display: flex;
+
+        .avatar:not(.current) {
+            display: none;
+        }
+
+        .userinitials,
+        .userpicture {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
+        }
+
+        .userinitials {
+            background-color: $salek-surface;
+            color: var(--bs-primary);
+            font-size: .875rem;
+            font-weight: 600;
+        }
+    }
+
+    .salek-usermenu-name {
+        min-width: 0;
+        line-height: 1.5;
+
+        small {
+            color: $salek-message-muted;
+            font-size: .75rem;
+        }
+
+        strong {
+            overflow: hidden;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}
+
+/* User-menu submenus (language and others): the back arrow and the submenu's title on one row,
+   the title in the brand colour, as on Moodle 5.0 (Moodle 5.3 lays them out as blocks, which
+   puts the title under the arrow). */
+.navbar.fixed-top:not(.boost-union-menubar) .usermenu .carousel-item.submenu .header {
+    &,
+    > .carousel-navigation-link {
+        display: flex;
+        align-items: center;
+    }
+
+    [id^="carousel-item-title-"] {
+        color: var(--bs-primary);
     }
 }
 
@@ -879,6 +993,13 @@ body.jsenabled #page .secondary-navigation .secondarynav-tabbar > nav.moremenu {
         #boost-union-footer-buttons,
         &.jsenabled .btn-footer-popover {
             bottom: calc(60px + 1rem);
+        }
+
+        // The drawers under the bar (the course index, the site menu; the blocks drawer is over
+        // it): their list ends above the bar, so the last items can be reached (they were under
+        // the bar, and when the list fitted the drawer it could not be scrolled up).
+        .drawer:not(#theme_boost-drawers-blocks) .drawercontent {
+            padding-bottom: calc(60px + env(safe-area-inset-bottom) + 8px) !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 }

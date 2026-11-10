@@ -38,6 +38,9 @@ $string['salekactivitiescount'] = '{$a} فعالیت';
 $string['salekinitialsfilter'] = 'فیلتر با حرف اول';
 $string['salekinitialsremove'] = 'حذف فیلتر';
 
+// Boost Union's label above the full name at the top of the user menu (no Persian translation yet).
+$string['showfullnameinusermenussetting_loggedinas'] = 'وارد شده با نام:';
+
 // Salek: the bar above the front page's course list (amd/src/frontpagecourses).
 $string['salekcoursescards'] = 'کارتی';
 $string['salekcoursescount'] = '{$a} درس';

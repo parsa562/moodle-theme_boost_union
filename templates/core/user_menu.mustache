@@ -68,6 +68,7 @@
     * Set the submenus' data-bs-theme attribute to light even if the navbar is dark
     * Salek: show the Edit mode switch in the user menu on phones (below md).
     * Salek: do not show the first name next to the avatar (new in Moodle 5.3).
+    * Salek: show the avatar beside the full name at the top of the user menu.
     * Add the smart menu description (above or below the items or as help icon) to the submenus.
     * Initialize the theme_boost_union/smartmenu_usermenu module which keeps the tooltips of the smart menu items alive
       (core/usermenu disposes them when it initializes its truncation tooltips) and which keeps the user menu open when
@@ -99,8 +100,14 @@
                         <div id="carousel-item-main" class="carousel-item active" role="menu" tabindex="-1" aria-label="{{#str}}user{{/str}}">
                             {{#showfullnameinusermenu}}
                                 <div class="loggedinas">
-                                    <small>{{#str}}showfullnameinusermenussetting_loggedinas, theme_boost_union{{/str}}</small><br />
-                                    <strong>{{userfullname}}</strong>
+                                    {{! Salek: the avatar beside the name. }}
+                                    <span class="salek-usermenu-avatar avatars">
+                                        {{#avatardata}}<span class="avatar {{classes}}">{{{content}}}</span>{{/avatardata}}
+                                    </span>
+                                    <span class="salek-usermenu-name d-flex flex-column">
+                                        <small>{{#str}}showfullnameinusermenussetting_loggedinas, theme_boost_union{{/str}}</small>
+                                        <strong>{{userfullname}}</strong>
+                                    </span>
                                 </div>
                                 <div class="dropdown-divider"></div>
                             {{/showfullnameinusermenu}}
