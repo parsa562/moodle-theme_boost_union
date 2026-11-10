@@ -1,6 +1,121 @@
 // Salek: parts that look the same on every page: confirmations, lists to move people or groups
 // between, the message in empty tables. (First made for the participants pages.)
 
+// Dialogues: the corners of the site's cards (Bootstrap's 9.6px looked out of place).
+.modal {
+    --bs-modal-border-radius: #{$salek-card-radius};
+    --bs-modal-inner-border-radius: calc(#{$salek-card-radius} - 1px);
+}
+
+// (Moodle gives the dialogue its smaller corners again while it has the focus, as it has when it
+// opens: the corners changed at the first click inside it.)
+.modal-dialog[tabindex="0"]:is(.focus, :focus) .modal-content {
+    border-radius: var(--bs-modal-border-radius);
+}
+
+// (Moodle gives the dialogue the focus when it opens, and draws a thick blue ring around it
+// then: none; its frame a faint line and a soft shadow, as the older dialogues'.)
+.modal-dialog:focus {
+    outline: 0;
+}
+
+.modal-content {
+    border: 0;
+    box-shadow: 0 0 0 1px rgb(15 23 42 / 6%), 0 18px 48px -12px rgb(15 23 42 / 28%);
+}
+
+.modal-dialog:focus .modal-content,
+.modal-dialog.focus .modal-content {
+    box-shadow: 0 0 0 1px rgb(15 23 42 / 6%), 0 18px 48px -12px rgb(15 23 42 / 28%) !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// The close button of dialogues: a plain thin × in a round hover, as the activity chooser's.
+.modal-header .btn-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    margin-inline: auto -8px;
+    padding: 0;
+    border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+    background: none;
+    color: $salek-ink;
+    opacity: 1;
+
+    &::before {
+        @include salek-mask-icon($salek-icon-close, 14px);
+    }
+
+    &:hover {
+        background-color: $salek-soft;
+    }
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    &:focus-visible {
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .25);
+    }
+}
+
+// Moodle's older (YUI) dialogues, as the quiz's "Start attempt" and the file picker: the same
+// corners and a soft shadow, the title line as the Bootstrap ones', a round close button.
+.moodle-dialogue-base .moodle-dialogue-wrap {
+    overflow: clip;
+    border: 0;
+    border-radius: $salek-card-radius;
+    box-shadow: 0 0 0 1px rgb(15 23 42 / 6%), 0 18px 48px -12px rgb(15 23 42 / 28%);
+
+    .moodle-dialogue-hd {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 64px;
+        padding-block: 12px;
+        padding-inline: 24px 16px;
+        border-bottom: 1px solid $salek-line;
+
+        > :is(H1, H2, H3, H4, H5) {
+            flex: 1;
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+    }
+
+    .closebutton {
+        position: static;
+        flex: none;
+        width: 32px;
+        height: 32px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: $salek-soft url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") no-repeat center / 14px 14px;
+        opacity: 1;
+
+        &:hover {
+            background-color: $salek-soft-hover;
+        }
+
+        // (Moodle's × as text or an icon: the background draws it.)
+        > * {
+            display: none;
+        }
+
+        font-size: 0;
+    }
+
+    .moodle-dialogue-bd {
+        padding: 20px 24px 24px !important; /* stylelint-disable-line declaration-no-important */ // (In line with the title.)
+    }
+}
+
 @include salek-page-content {
     div[role="main"] {
         tr:has(> td.salek-empty-cell) {
@@ -11,6 +126,23 @@
             padding: 28px 14px !important; /* stylelint-disable-line declaration-no-important */
             color: $salek-text-muted;
             text-align: center;
+        }
+
+        // Messages (errors, notes): the last paragraph's margin left more space under the text
+        // than above it.
+        [class~="alert"] > p:last-child {
+            margin-bottom: 0;
+        }
+
+        // A "Continue" button that ends the page: Moodle's 35px under it came on top of the
+        // sheet's own padding.
+        .continuebutton:last-child {
+            padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Settings: "Default: …" under a field sat on the field's edge.
+        .form-defaultinfo {
+            margin-top: 6px;
         }
 
         // Buttons as high as the fields, the text centred in that height (forms: section 27).
@@ -31,9 +163,9 @@
 
             .modal-content {
                 padding: 0 !important; /* stylelint-disable-line declaration-no-important */
-                border: 1px solid $salek-line;
+                border: 1px solid $salek-note-border;
                 border-radius: 12px;
-                background-color: $salek-subtle;
+                background-color: $salek-note-bg;
                 box-shadow: none;
             }
 
@@ -794,3 +926,94 @@ table.question-bank-table {
     }
 }
 /* stylelint-enable declaration-no-important */
+
+// Help buttons ("?") everywhere in the content, as in the forms (_forms.scss): a small light-blue
+// round button with a question mark (Moodle's is a filled teal circle, often touching the text
+// before it); a little space before it.
+@include salek-content-scope {
+    a[data-bs-toggle="popover"]:has(> .fa-circle-question) {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        min-width: 0;
+        height: 18px;
+        min-height: 0;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0;
+        border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+        vertical-align: middle;
+
+        .icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-question, 12px);
+        }
+
+        &:hover,
+        &:focus-visible {
+            background-color: rgba(var(--bs-primary-rgb), .18);
+        }
+    }
+
+    &:is([dir="rtl"] *) a[data-bs-toggle="popover"]:has(> .fa-circle-question)::before {
+        transform: scaleX(-1); // The Persian question mark (؟) faces the other way.
+    }
+
+    // (Before a field in a toolbar, as the forum's search: on the field's middle, a gap after it.)
+    .navitem > a[data-bs-toggle="popover"]:has(> .fa-circle-question) {
+        align-self: center;
+        margin-inline: 0 8px !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// "Add a block" (edit mode, in the blocks drawer and in the page's block areas): Moodle's dashed
+// button, with the site's buttons' rounder corners.
+[data-region="add-block-button"] .btn-add-content {
+    border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// An empty blog (blog/index.php; the line from the theme's JS, emptytables.js): "No visible entries
+// here" in the muted centred style of the empty tables, "Add a new entry" a soft button under it.
+@include salek-page-content {
+    div[role="main"] > .salek-empty-note {
+        margin: 8px 0 12px;
+
+        &:last-child {
+            margin-bottom: 8px;
+        }
+
+        color: $salek-text-muted;
+        font-size: .875rem;
+        text-align: center;
+    }
+
+    div[role="main"] > .salek-empty-note + .addbloglink {
+        text-align: center;
+
+        a {
+            @include salek-button-soft;
+            display: inline-flex;
+            align-items: center;
+            min-height: 40px;
+            padding: 0 16px;
+            border-radius: $salek-button-radius;
+            background-color: $salek-button-soft;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-button-soft-hover;
+            }
+        }
+    }
+}

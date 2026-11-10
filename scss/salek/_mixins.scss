@@ -6,6 +6,7 @@
     body.pagelayout-mydashboard,
     body.page-mycourses,
     body#page-user-profile,
+    body.pagelayout-mypublic:has(#region-main .userprofile > .profile_tree), // (The profile in a course, _profile.scss.)
     body#page-calendar-view,
     body.path-course-view:has(.course-content) {
         @content;
@@ -14,10 +15,13 @@
 
 // From the base part.
 // Content area, page header (header buttons, admin search) and dialogs;
-// the navbar, drawers and login page keep their own designs.
+// the navbar, drawers and login page keep their own designs. (The "embedded" layout's pages, as
+// the assignment's grader and a book's print page, have no #region-main: their content area, by
+// #page as heavy as it.)
 @mixin salek-content-scope {
     body:not(.pagelayout-login) #region-main,
     body:not(.pagelayout-login) #page-header,
+    #page > .embedded-main,
     .modal-dialog {
         @content;
     }
@@ -591,7 +595,9 @@
         background-color: rgba(var(--bs-primary-rgb), .07);
     }
 
-    &:last-child > * {
+    // The last row without its line (the frame closes the table); also when Moodle's hidden
+    // empty filler rows (.emptyrow) come after it.
+    &:not(:has(~ tr:not(.emptyrow))) > * {
         border-bottom: 0;
     }
 

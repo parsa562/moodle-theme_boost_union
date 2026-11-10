@@ -28,7 +28,12 @@ $salek-soft: #f1f5f9;               // Secondary buttons, menu item hover.
 $salek-soft-hover: #e2e8f0;
 $salek-soft-strong: #e8edf3;        // Small subtle buttons, visible on white and on tinted boxes.
 $salek-surface: #fcfcfd;            // The white of boxes and surfaces (sheets, cards, menus, fields on them).
-$salek-subtle: #f8fafc;             // Tinted info boxes.
+$salek-subtle: #f8fafc;             // Faint tints (hovers, bands).
+// Soft note boxes (an activity's description, a section's summary, report notes, a group's info,
+// confirmations): a grey clearly darker than the sheet's white, with a thin edge (the faint
+// tint above showed almost no difference from the white).
+$salek-note-bg: #f1f4f8;
+$salek-note-border: #e1e7ef;
 $salek-line: #e9edf2;               // Hairline separators.
 $salek-field-border: #e2e8f0;       // Hairline around fields and dropdowns.
 $salek-field-border-hover: #cbd5e1;
@@ -38,8 +43,8 @@ $salek-field-bg: #f1f4f8;          // Fields are filled shapes without a border 
 $salek-field-bg-hover: #e9edf3;
 $salek-field-radius: 14px;
 $salek-button-radius: 15px;
-$salek-button-soft: #e8ecf2;       // Secondary buttons ("Cancel"): a soft grey fill without an outline.
-$salek-button-soft-hover: #dce2ea;
+$salek-button-soft: #e2e7ee;       // Secondary buttons ("Cancel"): a soft grey fill without an outline.
+$salek-button-soft-hover: #d5dce6;
 // The arrow of a dropdown field, in a small chip at its end. Change its look here, for every
 // dropdown of the site: the chip's colour, the arrow's colour and thickness, the chip's corner
 // roundness (the chip is 22 units wide, so 11 makes it a circle) and its shadow (0 = none). Its
@@ -47,7 +52,7 @@ $salek-button-soft-hover: #dce2ea;
 $salek-select-chip-color: #fff;
 $salek-select-arrow-color: #64748b;
 $salek-select-arrow-width: 1.5;
-$salek-select-chip-radius: 7;
+$salek-select-chip-radius: 9;
 $salek-select-chip-shadow: .10;
 
 @function salek-select-chip($chip, $arrow, $width, $radius, $shadow) {
@@ -78,6 +83,12 @@ $salek-text-strong: #0f172a;
 $salek-text: #334155;
 $salek-control-border: #c3ccd9;
 $salek-band-bg: #f5f7fa;
+
+// Soft title cards (course index title section, the name at the top of the user menu): light blue
+// at the top start corner to light yellow at the bottom end corner. The RTL step does not flip
+// gradient directions, so right-to-left pages use the second one.
+$salek-card-gradient: linear-gradient(to bottom right, #dcebfe, #fcefc97d);
+$salek-card-gradient-rtl: linear-gradient(to bottom left, #dcebfe, #fcefc97d);
 $salek-hero-bg: radial-gradient(#c3d1ea8f 1px, transparent 1px) 0 0 / 16px 16px, #f2f6fd;
 $salek-hero-border: #d3dae4a6; // Outline of the dotted hero cards: lighter than the other cards.
 $salek-accent-yellow: #f5b301;
@@ -102,6 +113,13 @@ $salek-icon-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
 // From the participants part.
 $salek-icon-users: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'/%3E%3C/svg%3E");
 $salek-icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E");
+// Messages (warnings, errors).
+$salek-icon-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E");
+$salek-icon-error: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v5.5M12 16.5h.01'/%3E%3C/svg%3E");
+// A drag handle (two columns of dots): the quiz's questions.
+$salek-icon-grip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='9' cy='6' r='1.6'/%3E%3Ccircle cx='15' cy='6' r='1.6'/%3E%3Ccircle cx='9' cy='12' r='1.6'/%3E%3Ccircle cx='15' cy='12' r='1.6'/%3E%3Ccircle cx='9' cy='18' r='1.6'/%3E%3Ccircle cx='15' cy='18' r='1.6'/%3E%3C/svg%3E");
+// A sortable column (two small arrows, up and down).
+$salek-icon-sort: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 9 4-4 4 4M8 15l4 4 4-4'/%3E%3C/svg%3E");
 $salek-icon-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
 $salek-icon-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14'/%3E%3C/svg%3E");
 

@@ -1,0 +1,252 @@
+// Salek: the pages of Moodle's "popup" and "print" layouts (opened in a window of their own: the
+// scales, a help text, the quiz's "Make comment or override mark" and the review of one question;
+// a glossary's print page). No navbar there: Moodle's 60px for it at the top removed; the content
+// a white sheet in the middle of the page's ground, with the site's inner spaces and the site's
+// title sizes (Moodle's big headings were for full pages). The quiz's windows: no sheet, the
+// summary and the question cards on the ground, as on the quiz's review.
+
+$salek-popup-layouts: "body:is(.pagelayout-popup, .pagelayout-print)";
+
+#{$salek-popup-layouts} {
+    #page {
+        margin-top: 0;
+        padding: 32px 16px 16px;
+
+        @include media-breakpoint-down(md) {
+            padding: 16px 0 8px;
+        }
+    }
+
+    #page-content {
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    #region-main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 40px !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: $salek-card-radius !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-surface;
+        box-shadow: $salek-card-shadow;
+
+        @include media-breakpoint-down(md) {
+            padding: 20px 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // Titles: the site's sizes. (Not the questions' own, as their number.)
+        :is(h1, .helpheading):not(.que *) {
+            margin: 0 0 16px;
+            color: $salek-text-strong;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        h2:not(.que *) {
+            margin: 0 0 12px;
+            color: $salek-text-strong;
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        h3:not(.que *) {
+            margin: 0 0 10px;
+            color: $salek-text-strong;
+            font-size: 1.0625rem;
+            font-weight: 700;
+        }
+
+        div[role="main"] > p:first-of-type,
+        .helpheading + p {
+            color: $salek-text;
+            line-height: 1.8;
+        }
+
+        hr {
+            margin: 24px 0;
+            border: 0;
+            border-top: 1px solid $salek-line;
+            opacity: 1;
+        }
+
+        // "Close this window": at the end.
+        .closewindow {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+    }
+}
+
+// The scales: each a part with its title, its values (a menu to try them) and its text.
+body#page-course-scales #region-main {
+    div[role="main"] > p:first-child,
+    div[role="main"] > #maincontent + p {
+        margin: 0 0 8px;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    div[role="main"] > h2 {
+        margin: 24px 0 4px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+        text-transform: none;
+    }
+
+    .generalbox {
+        padding: 12px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > h2,
+        > h3 {
+            margin-bottom: 12px;
+            font-size: 1.125rem;
+        }
+
+        // (Moodle centres the menu of the scale's values: at the start, as the text.)
+        center,
+        .text-center,
+        [align="center"] {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        select {
+            margin-bottom: 12px;
+        }
+
+        ul {
+            margin: 8px 0 0;
+            padding-inline-start: 20px;
+            line-height: 1.8;
+        }
+    }
+}
+
+// A glossary's print page: "Print" a soft button and the date at the top end; the site, course
+// and glossary on lines under them, then a line before the entries.
+body#page-mod-glossary-print #region-main {
+    .displayprinticon {
+        margin-bottom: 8px;
+        text-align: end;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 36px;
+            padding: 6px 14px;
+            border-radius: 12px;
+            background-color: $salek-button-soft;
+            color: $salek-ink;
+            font-size: .8125rem;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-button-soft-hover;
+            }
+
+            .icon {
+                margin: 0;
+            }
+        }
+
+        // (Moodle's print icon is the link's background: 16px, in the button's start.)
+        a.printicon {
+            /*rtl:ignore*/
+            padding-left: 14px;
+            padding-inline-start: 38px;
+            background-position: 14px center;
+            background-size: 16px 16px;
+
+            [dir="rtl"] & {
+                /*rtl:ignore*/
+                padding-left: 14px;
+                /*rtl:ignore*/
+                background-position: right 14px center;
+            }
+        }
+    }
+
+    .displaydate {
+        margin-bottom: 16px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        text-align: end;
+    }
+
+    .sitename,
+    .coursename,
+    .modname {
+        color: $salek-text-muted;
+        font-size: .875rem;
+        line-height: 1.9;
+
+        .strong,
+        b,
+        strong {
+            color: $salek-text-strong;
+            font-weight: 600;
+        }
+    }
+
+    .modname {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid $salek-line;
+    }
+}
+
+// The quiz's windows: as the review, the summary and the question cards on the page's ground (no
+// sheet), as wide as the site's pages (Boost Union's course content width: 1460px with the 8px at
+// its sides, the page's 48px at the sides; 8px on phones).
+body:is(#page-mod-quiz-comment, #page-mod-quiz-reviewquestion) {
+    #page {
+        padding-inline: 48px;
+
+        @include media-breakpoint-down(md) {
+            padding-inline: 0;
+        }
+    }
+
+    #region-main {
+        --salek-quiz-pad: 28px; // (The question cards' inner space, as on the review.)
+        max-width: 1444px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none;
+        box-shadow: none;
+
+        @include media-breakpoint-down(md) {
+            --salek-quiz-pad: 16px;
+        }
+    }
+
+    table.salek-quiz-summary {
+        @include salek-quiz-card;
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 28px !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: $salek-quiz-card-shadow !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            border-radius: 20px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    #region-main div[role="main"] > div > .mb-3:has(> .salek-quiz-summary),
+    #region-main div[role="main"] > .mb-3:has(> .salek-quiz-summary) {
+        margin-bottom: 20px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .que {
+        @include salek-quiz-card;
+        --salek-quiz-que-pad: var(--salek-quiz-pad);
+        margin: 0 0 20px;
+    }
+
+    #manualgradingform {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}

@@ -10,8 +10,11 @@
 // Only the page's own form (a direct child of the content, or of Moodle's box around it, as on
 // the grader report's preferences), not the small forms inside dropdowns and lists (report
 // filters, bulk actions).
+// Also the forms in dialogues ("New event", …): the same rows, lines and bands, reaching the
+// dialogue's edges.
 body:not(.pagelayout-login) #region-main div[role="main"] > form.mform,
-body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > form.mform {
+body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > form.mform,
+.modal-body > form.mform {
     --salek-sheet-pad: #{$salek-sheet-pad};
     margin-top: $salek-page-header-gap; // After the title (its 12px margin collapses into this) or other content.
 
@@ -112,8 +115,10 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
     // Rows: one field each, a hairline between them (Moodle's 16px gap below each row instead).
     // The line stops at the content edges (the row is 12px wider on each side), so the lines
     // inside a section read differently from the full-width lines between sections.
+    // (Also the fields shown by "Show more…", in Moodle's box of their own.)
     > .fitem:not(fieldset):not([data-groupname="buttonar"]),
-    > fieldset > .fcontainer > .fitem {
+    > fieldset > .fcontainer > .fitem,
+    > fieldset > .fcontainer > #form-advanced-div > .fitem {
         margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
         padding-block: 12px;
         background: linear-gradient($salek-form-row-line, $salek-form-row-line) center bottom / calc(100% - 24px) 1px no-repeat;
@@ -121,6 +126,19 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
         &:last-child {
             background: none;
         }
+    }
+
+    // "Show more…": its own short row, no line under it (the fields it shows follow).
+    > fieldset > .fcontainer > .moreless-actions {
+        background: none;
+    }
+
+    // A checkbox without a name in the label column ("Repeat this event"): in line with the
+    // fields.
+    > fieldset > .fcontainer .fitem > .checkbox {
+        display: flex;
+        align-items: center;
+        min-height: 24px;
     }
 
     // Parts inside a row (date and time lists, groups of fields): 8px apart, also when they
@@ -246,12 +264,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
             font-size: .875rem;
         }
 
-        // Cancel: white with a frame, as the soft grey button disappears on the band.
-        [class~="btn-secondary"] {
-            --bs-btn-bg: #fff;
-            --bs-btn-hover-bg: #{$salek-soft};
-            border: 1px solid $salek-control-border;
-        }
+        // (Cancel: the soft grey button, as everywhere; its grey is dark enough for the band.)
 
         .felement > [class~="w-100"] > [class~="d-flex"] {
             gap: 8px;
@@ -363,9 +376,11 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox:has(
 
 // A form that starts the page (no title above it: bulk user actions, creating a group): its first
 // section's band at the top edge of the sheet (no white strip and no line above it).
-// (Also after an empty element: the group picture's place when creating a group.)
+// (Also after an empty element: the group picture's place when creating a group; and after an
+// activity's empty information box, which is hidden: adding a book's first chapter.)
 body:not(.pagelayout-login) #region-main div[role="main"] > #maincontent:first-child + form.mform,
-body:not(.pagelayout-login) #region-main div[role="main"] > #maincontent:first-child + :empty + form.mform {
+body:not(.pagelayout-login) #region-main div[role="main"] > #maincontent:first-child + :empty + form.mform,
+body:not(.pagelayout-login) #region-main > .activity-header:not(:has(> :not(.activity-information))):not(:has(.activity-information > :not(.activity-details))):not(:has(.activity-details > *)) + div[role="main"] > form.mform:first-child {
     margin-top: calc(-1 * var(--salek-sheet-pad));
 
     > fieldset:first-of-type > [class~="d-flex"]:has(.ftoggler) {
@@ -489,6 +504,124 @@ body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:last-chil
 
         @include media-breakpoint-down(md) {
             padding-block: 0 16px;
+        }
+    }
+}
+
+// The forms in dialogues: no gap above them (no page title), the dialogue's inner space at their
+// sides; the one section's title band left out where Moodle gives it no title (as in "New
+// event"); "Show more…" a soft pill; the title line and the footer with the dialogue's space.
+.modal-body:has(> form.mform) {
+    padding: 0 24px !important; /* stylelint-disable-line declaration-no-important */
+
+    > form.mform {
+        margin-top: 0;
+
+        > fieldset#id_general > [class~="d-flex"]:has(> .ftoggler):not(:has(h3 [class~="fheader"])) {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > fieldset > .fcontainer {
+            padding-top: 4px;
+        }
+
+        .moreless-actions {
+            margin-block: 4px 12px;
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+
+            .moreless-toggler {
+                display: inline-flex;
+                align-items: center;
+                min-height: 32px;
+                padding: 0 14px;
+                border-radius: 999px;
+                background-color: rgba(var(--bs-primary-rgb), .08);
+                color: var(--bs-primary);
+                font-size: .8125rem;
+                font-weight: 600;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: rgba(var(--bs-primary-rgb), .14);
+                }
+            }
+        }
+
+        // "Required": as on the pages, a red dot and the short word (in a dialogue it is inside
+        // the section).
+        .fdescription.required {
+            display: flex;
+            align-items: center;
+            padding-block: 4px 16px;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                content: "";
+                flex: none;
+                width: 6px;
+                height: 6px;
+                margin-inline-end: 8px;
+                border-radius: 50%;
+                background-color: #dc2626;
+            }
+
+            &:lang(fa),
+            &:lang(en) {
+                font-size: 0;
+
+                &::after {
+                    font-size: .8125rem;
+                }
+            }
+
+            &:lang(fa)::after {
+                content: "الزامی";
+            }
+
+            &:lang(en)::after {
+                content: "Required";
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        padding: 0 16px !important; /* stylelint-disable-line declaration-no-important */
+
+        > form.mform {
+            --salek-sheet-pad: 16px;
+        }
+    }
+}
+
+.modal-content:has(> .modal-body > form.mform) {
+    > .modal-header {
+        padding: 18px 24px 16px !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-form-section-line;
+
+        .modal-title {
+            color: $salek-text-strong;
+            font-size: 1.125rem !important; /* stylelint-disable-line declaration-no-important */
+            font-weight: 700;
+        }
+    }
+
+    > .modal-footer {
+        padding: 14px 24px !important; /* stylelint-disable-line declaration-no-important */
+        border-top: 1px solid $salek-form-section-line;
+        background-color: $salek-subtle;
+
+        > * {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            min-width: 110px;
         }
     }
 }

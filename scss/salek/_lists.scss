@@ -15,12 +15,45 @@
         margin-bottom: 12px;
     }
 
+    // A second title after a table (the grades overview's "Courses I am teaching" under "Courses I
+    // am taking"): a section's title, as on the course search page, not Moodle's page-sized h2.
+    div[role="main"] > :is(.table-responsive, .salek-table-scroll, table) ~ h2 {
+        color: $salek-ink;
+        font-size: 1.15rem;
+        font-weight: 600;
+    }
+
     .table-responsive {
         margin-bottom: 16px;
 
         > table {
             margin-bottom: 0;
         }
+    }
+
+    // A table right after the controls above it (a filter form with its button, a single button,
+    // a list, the permissions filter): 16px between them, as after a table (they touched: the
+    // logs, live logs and permissions pages).
+    @each $before in form, button, ".singlebutton", ".singleselect", ".urlselect", ".capabilitysearchui", "[class~=\"btn\"]" {
+        #{$before} + .table-responsive,
+        #{$before} + .salek-table-scroll,
+        #{$before} + table {
+            margin-top: 16px;
+        }
+    }
+
+    // "Reset table preferences" above a table: 8px, it belongs to the table.
+    .resettable + table,
+    .resettable + .salek-table-scroll {
+        margin-top: 8px;
+    }
+
+    // The permissions filter at the start of its line: Moodle gives it the table's width and
+    // centres it, so it stood in from the start when the table is narrower than the page.
+    .capabilitysearchui {
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        max-width: 100%;
+        margin-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
     }
 
     // Label + list (+ button) rows.
@@ -35,9 +68,16 @@
         }
     }
 
+    // A list on its own line starts where the content starts; a second list next to it, or
+    // the groups overview's lists after "Filter groups by:" (a text, which CSS cannot see), 8px
+    // apart from what comes before them.
     .singleselect.d-inline-block {
         margin: 4px 0;
-        margin-inline: 8px 16px; // Also apart from a text before it ("Filter groups by:").
+        margin-inline: 0 16px;
+    }
+
+    .singleselect.d-inline-block + .singleselect.d-inline-block {
+        margin-inline-start: 8px;
     }
 
     .dataformatselector {
@@ -55,14 +95,6 @@
 
     nav.pagination {
         margin-block: 12px;
-    }
-
-    // Info messages ("Nothing to display" and the like): a soft blue note.
-    .alert-info {
-        border-color: #d5e3f8;
-        border-radius: 12px;
-        background-color: #eef4fd;
-        color: #1e3a5f;
     }
 
     // Tabs inside a page (cohorts and other admin pages): an underline, like the tab bar.
@@ -194,6 +226,16 @@ body.path-mod-assign #region-main .gradingtable {
     }
 }
 
+// A column sorted by its title alone (question type, Version; the quiz dialogue's Question):
+// the same small up-and-down arrows after the title while it is not the sorted one, so every
+// sortable column shows it can be sorted (the sorted one shows Moodle's arrow of its direction).
+.question-bank-table thead .sorters > a:not(:has(.icon))::after {
+    @include salek-mask-icon($salek-icon-sort, 12px);
+    margin-inline-start: 4px;
+    color: #94a3b8;
+    vertical-align: -1px;
+}
+
 // Sort button of question bank header cells (theme template core_question/column_header),
 // wherever the question bank list appears (also the quiz dialogue).
 .question-bank-table .sorters-toggle {
@@ -245,18 +287,6 @@ body.path-mod-assign #region-main .gradingtable {
     }
 }
 
-// Assignment grading: the "Quick grading / Actions" row closer to the bar above and the table.
-body.path-mod-assign #region-main {
-    .tertiary-navigation.pt-0 > .d-flex {
-        align-items: center;
-        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
-    }
-
-    .gradingtable.py-3 {
-        padding-top: 12px !important; /* stylelint-disable-line declaration-no-important */
-    }
-}
-
 // Sticky footer of list pages ("Show 10" on assignment grading, the grader report): a hairline
 // and a soft shadow on top, the label and its list on one line.
 #sticky-footer.stickyfooter {
@@ -275,4 +305,134 @@ body.path-mod-assign #region-main {
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */
         }
     }
+}
+
+// Rows that wrap on phones touched each other: the quiz's controls above its questions (maximum
+// grade, Repaginate), the course search when importing from a course, the "View by" label of the
+// grade single view above its buttons.
+#page-mod-quiz-edit .mod_quiz-edit-top-controls > [class~="d-flex"] {
+    row-gap: 8px;
+    margin-bottom: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-1.)
+}
+
+#region-main .ics-search {
+    gap: 8px;
+
+    > [class~="btn"] {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-1: the gap.)
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    #region-main .page-toggler > p[class~="text-uppercase"] {
+        margin-bottom: 6px !important; /* stylelint-disable-line declaration-no-important */ // (Over .my-auto.)
+    }
+}
+
+/* Messages (errors, warnings, notes, confirmations, "Nothing to display"): one soft note for all,
+   in the colour of its kind, with the kind's icon at its start: blue with an "i" (notes), green
+   with a tick (done), amber with a triangle (warnings), red with an "!" (errors). The text in the
+   site's size, links in the message's colour and underlined, paragraphs close together. */
+@mixin salek-alerts {
+    [class~="alert"] {
+        --bs-alert-bg: #eef4fd;
+        --bs-alert-border-color: #d5e3f8;
+        --bs-alert-color: #1e3a5f;
+        --bs-alert-link-color: #1e3a5f;
+        --salek-alert-icon: #{$salek-icon-info};
+        --salek-alert-icon-color: var(--bs-primary);
+        position: relative;
+        padding: 16px 18px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3 of error boxes.)
+        padding-inline-start: 50px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid var(--bs-alert-border-color);
+        border-radius: 16px; // (As the tables and filter cards.)
+        background-color: var(--bs-alert-bg);
+        color: var(--bs-alert-color);
+        font-size: .875rem;
+        line-height: 1.6;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            inset-inline-start: 18px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--salek-alert-icon-color);
+            mask: var(--salek-alert-icon) center / contain no-repeat;
+        }
+
+        > p {
+            margin-bottom: 10px;
+        }
+
+        a:not([class~="btn"]) {
+            color: inherit;
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+            text-underline-offset: 3px;
+
+            &:hover {
+                text-decoration-color: currentColor;
+            }
+        }
+
+        [class~="btn-close"] {
+            top: 50%;
+            padding: 8px;
+            transform: translateY(-50%);
+            margin-inline-end: 6px;
+        }
+    }
+
+    [class~="alert-success"] {
+        --bs-alert-bg: #ecfaf1;
+        --bs-alert-border-color: #c7ecd5;
+        --bs-alert-color: #14532d;
+        --bs-alert-link-color: #14532d;
+        --salek-alert-icon: #{$salek-icon-circle-check};
+        --salek-alert-icon-color: #16a34a;
+    }
+
+    [class~="alert-warning"] {
+        --bs-alert-bg: #fff8e6;
+        --bs-alert-border-color: #f7de9c;
+        --bs-alert-color: #5c3d00;
+        --bs-alert-link-color: #5c3d00;
+        --salek-alert-icon: #{$salek-icon-warning};
+        --salek-alert-icon-color: #d99a00;
+    }
+
+    [class~="alert-danger"] {
+        --bs-alert-bg: #fdf1f1;
+        --bs-alert-border-color: #f6cfcf;
+        --bs-alert-color: #7f1d1d;
+        --bs-alert-link-color: #7f1d1d;
+        --salek-alert-icon: #{$salek-icon-error};
+        --salek-alert-icon-color: #dc2626;
+    }
+
+    [class~="alert-secondary"],
+    [class~="alert-light"] {
+        --bs-alert-bg: #{$salek-note-bg};
+        --bs-alert-border-color: #{$salek-note-border};
+        --bs-alert-color: #{$salek-text};
+        --bs-alert-link-color: #{$salek-text};
+        --salek-alert-icon-color: #64748b;
+    }
+}
+
+@include salek-content-scope {
+    @include salek-alerts;
+}
+
+// (The groups overview's lists after "Filter groups by:", see section 24.)
+#page-group-overview #region-main div[role="main"] > .singleselect.d-inline-block {
+    margin-inline-start: 8px;
+}
+
+// The messages above the page after an action ("Changes saved").
+#user-notifications {
+    @include salek-alerts;
 }

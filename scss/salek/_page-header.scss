@@ -144,6 +144,16 @@
         }
     }
 
+    // The other tertiary navigations in the content (toolbars: assignment grading with its
+    // search and filters, the assignment's overrides list with its button, the forum's search
+    // and button): their start in line with the content, as the ones above (Moodle's
+    // .container-fluid set them 12px in).
+    // (Not the report toolbars with their title inside, which have the title area's insets: see
+    // "Report toolbars" below.)
+    div[role="main"] > .tertiary-navigation:not(:has(.tertiary-navigation-selector, > .navitem:only-child, > [class~="d-flex"] > .navitem:only-child)):not(:has(> [class~="d-flex"] > .navitem > H2)) {
+        padding-inline: 0;
+    }
+
     // Above the content (activity pages): in line with the content, inset like it.
     > .tertiary-navigation:has(.tertiary-navigation-selector, > .navitem:only-child) {
         padding-inline: $salek-space-inset-sm;
@@ -413,6 +423,16 @@ $salek-sheet-page: "body:not(.pagelayout-login):not(.pagelayout-frontpage)" +
         @include salek-title-line;
         width: auto !important; /* stylelint-disable-line declaration-no-important */ // Moodle's .full-width-bottom-border sets one.
         border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+
+        // Report title rows carry Moodle's .ms-0 (!important), which kept the line from the
+        // sheet's start edge: it runs edge to edge.
+        &[class~="ms-0"] {
+            margin-inline-start: calc(-1 * #{$salek-space-inset}) !important; /* stylelint-disable-line declaration-no-important */
+
+            @include media-breakpoint-down(md) {
+                margin-inline-start: calc(-1 * #{$salek-space-inset-sm}) !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
     }
 }
 
@@ -699,4 +719,266 @@ body:not(.pagelayout-login) #region-main > .tertiary-navigation:has(> .navitem:o
 // empty, so it takes no place in the header's rows.
 #page-header .header-extras-container:not(:has(*)) {
     display: none;
+}
+
+/* Report toolbars: Moodle's bar of a title, a search, filter menus ("Filter by name", "Status",
+   "Advanced") and the main button (assignment submissions; the same parts on the gradebook's
+   pages), with a second row of tools above the table ("Quick grading", "Actions", "Reset table
+   preferences").
+   - The bar closes with the line across the sheet of the other title areas.
+   - Its filter menus are fields like the search beside them (the soft grey shape with the
+     arrow chip; white with a ring while open), without Moodle's dividers between them and
+     without the dark frame they showed when clicked.
+   - In the second row "Reset table preferences" at the start, the tools at the end, "Actions"
+     as the site's secondary buttons. */
+$salek-toolbar: '.tertiary-navigation:has(> [class~="d-flex"] > .navitem > H2)';
+
+#region-main {
+    div[role="main"] > #{$salek-toolbar} {
+        @include salek-title-line;
+        width: auto !important; /* stylelint-disable-line declaration-no-important */ // Moodle's .full-width-bottom-border sets one.
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navitem-divider {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        H2 {
+            margin: 0;
+            margin-inline-end: 8px;
+        }
+
+        // The main button ("Grade") at the end.
+        > [class~="d-flex"] > .navitem:last-child:has(> [class~="btn"]) {
+            margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The filter menus.
+    #{$salek-toolbar} :is(.initialswidget, .extrafilters > .dropdown-toggle, .select-menu > .dropdown-toggle) {
+        display: inline-flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex/.d-block.)
+        align-items: center;
+        gap: 6px;
+        min-height: $salek-control-height;
+        padding: 0 46px 0 14px !important; /* stylelint-disable-line declaration-no-important */ // (Over .p-0; the end for the arrow chip.)
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: $salek-field-radius;
+        position: relative;
+        background-color: $salek-field-bg;
+        box-shadow: none;
+        color: $salek-text-strong;
+        font-size: .875rem;
+        font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */ // (Over .fw-bold.)
+        white-space: nowrap;
+
+        // The arrow chip at the end, in place of Moodle's caret.
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            inset-inline-end: 7px;
+            width: 30px;
+            height: 30px;
+            margin: 0;
+            border: 0;
+            background: $salek-select-chip no-repeat center / 30px 30px;
+            transform: translateY(-50%);
+        }
+
+        &:hover {
+            background-color: $salek-field-bg-hover;
+        }
+
+        &:focus-visible,
+        &[aria-expanded="true"] {
+            outline: 0;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+        }
+
+        // "Status" and its value on one line: "Status: All".
+        > div {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [class~="small"] {
+            display: inline !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-block.)
+            color: $salek-text-muted;
+            font-size: inherit;
+
+            &::after {
+                content: ":";
+                margin-inline-end: 4px;
+            }
+        }
+
+        [class~="fw-bold"] {
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // "Advanced": its panel's "Close" as a quiet button beside "Apply".
+    #{$salek-toolbar} .extrafilters .dropdown-menu {
+        padding: 12px;
+
+        [data-action="close"] {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            margin: 0 8px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 14px;
+            border-radius: $salek-button-radius;
+            background-color: $salek-button-soft;
+            color: $salek-text-strong !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The second row.
+    #{$salek-toolbar} + .tertiary-navigation {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > [class~="d-flex"] {
+            align-items: center;
+            gap: 16px !important; /* stylelint-disable-line declaration-no-important */
+            min-height: 40px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navitem-divider {
+            display: none;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+
+            input[type="checkbox"] {
+                margin: 0;
+            }
+
+            label {
+                color: $salek-text;
+                font-size: .875rem;
+            }
+        }
+
+        .action-menu-trigger [class~="btn-outline-primary"] {
+            @include salek-button-soft;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 40px;
+            padding-inline: 16px;
+            border-radius: $salek-button-radius;
+            font-size: .875rem;
+            font-weight: 500;
+        }
+
+        // The table's box below it: "Reset table preferences" moves up to the start of this row.
+        + [class~="box"]:has(> .resettable) {
+            position: relative;
+            padding-top: 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+
+            > .resettable {
+                position: absolute;
+                bottom: 100%;
+                inset-inline-start: 0;
+                display: flex;
+                align-items: center;
+                height: 40px;
+                margin: 0;
+                font-size: .875rem;
+                text-align: start;
+
+                @include media-breakpoint-down(md) {
+                    position: static;
+                    height: auto;
+                    margin-bottom: 8px;
+                }
+            }
+
+            > .resettable + table,
+            > .resettable + .salek-table-scroll {
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+// The welcome on the Dashboard after logging in (templates/core/welcome.mustache): today's date
+// small and quiet, the welcome large and bold, a short line under it.
+#page-header .salek-welcome {
+    margin: 4px 0 8px;
+    padding-inline: $salek-space-inset; // (In line with the text inside the cards under it.)
+
+    @include media-breakpoint-down(md) {
+        padding-inline: $salek-space-inset-sm;
+    }
+
+    .salek-welcome-date {
+        margin-bottom: 4px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    .salek-welcome-title {
+        color: $salek-text-strong;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.3;
+
+        @include media-breakpoint-down(md) {
+            font-size: 1.5rem;
+        }
+    }
+
+    .salek-welcome-sub {
+        margin: 6px 0 0;
+        color: $salek-text-muted;
+        font-size: .9375rem;
+    }
+}
+
+// "Change password" (login/change_password.php): its title is its form's only section's heading,
+// small and without the line; as every page's title: the title's size, the line across the sheet
+// under it, as far under the sheet's top (the form pulled up 24px, as the forms whose first
+// section meets the line).
+#{$salek-sheet-page} #region-main div[role="main"] > #maincontent + form.mform:has(> fieldset:first-of-type:not(.collapsible):only-of-type > [class~="d-flex"] > .ftoggler) {
+    margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+#{$salek-sheet-page} #region-main div[role="main"] > #maincontent + form.mform > fieldset:first-of-type:not(.collapsible):only-of-type > [class~="d-flex"]:has(> .ftoggler) {
+    @include salek-title-line;
+    min-height: 44px;
+    margin-top: 0;
+    margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-2: the form's rows right under the line, as on the other forms.)
+
+    h3 {
+        margin: 0;
+        color: $salek-text-strong;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+}
+
+#{$salek-sheet-page} #region-main div[role="main"] > #maincontent + form.mform > fieldset:first-of-type:not(.collapsible):only-of-type > [class~="d-flex"]:has(> .ftoggler) + .fcontainer {
+    margin-top: 0;
+    padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
 }

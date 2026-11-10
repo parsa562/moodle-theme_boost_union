@@ -45,3 +45,4 @@ $string['salekcoursesoldest'] = 'قدیمی‌ترین';
 $string['salekcoursesnone'] = 'درسی با این جست‌وجو پیدا نشد.';
 $string['salekcoursessearch'] = 'جست‌وجو با نام یا کد درس';
 $string['salekcoursessort'] = 'ترتیب';
+$string['salekwelcomesub'] = 'فعالیت‌های پیش رو و تقویم شما در ادامه آمده است.';

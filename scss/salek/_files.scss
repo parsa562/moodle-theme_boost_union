@@ -4,6 +4,8 @@
    edge and an upload sign; no frame around them. */
 $salek-files-shadow: 0 0 5px 0 rgb(15 23 42 / 8%);
 $salek-files-drop-line: #b6c8e4;
+$salek-icon-plus-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+$salek-icon-folder-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round'%3E%3Cpath d='M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2 2.2h7.4A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z'/%3E%3C/svg%3E");
 $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3M7 8l5-5 5 5M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E");
 
 // The limits ("Maximum file size…") and the accepted types: quiet small lines.
@@ -96,6 +98,15 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 #region-main .filemanager .fp-btn-add [class~="btn"] {
     --bs-btn-color: var(--bs-primary);
     --bs-btn-hover-color: var(--bs-primary);
+
+    // (A plain "+" as big as the other tools' icons; Moodle's is a small filled circle.)
+    .icon {
+        display: none;
+    }
+
+    &::before {
+        @include salek-mask-icon($salek-icon-plus-line, 18px);
+    }
 }
 
 .filemanager .fp-viewbar {
@@ -123,7 +134,24 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     margin-top: 6px;
     font-size: .8125rem;
 
+    // (A line folder in the quiet colour before each folder's name; Moodle's is a black picture.)
+    .fp-path-folder {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: auto;
+        margin: 0;
+        margin-inline-end: 4px;
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+
+        &::before {
+            @include salek-mask-icon($salek-icon-folder-line, 16px);
+            color: $salek-text-muted;
+        }
+    }
+
     .fp-path-folder-name {
+        margin: 0;
         color: $salek-text;
     }
 }

@@ -105,9 +105,9 @@ body.salek-participants-page #region-main div[role="main"] {
     .groupinfobox {
         margin: 0 0 $salek-page-header-gap;
         padding: 20px 24px !important; /* stylelint-disable-line declaration-no-important */
-        border: 1px solid $salek-line;
+        border: 1px solid $salek-note-border;
         border-radius: 12px;
-        background-color: $salek-subtle;
+        background-color: $salek-note-bg;
         box-shadow: none;
 
         h3 {
@@ -216,10 +216,6 @@ body.salek-participants-page #region-main div[role="main"] {
             max-width: 100%;
             overflow-x: auto;
         }
-    }
-
-    .capabilitysearchui {
-        max-width: 100%;
     }
 
     // Groups overview: an empty description box under a grouping name took 32px.

@@ -2359,3 +2359,4 @@ $string['salekcoursesoldest'] = 'Oldest';
 $string['salekcoursesnone'] = 'No courses match your search.';
 $string['salekcoursessearch'] = 'Search by course name or code';
 $string['salekcoursessort'] = 'Sort';
+$string['salekwelcomesub'] = 'Here are your upcoming activities and your calendar.';

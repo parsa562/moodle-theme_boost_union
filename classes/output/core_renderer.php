@@ -956,6 +956,10 @@ class core_renderer extends core_renderer_intermediate {
 
         if (!empty($pagetype) && !empty($homepagetype) && $pagetype == $homepagetype) {
             $header->welcomemessage = \core\user::welcome_message();
+            // Salek: today's date over the welcome (templates/core/welcome.mustache).
+            if ($header->welcomemessage) {
+                $header->salekwelcomedate = userdate(time(), get_string('strftimedaydate', 'langconfig'));
+            }
         }
         return $this->render_from_template('core/full_header', $header);
     }

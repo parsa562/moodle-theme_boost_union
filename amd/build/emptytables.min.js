@@ -7,7 +7,13 @@
 
 /**
  * Empty list tables: Moodle shows only the header row (and a blank filler row) of some tables
- * that have no rows ("Other users"), which looks broken. Add one row saying "Nothing to display".
+ * that have no rows ("Other users"), which looks broken. Add one row saying "Nothing to display";
+ * where Moodle says why itself in a message right after the table (learning plans: "No learning
+ * plans have been created yet"), that message in the row instead, and the message box left out
+ * (there were two messages).
+ *
+ * Also an empty blog (blog/index.php): Moodle shows only its title (and "Add a new entry" in one's
+ * own blog); say there are no entries under the title.
  *
  * @module     theme_boost_union/emptytables
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,6 +32,7 @@ define(['core/str'], function(Str) {
                 return !row.textContent.trim() && !row.querySelector('input, select, img, a');
             });
         });
+        emptyBlog();
         if (!tables.length) {
             return;
         }
@@ -34,11 +41,46 @@ define(['core/str'], function(Str) {
                 const cell = table.tBodies[0].insertRow().insertCell();
                 cell.className = 'salek-empty-cell';
                 cell.colSpan = table.tHead.rows[0].cells.length;
-                cell.textContent = text;
+                const box = table.closest('.table-responsive, .salek-table-scroll') || table;
+                const message = box.nextElementSibling;
+                if (message && message.matches('.alert-info') && !message.querySelector('a, button, form')
+                        && message.textContent.trim()) {
+                    cell.textContent = message.textContent.trim();
+                    message.remove();
+                } else {
+                    cell.textContent = text;
+                }
             });
             return text;
         }).catch(function() {
             // Without the string the table stays as Moodle drew it.
+        });
+    };
+
+    /**
+     * An empty blog: the "no entries" line under the title (above "Add a new entry" when it is there).
+     */
+    const emptyBlog = function() {
+        const main = document.querySelector('#page-blog-index #region-main div[role="main"]');
+        const title = main && main.querySelector(':scope > h2');
+        if (!title) {
+            return;
+        }
+        // Nothing after the title but "Add a new entry".
+        const after = Array.from(main.children).slice(Array.from(main.children).indexOf(title) + 1);
+        if (!after.every(function(el) {
+            return el.matches('.addbloglink');
+        })) {
+            return;
+        }
+        Str.get_string('noentriesyet', 'core_blog').then(function(text) {
+            const note = document.createElement('p');
+            note.className = 'salek-empty-note';
+            note.textContent = text;
+            title.after(note);
+            return text;
+        }).catch(function() {
+            // Without the string the page stays as Moodle drew it.
         });
     };
 

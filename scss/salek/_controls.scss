@@ -245,6 +245,48 @@ html[dir="ltr"] body {
     --salek-field-hover: #fff;
 }
 
+// Moodle 5.3 builds the dashboard's Timeline block in the browser (React): at first the block was
+// empty and short, then the filter bar came, the list after it, and the blocks below jumped down.
+// Keep the block's usual height while it is built (the filter bar and the "No activities"
+// message), and draw the filter bar until Moodle has built it: the grey bar with its two white
+// filter pills (their sizes in English and Persian; the search is the rest of the bar).
+.block_timeline [data-react-component$="/Timeline"] {
+    position: relative;
+    min-height: 193px;
+
+    &:empty {
+        &::before {
+            content: "";
+            display: block;
+            height: 46px;
+            margin-inline: 8px;
+            border-radius: 17px;
+            background-color: $salek-field-bg;
+
+            @include media-breakpoint-down(md) {
+                height: 88px; // The search goes under the filters.
+            }
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            inset-inline-start: 13px;
+            width: 129px;
+            height: 36px;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 135px 0 0 #fff;
+
+            html[lang="fa"] & {
+                width: 102px;
+                box-shadow: -108px 0 0 #fff;
+            }
+        }
+    }
+}
+
 // A row of filters and a search (the dashboard's timeline): one grey bar, the filters white
 // pills on it, the search the rest of the bar, no line under it.
 .block_timeline [data-region="timeline"] > [class~="px-2"] {
@@ -320,6 +362,18 @@ html[dir="ltr"] body {
     @include salek-dropdown-menu;
 }
 
+// The tab bar's "More" list opens under the tab, as in 5.0: Moodle 5.3's list is shorter, so when
+// it did not fit under the tab (edit mode, a course image above) it opened above it, over the
+// course image. (!important over the position Moodle writes on the element.)
+/* stylelint-disable declaration-no-important */
+.secondary-navigation .dropdownmoremenu > .dropdown-menu[data-popper-placement^="top"] {
+    top: 100% !important;
+    bottom: auto !important;
+    margin-top: 2px !important;
+    transform: none !important;
+}
+/* stylelint-enable declaration-no-important */
+
 /* 7. Long separator lines stay, as light hairlines. */
 
 .block_myoverview .block-myoverview.block-cards {
@@ -340,6 +394,12 @@ html[dir="ltr"] body {
     > hr {
         margin-bottom: 1.9rem;
     }
+}
+
+// The same spacing for the link lists of the course's Reports, Course reuse and penalty pages
+// (core/report_link_page).
+#region-main div[role="main"] > .container-fluid > div > ul.list-unstyled[class~="ms-0"] {
+    line-height: 1.9;
 }
 
 /* 8. Slightly more line spacing for reading text (Persian script needs it most). */
@@ -594,26 +654,64 @@ body:not(.pagelayout-frontpage) #page.drawers #region-main {
         }
     }
 
+    // Chosen values: soft pills with the name first and a small round remove button (x) after it
+    // (Moodle writes a "×" before the name). Moodle marks the chip the keyboard would act on all the
+    // time; the line around it shows only while the chips have the keyboard focus.
     .form-autocomplete-selection [role="option"][data-value] {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 6px 10px;
-        border-radius: 6px;
-        background-color: rgba(var(--bs-primary-rgb), .1) !important; /* stylelint-disable-line declaration-no-important */
-        color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
-        font-size: .875rem !important; /* stylelint-disable-line declaration-no-important */
+        gap: 8px;
+        min-height: 32px;
+        padding: 3px 13px;
+        border: 1px solid rgba(var(--bs-primary-rgb), .2);
+        border-radius: 999px;
+        background-color: rgba(var(--bs-primary-rgb), .08) !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-ink !important; /* stylelint-disable-line declaration-no-important */
+        font-size: .8125rem !important; /* stylelint-disable-line declaration-no-important */
         font-weight: 500;
         line-height: 1.4;
+        white-space: normal;
+        cursor: pointer;
+        box-shadow: none;
+        transition: background-color .15s ease;
+
+        > span[aria-hidden="true"] {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            order: 1;
+            width: 18px;
+            height: 18px;
+            margin-inline-end: -6px;
+            border-radius: 50%;
+            background-color: rgba(var(--bs-primary-rgb), .14);
+            color: var(--bs-primary);
+            font-size: 0;
+            transition: background-color .15s ease, color .15s ease;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-close, 10px);
+            }
+        }
 
         &:hover {
-            background-color: rgba(var(--bs-primary-rgb), .16) !important; /* stylelint-disable-line declaration-no-important */
-        }
+            background-color: rgba(var(--bs-primary-rgb), .14) !important; /* stylelint-disable-line declaration-no-important */
 
-        // Moodle marks the chip the keyboard is on with a wide focus ring; a thin line is enough.
-        &[data-active-selection="true"] {
-            box-shadow: inset 0 0 0 1px var(--bs-primary);
+            > span[aria-hidden="true"] {
+                background-color: var(--bs-primary);
+                color: #fff;
+            }
         }
+    }
+
+    .form-autocomplete-selection:focus-visible [role="option"][data-active-selection="true"] {
+        box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .45);
+    }
+
+    .form-autocomplete-selection:focus-visible {
+        outline: 0;
+        box-shadow: none;
     }
 
     .form-autocomplete-suggestions {
@@ -738,3 +836,4 @@ body:not(.pagelayout-frontpage) #page.drawers #region-main {
 :where(.modal-dialog) [class~="btn-icon"].icons-collapse-expand {
     @include salek-round-toggle;
 }
+

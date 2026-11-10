@@ -366,6 +366,20 @@ a:not([class]),
     box-sizing: border-box;
 }
 
+/* Salek: drawers on tablets (md). Below lg, Moodle 5.3 opens them as modals under the top navbar
+   (from its height down) and keeps the navbar over them. The Salek navbar floats with space
+   around it, so it covered the drawer's top. As on Moodle 5.0, the drawers there cover the full
+   height, over the navbar; the drawer's backdrop follows its z-index, so it dims the navbar too.
+   Phones keep Moodle's layout: their navbar is a plain bar at the top. */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .drawer-left,
+    .drawer-right {
+        top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        height: 100vh !important; /* stylelint-disable-line declaration-no-important */
+        z-index: $zindex-fixed + 5;
+    }
+}
+
 /* Salek: full-height desktop drawers and unified navbar positioning.
    On desktop, the navbar keeps one positioning model at all widths.
    It follows Moodle's drawer state and uses Moodle's native drawer widths. */
@@ -477,6 +491,14 @@ html[dir="rtl"] #theme_boost-drawers-blocks {
     clip-path: inset(0 100% 0 0);
 }
 
+/* Salek: the drawer above the navbar (Moodle's 1015 is under the navbar's 1022): while it closes,
+ * the navbar and the page widen under it, instead of the navbar widening over it before it goes.
+ * (Open, the navbar ends before it anyway.)
+ */
+#theme_boost-drawers-blocks {
+    z-index: 1035 !important; /* stylelint-disable-line declaration-no-important */ // (As the left drawers: over the navbar, and over the page's dark backdrop when it lies over the page.)
+}
+
 #theme_boost-drawers-blocks.show,
 html[dir="rtl"] #theme_boost-drawers-blocks.show {
     visibility: visible !important; /* stylelint-disable-line declaration-no-important */
@@ -518,6 +540,11 @@ html[dir="rtl"] #theme_boost-drawers-blocks.show {
     font-size: 13.5px !important;
     font-weight: 600 !important;
     color: #1e293b !important;
+}
+
+/* Salek: the line under a block's title as light as the one under the drawer's top. */
+#theme_boost-drawers-blocks .block-header {
+    border-bottom-color: $salek-line !important; /* stylelint-disable-line declaration-no-important */
 }
 
 #theme_boost-drawers-blocks .add_block_button .block-add {
@@ -583,6 +610,17 @@ html[dir="rtl"] #theme_boost-drawers-blocks.show {
         &:hover {
             background-color: var(--bs-gray-300);
         }
+
+        // (Moodle gives a toggle the focus when its drawer closes: no dark 4px ring then; for the
+        // keyboard a light ring in the brand colour, as the site's other buttons.)
+        &:focus:not(:focus-visible) {
+            outline: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:focus-visible {
+            outline: 2px solid rgba(var(--bs-primary-rgb), .45) !important; /* stylelint-disable-line declaration-no-important */
+            outline-offset: 2px;
+        }
     }
 
     // The icons of Moodle 5.0: a list for the course index, an arrow towards the blocks drawer
@@ -626,9 +664,205 @@ html[dir="rtl"] #theme_boost-drawers-blocks.show {
             padding-inline-end: 20px;
         }
     }
+
+    // Phones: the tabs float over the content, so smaller and see-through, and only while the page
+    // is at its top: they fade out over the first 120px of scrolling (browsers without
+    // scroll-driven animations keep them).
+    @include media-breakpoint-down(md) {
+        .btn,
+        .btn:hover {
+            padding: 10px;
+            background-color: rgb(222 226 230 / 72%);
+            box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
+            backdrop-filter: blur(6px);
+        }
+
+        &.drawer-left-toggle .btn,
+        &.drawer-left-toggle .btn:hover {
+            padding-inline: 6px 9px;
+        }
+
+        &.drawer-right-toggle .btn,
+        &.drawer-right-toggle .btn:hover {
+            padding-inline: 9px 6px;
+        }
+
+        .btn::before {
+            width: 14px;
+            height: 14px;
+            margin-block: 2px;
+            opacity: .8;
+        }
+
+        @supports (animation-timeline: scroll()) {
+            animation: salek-drawer-toggle-away linear both;
+            animation-timeline: scroll(root block);
+            animation-range: 0 120px;
+        }
+    }
+}
+
+@keyframes salek-drawer-toggle-away {
+    to {
+        visibility: hidden;
+        opacity: 0;
+    }
 }
 
 // The footer "?" button: Moodle 5.3's .text-bg-secondary makes its icon black.
 .btn-footer-popover {
     color: var(--bs-body-color) !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Phones (under 576px Moodle writes the footer's links under the content instead of the "?"
+// button): a card on the page's ground, as the others, its links as rows (icon in the brand
+// colour, the text in the ink colour), a hairline between the groups, "Powered by Moodle" small
+// and quiet; groups with nothing to show (as the site's extra script) left out.
+@include media-breakpoint-down(sm) {
+    // The card as far under the content and over the bottom bar as the page's cards are from each
+    // other: 16px (the course page's sections), 24px where the cards are blocks (dashboard) or the
+    // profile's groups. (Moodle's space under the content, 48px for the "?" button, the inner
+    // spaces of the boxes around the content and the last card's own space under it taken off.)
+    body:not(.theme_boost-union-footerbuttonmobile) #page.drawers {
+        --salek-footer-gap: 16px;
+
+        .main-inner {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        #page-content {
+            padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (The last of them: Moodle writes skip links after the blocks.)
+        #region-main .course-content > div > ul.section-list > .course-section:not(:has(~ .course-section)),
+        #block-region-content > .block:not(:has(~ .block)),
+        #region-main .profile_tree > .node_category:not(:has(~ .node_category)) {
+            margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:has(#block-region-content > .block) {
+            --salek-footer-gap: 24px;
+        }
+
+        &:has(#region-main .profile_tree > .node_category) {
+            --salek-footer-gap: 24px;
+        }
+    }
+
+    #page-footer.footer-popover {
+        margin-top: var(--salek-footer-gap, 16px);
+        padding: 0 8px calc(var(--salek-footer-gap, 16px) - 15px); // (As the content's cards; under it the bar's 60px and 15px of #page's 75px.)
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */ // (Over .bg-white.)
+
+        .footer-content-popover {
+            margin: 0;
+            padding: 4px 0;
+            border-radius: $salek-card-radius;
+            background-color: $salek-surface;
+            box-shadow: $salek-card-shadow;
+        }
+
+        // (A line over each group after the first, so a group left out leaves no line.)
+        .footer-section {
+            padding: 10px 20px !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            & ~ .footer-section {
+                border-top: 1px solid $salek-line;
+            }
+
+            &:not(:has(> :not(script))) {
+                display: none;
+            }
+
+            > div {
+                padding: 0;
+            }
+        }
+
+        .tool_usertours-resettourcontainer:empty {
+            display: none;
+        }
+
+        .footer-support-link a,
+        .tool_dataprivacy a,
+        .tool_usertours-resettourcontainer a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 40px;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            .icon {
+                width: 16px;
+                margin: 0;
+                color: var(--bs-primary);
+                font-size: 15px;
+            }
+
+            // (The "opens in a new window" arrow: small and quiet, after the text.)
+            .icon.ms-1 {
+                margin-inline-start: -4px !important; /* stylelint-disable-line declaration-no-important */
+                color: $salek-text-muted;
+                font-size: 11px;
+            }
+        }
+
+        // "Powered by Moodle", the version.
+        .footer-section:has(> div > a[href="https://moodle.com"]:only-child) {
+            padding-block: 14px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .75rem;
+            line-height: 1.7;
+        }
+    }
+}
+
+/* Salek: the blocks drawer's close button, on every page, as the course index's and the quiz
+   navigation's: a small round white button with a soft shadow and a thin ×, at the end of the
+   drawer's top line, on the navbar's middle (Moodle: a panel icon at the line's start). */
+#theme_boost-drawers-blocks .drawerheader {
+    .drawerheadertop {
+        flex-direction: row !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's row-reverse.)
+        justify-content: flex-end;
+        align-items: flex-start;
+        min-height: 0;
+        padding: 27px 16px 26px !important; /* stylelint-disable-line declaration-no-important */ // (Under the header's own 16px: on the navbar's middle, 54px down; the line under it at the navbar's bottom, as in the quiz navigation.)
+    }
+
+    .drawerheading:empty,
+    .drawerheading:not(:has(*)):not(:has(~ *:empty)) {
+        flex: 1;
+    }
+
+    .drawertoggle {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border-radius: 50%;
+        background-color: rgb(255 255 255 / 85%) !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: 0 1px 3px rgb(15 23 42 / 8%), 0 0 0 1px rgb(15 23 42 / 4%);
+        color: $salek-ink;
+
+        > span {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-close, 10px);
+        }
+
+        &:hover {
+            background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:focus:not(:focus-visible) {
+            box-shadow: 0 1px 3px rgb(15 23 42 / 8%), 0 0 0 1px rgb(15 23 42 / 4%) !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
 }
