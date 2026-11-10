@@ -1,0 +1,151 @@
+// Salek: a book's table of contents, in the blocks drawer (mod/book/view.php). As the quiz's
+// navigation (_quiz-attempt.scss, the drawer's top): no box; the title on the drawer's top line with
+// the close button; the chapters a list of rows (a soft background under the mouse), the chapter
+// shown a light blue row, the subchapters indented.
+
+#theme_boost-drawers-blocks .block_book_toc {
+    // (Over the drawer's blocks' box.)
+    &.card {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background: none !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+
+        > .card-body {
+            padding: 4px 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .book_toc {
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        ul ul {
+            margin-top: 2px;
+            padding-inline-start: 16px;
+        }
+
+        li {
+            margin: 0 0 2px;
+        }
+
+        // A chapter: a row; the one shown (Moodle's <strong>) light blue.
+        li > :is(a, strong) {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-decoration: none;
+        }
+
+        li > a:hover {
+            background-color: $salek-soft;
+        }
+
+        li > strong {
+            background-color: rgba(var(--bs-primary-rgb), .08);
+            color: var(--bs-primary);
+            font-weight: 700;
+        }
+
+        // (A hidden chapter, seen by teachers: quieter.)
+        li > .dimmed_text,
+        li > a.dimmed {
+            color: $salek-text-muted;
+        }
+
+        // (When editing: the chapter's actions after its name, small.)
+        .action-list {
+            display: inline-flex;
+            gap: 2px;
+            margin-inline-start: 6px;
+
+            .icon {
+                margin: 0;
+                font-size: .75rem;
+            }
+        }
+    }
+}
+
+// A chapter's previous and next arrows (mod/book/view.php). Moodle floats them 50px outside the
+// content (half outside the white sheet here) and a negative margin keeps their row from taking
+// room; the site's rule for the action bars zeroes that margin, which left a big empty band above
+// the chapter's title. Here: their row takes no room; the arrows round soft buttons inside the
+// sheet, beside the chapter (its text set in to leave them room); on phones a row of their own
+// above the chapter's title (floating, they lay over the text).
+#page-mod-book-view #region-main {
+    #mod_book-chaptersnavigation {
+        height: 0;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        z-index: 2;
+
+        .tertiary-navigation {
+            padding: 0;
+        }
+
+        .btn-previous,
+        .btn-next {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 0;
+            border-radius: 50% !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-field-bg;
+            color: $salek-text-strong;
+            transform: translateY(64px);
+
+            &:hover {
+                background-color: $salek-field-bg-hover;
+            }
+
+            .icon {
+                margin: 0;
+                font-size: .875rem;
+            }
+        }
+    }
+
+    // (The chapter's text clear of the arrows: 40px and 16px on each side.)
+    #mod_book-chapter {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-inline: 56px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    @include media-breakpoint-down(md) {
+        #mod_book-chaptersnavigation {
+            position: static;
+            height: auto;
+            margin-bottom: 8px !important; /* stylelint-disable-line declaration-no-important */
+
+            // (Moodle's -52px under each arrow, which pulled the title up under them.)
+            .navitem {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            // (The next chapter's arrow at the row's other end, as Moodle's .ms-auto.)
+            .navitem[class~="ms-auto"] {
+                margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            .btn-previous,
+            .btn-next {
+                transform: none;
+            }
+        }
+
+        #mod_book-chapter {
+            padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding-top: 8px !important; /* stylelint-disable-line declaration-no-important */ // (The title 16px under the arrows.)
+        }
+    }
+}

@@ -53,7 +53,14 @@
         }
     }
 
-    // Open section: tinted title in the brand colour.
+    // In edit mode Moodle leaves 1em under every section as a drop zone; an empty section's title
+    // row is already the drop zone, so the space is not left under it.
+    .courseindex-section.dropready .courseindex-item-content:not(:has(li)) {
+        padding-bottom: 0;
+    }
+
+    // Open section: tinted title in the brand colour (the chevron or the section says it is open).
+    > .courseindex-section[aria-expanded="true"] > .courseindex-section-title,
     > .courseindex-section > .courseindex-section-title:has(.courseindex-chevron[aria-expanded="true"]) {
         background-color: $ci-open;
         color: var(--bs-primary);
@@ -339,6 +346,129 @@
         &:hover {
             border-color: var(--bs-primary);
             background-color: rgba(var(--bs-primary-rgb), .05);
+        }
+    }
+}
+
+/* The course index's title section as a tinted band (the user's reference design): a gradient from
+   light blue to light yellow over the drawer's full width, the course name on up to three lines,
+   a round close button, and under it the number of sections and "Collapse all" as a quiet link on
+   one line (templates/theme_boost/courseindexdrawercontrols.mustache). The block drawer keeps the
+   plain title section above. */
+#theme_boost-drawers-courseindex .drawerheader {
+    margin: 0;
+    padding: 21px 12px 21px 16px !important; /* stylelint-disable-line declaration-no-important */
+    background: $salek-card-gradient;
+
+    html[dir="rtl"] & {
+        background: $salek-card-gradient-rtl;
+    }
+
+    .drawerheadertop {
+        align-items: flex-start;
+        gap: 10px;
+        min-height: 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 0;
+    }
+
+    .drawerheading {
+        justify-content: flex-start;
+        margin: 0;
+    }
+
+    #courseindexdrawerheading {
+        width: 100%;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over a start margin from Moodle.)
+    }
+
+    .drawerheading .courseindex-link {
+        display: -webkit-box;
+        overflow: hidden;
+        white-space: normal;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        font-size: .9375rem;
+        line-height: 1.7;
+    }
+
+    .draweractions {
+        align-self: flex-start;
+    }
+
+    .drawertoggle {
+        width: 22px;
+        height: 22px;
+        margin-top: -1px;
+        border-radius: 50%;
+        background-color: rgb(255 255 255 / 85%) !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+        color: $salek-ink;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-close, 10px);
+        }
+
+        &:hover {
+            background-color: #fff !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (Moodle puts the focus on it when the drawer opens: its shadow kept then, the
+        // keyboard's focus ring only for the keyboard.)
+        &:focus:not(:focus-visible) {
+            box-shadow: 0 1px 3px rgb(15 23 42 / 8%) !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    #courseindexdrawercontrols {
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 20px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-message-muted;
+        font-size: .8125rem;
+    }
+
+    .salek-courseindex-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        &::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #f5b301;
+        }
+
+        &::after {
+            content: "·";
+            margin-inline-start: 2px;
+            color: #94a3b8;
+        }
+    }
+
+    .courseindex-collapsemenu {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        font-size: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+        text-decoration-color: rgba(var(--bs-primary-rgb), .35);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 5px;
+
+        > span::before {
+            display: none;
+        }
+
+        &:hover {
+            border-color: transparent;
+            background-color: transparent;
+            text-decoration-color: var(--bs-primary);
         }
     }
 }

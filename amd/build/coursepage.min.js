@@ -10,6 +10,10 @@
  * - counts in the title rows of sections ("2 lessons · 5 activities") and lessons ("3 activities");
  * - a meta line under each activity name with its type and its dates side by side, so rows
  *   with and without dates have the same height.
+ * - room in the first section's title row for "Collapse all / Expand all", which Moodle 5.3 puts
+ *   above the sections and the theme CSS places over that row: the space the button takes at the
+ *   row's end (with a gap) as the CSS variable --salek-collapseall-space, kept up to date when the
+ *   button's text or the row's width changes.
  * Kept up to date when the course format re-draws parts of the page (editing, moving, collapsing).
  *
  * @module     theme_boost_union/coursepage
@@ -32,6 +36,23 @@ define(['core/str'], function(Str) {
         if (!root) {
             return;
         }
+        const toggleAll = document.querySelector('#region-main .section-collapsemenu');
+        const firstHeader = root.querySelector(
+            'ul[data-for="course_sectionlist"] > li.course-section:first-child > .section-item > .course-section-header');
+        if (toggleAll && firstHeader && window.ResizeObserver) {
+            const main = toggleAll.closest('#region-main');
+            const observer = new ResizeObserver(function() {
+                // From the button's start edge to the row's end edge, and a gap.
+                const button = toggleAll.getBoundingClientRect();
+                const row = firstHeader.getBoundingClientRect();
+                const rtl = window.getComputedStyle(firstHeader).direction === 'rtl';
+                const space = rtl ? button.right - row.left : row.right - button.left;
+                main.style.setProperty('--salek-collapseall-space', Math.max(0, Math.round(space + 12)) + 'px');
+            });
+            observer.observe(toggleAll);
+            observer.observe(firstHeader);
+        }
+
         const persian = (document.documentElement.lang || '').startsWith('fa');
         const number = (n) => (persian ? n.toLocaleString('fa-IR') : String(n));
 

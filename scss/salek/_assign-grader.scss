@@ -1,0 +1,775 @@
+// Salek: the assignment's grader (mod/assign/view.php?action=grader), a page of the "embedded"
+// layout: no navbar, its own three parts on the page's ground. Moodle places them (the top bar 85px
+// high, the bar at the bottom 60px, the grading between them, see mod/assign/styles.css); the
+// theme makes the top bar taller ($salek-ag-bar, the parts under it moved down with it) and gives
+// them the site's design: the top bar and the bottom bar white with a line, the student in the
+// middle of the top bar (photo round, name, and under it e-mail and due date), round arrow buttons
+// around the student field; the grading a card with a part for the submission (its states as
+// pills) and one for the grade, each with its title on a line of its own. The fields and buttons
+// are the site's (the embedded layout's content is in salek-content-scope).
+
+$salek-ag-bar-shadow: 0 0 8px rgb(15 23 42 / 6%);
+$salek-ag-bar: 108px;
+$salek-ag-pad: 32px;
+// (A page with lines: the submission's icon.)
+$salek-ag-icon-file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 2v6h6M16 13H8M16 17H8M10 9H8'/%3E%3C/svg%3E");
+
+body.path-mod-assign.pagelayout-embedded {
+    background-color: $salek-band-bg;
+
+    // The top bar.
+    @media (min-width: 768px) {
+        [data-region="grading-navigation-panel"] {
+            height: $salek-ag-bar;
+        }
+
+        [data-region="review-panel"],
+        [data-region="resizer"],
+        [data-region="grade-panel"] {
+            top: $salek-ag-bar;
+        }
+    }
+
+    [data-region="grading-navigation-panel"] {
+        z-index: 2;
+        border-bottom: 1px solid $salek-line;
+        background-color: $salek-surface;
+        box-shadow: $salek-ag-bar-shadow;
+    }
+
+    [data-region="grading-navigation-panel"] > .container-fluid {
+        height: 100%;
+        padding: 0;
+    }
+
+    [data-region="grading-navigation"] {
+        align-items: center;
+        height: 100%;
+        margin: 0;
+        padding: 0 16px;
+
+        > [class*="col-"] {
+            padding-block: 0;
+        }
+    }
+
+    // At its start: the course, the assignment (with its settings' pen), "View all submissions".
+    // (A line each, the assignment's pen beside it.)
+    [data-region="assignment-info"] {
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: start;
+        align-items: center;
+        gap: 7px 8px;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        line-height: 1.4;
+        text-align: start;
+
+        > br {
+            display: none;
+        }
+
+        > a:first-child,
+        > a[href*="action=grading"] {
+            grid-column: 1 / -1;
+        }
+
+        a {
+            color: $salek-text-muted;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        // ("View all submissions": the way back, in the brand's colour.)
+        a[href*="action=grading"] {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: .75rem;
+        }
+    }
+
+    // In the middle: the student.
+    [data-region="user-info"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+
+        h4 {
+            margin: 0;
+            min-width: 0;
+        }
+
+        // (The name on the first line, the e-mail and the due date on the second.)
+        a {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto auto;
+            justify-content: start;
+            align-content: center;
+            row-gap: 5px;
+            min-height: 48px;
+            padding-inline-start: 56px;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.4;
+            text-align: start;
+            text-decoration: none;
+        }
+
+        .img-rounded,
+        .userpicture {
+            position: absolute;
+            top: 50%;
+            inset-inline-start: 0;
+            float: none;
+            width: 44px;
+            height: 44px;
+            margin: -22px 0 0;
+            box-shadow: 0 0 0 3px $salek-surface, 0 0 0 4px $salek-line;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        em {
+            display: block;
+            grid-row: 2;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 500;
+
+            small {
+                font-size: inherit;
+            }
+        }
+
+        em + em {
+            margin-inline-start: 10px;
+            padding-inline-start: 10px;
+            border-inline-start: 1px solid $salek-field-border;
+        }
+    }
+
+    // At its end: the student field between round arrow buttons; under it the count, the filter
+    // and "Reset table preferences".
+    [data-region="user-selector"] .alignment {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 10px 8px;
+        float: none;
+        width: auto;
+        max-width: 340px;
+        margin: 0;
+        margin-inline-start: auto;
+
+        > br {
+            display: none;
+        }
+
+        // (The count, the filter and the reset on a line of their own, under the field.)
+        &::after {
+            content: "";
+            flex-basis: 100%;
+            order: 2;
+        }
+
+        > :is([data-region="user-count"], [data-region="user-filters"], [data-region="user-resettable"]) {
+            order: 3;
+        }
+
+        [data-region="input-field"] {
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+
+            // (While the page loads, before Moodle turns it into the search field: Moodle's bare
+            // select, small; as the empty field it becomes.)
+            > select {
+                width: 100%;
+                height: 40px;
+                border: 0;
+                border-radius: $salek-field-radius;
+                background: $salek-field-bg;
+                color: transparent;
+                appearance: none;
+            }
+
+            // (Moodle adds a loading icon after the field while it fetches the list: on a line of
+            // its own it made the bar taller for a moment, everything in it moving. In the field.)
+            > .loading-icon {
+                position: absolute;
+                top: 20px;
+                inset-inline-end: 46px;
+                margin: 0;
+                transform: translateY(-50%);
+            }
+        }
+
+        .form-autocomplete-input {
+            display: block !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            input {
+                width: 100%;
+                height: 40px;
+                min-height: 40px;
+                margin: 0;
+            }
+        }
+
+        .form-autocomplete-downarrow {
+            top: 50%;
+            inset-inline-end: 8px;
+            transform: translateY(-50%);
+        }
+
+        [data-region="user-count"] {
+            color: $salek-text-muted;
+            font-size: .75rem;
+        }
+
+        [data-region="user-count"] small {
+            font-size: inherit;
+        }
+
+        [data-region="user-filters"],
+        [data-region="user-resettable"] {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    // The arrows: round soft buttons with a chevron (pointing along the reading direction).
+    [data-region="user-selector"] :is([data-action="previous-user"], [data-action="next-user"]) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 36px;
+        height: 36px;
+        margin: 0;
+        border-radius: 50%;
+        background-color: $salek-soft;
+        color: $salek-ink;
+        font-size: 0;
+        text-decoration: none;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-chevron, 16px);
+        }
+
+        &:hover {
+            background-color: $salek-soft-hover;
+        }
+    }
+
+    [data-region="user-selector"] [data-action="previous-user"]::before {
+        /*rtl:ignore*/
+        transform: scaleX(-1);
+    }
+
+    [dir="rtl"] & {
+        [data-region="user-selector"] [data-action="previous-user"]::before {
+            /*rtl:ignore*/
+            transform: none;
+        }
+
+        [data-region="user-selector"] [data-action="next-user"]::before {
+            /*rtl:ignore*/
+            transform: scaleX(-1);
+        }
+    }
+
+    // The filter's menu: a card as the site's menus.
+    [data-region="configure-filters"] {
+        border: 0;
+        border-radius: 16px;
+        background-color: $salek-surface;
+        box-shadow: $salek-menu-shadow;
+
+        &::before,
+        &::after {
+            display: none;
+        }
+    }
+
+    // The grading, between the bars: a card on the page's ground.
+    [data-region="grade-panel"] {
+        padding: 28px 16px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent;
+    }
+
+    // (Each part's title on a white line of its own across the card, a line under it.)
+    @mixin salek-ag-part-title {
+        margin: 0 calc(-1 * var(--salek-ag-pad)) 20px;
+        padding: 18px var(--salek-ag-pad);
+        border-bottom: 1px solid $salek-line;
+    }
+
+    // (While a student's grading loads: only Moodle's loading icon in the card, on its middle, the
+    // card as high as a short grading.)
+    [data-region="grade"]:has(> img[src*="loading"]:only-child) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+        border-radius: $salek-card-radius !important; /* stylelint-disable-line declaration-no-important */
+        clip-path: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [data-region="grade"] {
+        --salek-ag-pad: #{$salek-ag-pad};
+        overflow: clip;
+
+        @media (max-width: 767.98px) {
+            --salek-ag-pad: 16px;
+        }
+
+        padding: 0;
+        border-radius: $salek-card-radius;
+        background-color: $salek-surface;
+        box-shadow: $salek-card-shadow;
+
+        h3 {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.0625rem;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+    }
+
+    // (The parts' titles: an icon in a soft blue square before each. The square is the title's
+    // ::before, the icon its ::after over the square.)
+    @mixin salek-ag-title-icon($icon, $start) {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        &::before {
+            content: "";
+            flex: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            background-color: rgba(var(--bs-primary-rgb), .1);
+        }
+
+        &::after {
+            @include salek-mask-icon($icon, 18px);
+            position: absolute;
+            top: 50%;
+            inset-inline-start: calc(#{$start} + 8px);
+            margin-top: -9px;
+            background-color: var(--bs-primary);
+        }
+    }
+
+    [data-region="grade"] div.submissionstatustable > h3 {
+        @include salek-ag-title-icon($salek-ag-icon-file, var(--salek-ag-pad));
+    }
+
+    [data-region="grade"] #id_gradeheader > .d-flex:first-of-type h3 {
+        @include salek-ag-title-icon($salek-icon-circle-check, 0px);
+    }
+
+    // The submission: its title; its states as pills on a line (the plugins' parts, as the comments,
+    // under them).
+    [data-region="grade"] div.submissionstatustable {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 0 var(--salek-ag-pad) 28px;
+
+        > * {
+            flex-basis: 100%;
+        }
+
+        > h3 {
+            @include salek-ag-part-title;
+            flex-basis: calc(100% + 2 * var(--salek-ag-pad)); // (Across the card: over its padding.)
+            margin-bottom: 12px;
+        }
+
+        > :is(.submissionstatus, [class^="submissionstatus"], .submissionnotgraded, .submissiongraded,
+                .overdue, .latesubmission, .earlysubmission, .submissioneditable, .submissionnoteditable) {
+            flex-basis: auto;
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background-color: $salek-soft;
+            color: $salek-ink;
+            font-size: .8125rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        > :is(.submissionstatussubmitted, .submissiongraded, .earlysubmission) {
+            background-color: #e3f6ea;
+            color: #0f6b37;
+        }
+
+        > :is(.submissionnotgraded, .overdue, .latesubmission) {
+            background-color: #fdecec;
+            color: #b42318;
+        }
+
+        > .assignsubmission > .box {
+            padding: 12px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The grade: its title on a line as the submission's (a line above it too, between the parts).
+    [data-region="grade"] .gradingform {
+        padding: 0 var(--salek-ag-pad) 12px !important; /* stylelint-disable-line declaration-no-important */
+
+        // (Moodle's 15px at the sides on phones: the card has its own.)
+        > form {
+            padding-inline: 0;
+        }
+
+        #id_gradeheader {
+            display: block;
+
+            > .d-flex:first-of-type {
+                @include salek-ag-part-title;
+                border-top: 1px solid $salek-line;
+            }
+        }
+
+        .fitem {
+            border: 0;
+            background: none;
+
+            // (Its name, then the field a little lower.)
+            > .col-form-label {
+                padding-bottom: 10px;
+            }
+        }
+
+        #id_gradeheader > .d-flex:first-of-type {
+            margin-bottom: 26px;
+        }
+
+        // ("Current grade in gradebook": its value under its name.)
+        .fitem_fstatic .form-control-static {
+            color: $salek-text-strong;
+            font-weight: 600;
+        }
+
+        // (The form's own line at its end: the card ends it.)
+        hr,
+        .fcontainer + * {
+            border: 0;
+        }
+    }
+
+    // The bottom bar: white with a line, the buttons in its middle.
+    [data-region="grade-actions-panel"] {
+        z-index: 2;
+        border-top: 1px solid $salek-line;
+        background-color: $salek-surface;
+        box-shadow: $salek-ag-bar-shadow;
+    }
+
+    [data-region="grade-actions"] {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 16px;
+
+        > .d-flex {
+            flex: 1;
+        }
+
+        [data-region="grading-actions-form"] {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        [data-region="grading-actions-form"] label {
+            margin: 0;
+            margin-inline-end: 8px;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+        }
+
+        [class~="btn"]:not(.help-icon) {
+            min-height: 40px;
+            margin: 0;
+        }
+
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Phones: Moodle puts the parts one under the other.
+    @media (max-width: 767px) {
+        [data-region="grading-navigation"] {
+            gap: 12px;
+            padding: 12px 16px;
+        }
+
+        [data-region="user-info"] {
+            justify-content: center;
+        }
+
+        [data-region="user-selector"] .alignment {
+            margin-inline: auto;
+        }
+
+        [data-region="grade-actions"] {
+            padding-block: 12px;
+        }
+    }
+}
+
+// The assignment's comments (on a submission, in the grader and on the assignment's page): "Comments
+// (n)" a word button with a chevron; the comments a list, a hairline between them; the new comment
+// a field as the site's, "Save comment" a small blue button and "Cancel" a soft one at its end.
+body.path-mod-assign .commentscontainer {
+    .comment-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-inline-start: -10px;
+        padding: 6px 10px;
+        border-radius: 10px !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's role="button" focus 4px.)
+        color: var(--bs-primary);
+        font-size: .9375rem;
+        font-weight: 600;
+        text-decoration: none;
+
+        > img.icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-chevron, 14px);
+            transition: transform .15s;
+        }
+
+        &[aria-expanded="true"]::before {
+            transform: rotate(90deg);
+        }
+
+        &:hover {
+            background-color: rgba(var(--bs-primary-rgb), .08);
+        }
+    }
+
+    [dir="rtl"] & .comment-link:not([aria-expanded="true"])::before {
+        /*rtl:ignore*/
+        transform: scaleX(-1);
+    }
+
+    .comment-ctrl {
+        margin: 10px 0 0;
+        padding: 0;
+    }
+
+    .comment-list {
+        margin: 0 0 8px;
+        padding: 0;
+        list-style: none;
+
+        > li {
+            padding: 12px 0;
+            border-bottom: 1px solid $salek-line;
+
+            &:empty,
+            &.first:empty {
+                display: none;
+            }
+        }
+
+        .comment-message-meta {
+            margin-bottom: 4px;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+
+            .user {
+                color: $salek-text-strong;
+            }
+
+            .picture img {
+                width: 24px;
+                height: 24px;
+                margin-inline-end: 6px;
+                border-radius: 50%;
+            }
+        }
+
+        .text {
+            color: $salek-ink;
+            font-size: .9375rem;
+        }
+    }
+
+    .comment-area {
+        width: 100%;
+        max-width: 640px;
+        margin: 0;
+        padding: 0;
+
+        .db {
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        textarea {
+            display: block;
+            margin: 0;
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
+            min-height: 96px;
+            padding: 12px 14px;
+            border: 0;
+            border-radius: $salek-field-radius;
+            background-color: $salek-field-bg;
+            color: $salek-ink;
+            font-size: .9375rem;
+            resize: vertical;
+
+            &:focus {
+                outline: 0;
+                background-color: #fff;
+                box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .35);
+            }
+        }
+
+        .fd {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            width: auto;
+            margin: 10px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > span {
+                display: none;
+            }
+
+            > a {
+                display: inline-flex;
+                align-items: center;
+                min-height: 36px;
+                padding: 6px 16px;
+                border-radius: 12px;
+                background-color: $salek-button-soft;
+                color: $salek-ink;
+                font-size: .875rem;
+                font-weight: 600;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: $salek-button-soft-hover;
+                }
+            }
+
+            > a[id^="comment-action-post"] {
+                order: 2;
+                background-color: var(--bs-primary);
+                color: #fff;
+
+                &:hover {
+                    background-color: #0d5fa8;
+                }
+            }
+        }
+    }
+}
+
+// The grader without a review panel (no submission to show beside the grade): the page in the
+// usual flow (Moodle fixes each part), so the buttons' bar can be the grading card's last part, under
+// its content: the card's bottom with a line above it, "Notify student" at its start and the buttons
+// at its end. The top bar stays at the top while the page scrolls.
+body.path-mod-assign.pagelayout-embedded:has([data-region="grade-panel"].fullwidth) {
+    overflow: auto;
+
+    [data-region="grading-navigation-panel"] {
+        position: sticky;
+        z-index: 3;
+    }
+
+    [data-region="grade-panel"].fullwidth {
+        position: static;
+        width: auto;
+        overflow: visible;
+        margin-bottom: 0; // (Moodle's on phones.)
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        [data-region="grade"] {
+            border-radius: $salek-card-radius $salek-card-radius 0 0;
+            clip-path: inset(-20px -20px 0 -20px); // (Its shadow not under it, on the buttons' part.)
+        }
+    }
+
+    // (While a student's grading loads, the buttons wait: the card has nothing to save yet.)
+    &:has([data-region="grade"] > img[src*="loading"]:only-child) [data-region="grade-actions-panel"] {
+        display: none;
+    }
+
+    [data-region="grade-actions-panel"] {
+        position: static;
+        width: auto;
+        max-width: 800px;
+        height: auto;
+        margin: 0 auto 40px;
+        border-top: 1px solid $salek-line;
+        border-radius: 0 0 $salek-card-radius $salek-card-radius;
+        box-shadow: $salek-card-shadow;
+        clip-path: inset(0 -20px -20px -20px); // (Its shadow not over the card above.)
+
+        @media (max-width: 767.98px) {
+            margin-inline: 16px;
+        }
+    }
+
+    [data-region="grade-actions"] {
+        padding: 16px $salek-ag-pad;
+
+        @media (max-width: 767.98px) {
+            padding-inline: 16px;
+        }
+
+        [data-region="grading-actions-form"] {
+            justify-content: flex-end;
+        }
+
+        // ("Notify student" at the start, the buttons at the end.)
+        [data-region="grading-actions-form"] label {
+            margin-inline-end: 4px;
+        }
+
+        [data-region="grading-actions-form"] .help-icon {
+            margin-inline-end: auto !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}

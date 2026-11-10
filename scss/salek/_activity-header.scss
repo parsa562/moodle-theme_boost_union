@@ -2,18 +2,25 @@
 
 /* 17. Activity pages: the activity icon and the breadcrumb on one line above the tab bar.
        The heading next to the icon is hidden (admin SCSS), so the icon stood alone on a
-       second line. Only when the header has no action buttons, which would otherwise come
-       between the icon and the breadcrumb. */
+       second line. Moodle 5.3's header buttons ("Mark as done") and dates (an assignment's due
+       date) at the end of the same line. (The icon's and the buttons' row is dissolved, so its
+       parts take their places in the breadcrumb's row: the icon first, the breadcrumb filling
+       the line, then the dates and the buttons.) */
 
-#page-header:has(.page-context-header .activityiconcontainer):not(:has(.header-actions-container > *)) {
+#page-header:has(.page-context-header .activityiconcontainer) {
     > .w-100 {
         padding-inline-start: 8px;
 
-        // Icon first, then the breadcrumb.
         > .d-flex.align-items-center {
-            order: -1;
-            flex: none;
-            transform: translateY(8px);
+            display: contents !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex.)
+
+            // The icon.
+            > .me-auto {
+                order: -1;
+                flex: none;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                transform: translateY(8px);
+            }
         }
 
         > .d-flex.flex-wrap {
@@ -22,9 +29,78 @@
         }
     }
 
+    // Without a breadcrumb (error pages, such as a quiz that cannot start): the row as high as
+    // with one, the icon on its middle (it stood alone in a short row, on the tab bar's edge).
+    &:not(:has(#page-navbar .breadcrumb)) > .w-100 {
+        align-content: center;
+        align-items: center;
+        min-height: 64px;
+
+        > .d-flex.align-items-center > .me-auto,
+        .header-actions-container,
+        .header-extras-container {
+            transform: none;
+        }
+    }
+
     .page-context-header {
         margin: 0 !important; /* stylelint-disable-line declaration-no-important */
         padding: 0;
+    }
+
+    // The buttons ("Mark as done"), on the middle of the breadcrumb's line like the icon (the
+    // breadcrumb sits 8px under the row's middle). Moodle 5.3 also writes an empty completion
+    // status there on every activity page: hidden while empty.
+    .header-actions-container {
+        order: 2;
+        align-self: center;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-auto.)
+        margin-inline-start: 16px !important; /* stylelint-disable-line declaration-no-important */
+        transform: translateY(8px);
+
+        &:not(:has(> * > :not(:empty))) {
+            display: none;
+        }
+    }
+
+    // The dates (Moodle's grid with 8px above and 16px below set them high).
+    .header-extras-container {
+        order: 1;
+        align-self: center;
+        margin-inline-start: 16px !important; /* stylelint-disable-line declaration-no-important */
+        transform: translateY(8px);
+
+        // (On phones on a line of its own under the breadcrumb, which it squeezed.)
+        @include media-breakpoint-down(md) {
+            flex-basis: 100%;
+            margin: 6px 0 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-auto.)
+            transform: none;
+
+            .header-extra {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-2.)
+            }
+        }
+
+        // (As the breadcrumb beside them: small and grey, the date's name a little darker.)
+        .activity-dates {
+            display: flex;
+            gap: 4px 16px;
+            padding: 0;
+            padding-inline-end: 15px; // (As the breadcrumb's 15px at its start.)
+            color: #616c7e;
+            font-size: .8125rem;
+            font-weight: 400;
+
+            .date-item {
+                color: inherit;
+                font-size: inherit;
+            }
+
+            .date-item-label {
+                color: $salek-text-muted;
+                font-weight: 500;
+            }
+        }
     }
 
     // Flex: as high as the icon (its line box made it 41px, so the icon sat above the
@@ -40,6 +116,7 @@
     .activityiconcontainer {
         width: 28px;
         height: 28px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (5.3's .me-2.)
         border-radius: 8px;
 
         .activityicon {

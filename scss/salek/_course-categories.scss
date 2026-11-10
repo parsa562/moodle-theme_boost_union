@@ -1,0 +1,265 @@
+// Salek: the course categories page (course/index.php; also a category's own page). The category
+// menu, the search and "More" on a white bar; under it no white sheet: the categories on the page's
+// ground, each a title (in the size of the site's section titles) with the round open/close button
+// of the course page and the forms before it (filled blue while open, white with an outline while
+// closed), space between the categories and between an open category and its course cards.
+// "Expand all / Collapse all" the course page's small pill with its double arrow. (Moodle: plain
+// links with a black arrow picture, which in right-to-left pages lay over the name's last letter.)
+
+body#page-course-index-category #page.drawers {
+    #region-main {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none;
+    }
+
+    div[role="main"] {
+        padding-inline: 0;
+    }
+
+    // The category menu, the search and "More": a white bar.
+    #region-main .tertiary-navigation {
+        margin-bottom: 24px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 12px 16px !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: $salek-card-radius;
+        background-color: $salek-surface;
+        box-shadow: $salek-card-shadow;
+
+        > .d-flex {
+            align-items: center;
+            gap: 12px;
+
+            > * {
+                margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+}
+
+#region-main .course_category_tree {
+    position: relative;
+
+    // "Expand all / Collapse all": the course page's pill, at the end of the first category's
+    // title line (not on a line of its own between the bar and the first title).
+    > .collapsible-actions {
+        position: absolute;
+        top: 2px; // (The 32px title line, the 28px pill.)
+        inset-inline-end: 0;
+        z-index: 1;
+        display: flex;
+        margin: 0;
+
+        .collapseexpand {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 12px !important; /* stylelint-disable-line declaration-no-important */
+            border: 1px solid #dfe5ee;
+            border-radius: 999px !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-surface;
+            background-image: none !important; /* stylelint-disable-line declaration-no-important */
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 500;
+            line-height: 1.65;
+            text-decoration: none;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-collapse, 12px);
+                transform: scaleY(-1); // "Expand all": the arrows down.
+            }
+
+            &.collapse-all::before {
+                transform: none;
+            }
+
+            &:hover {
+                border-color: var(--bs-primary);
+                background-color: rgba(var(--bs-primary-rgb), .05);
+            }
+        }
+    }
+
+    .subcategories {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .category {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+    }
+
+    // A title: the round button, the name.
+    .category > .info > .categoryname {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: $salek-toggle-size;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background-image: none !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's arrow picture.)
+        color: $salek-ink;
+        font-size: 1.15rem;
+        font-weight: 600;
+
+        > a {
+            min-width: 0;
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        .spinner {
+            margin: 0;
+        }
+    }
+
+    // The round button (salek-round-toggle, drawn here: Moodle makes the whole title the button):
+    // the circle, and the arrow over its middle.
+    .category.with_children > .info > .categoryname {
+        cursor: pointer;
+
+        &::before {
+            content: "";
+            flex: none;
+            box-sizing: border-box;
+            width: $salek-toggle-size;
+            height: $salek-toggle-size;
+            border: 1px solid var(--bs-primary);
+            border-radius: 50%;
+            background-color: var(--bs-primary);
+            transition: background-color .15s ease, border-color .15s ease;
+        }
+
+        &::after {
+            @include salek-mask-icon($salek-icon-chevron, 14px);
+            position: absolute;
+            top: 50%;
+            inset-inline-start: calc(#{$salek-toggle-size} / 2 - 7px);
+            margin-top: -7px;
+            color: #fff;
+            transform: rotate(90deg); // Open: down.
+        }
+    }
+
+    .category.with_children.collapsed > .info > .categoryname {
+        &::before {
+            border-color: $salek-control-border;
+            background-color: $salek-surface;
+        }
+
+        &::after {
+            color: var(--bs-primary);
+            transform: none; // Closed: towards the line's end.
+        }
+
+        &:hover::before {
+            border-color: var(--bs-primary);
+        }
+    }
+
+    // (The first title leaves the pill its room.)
+    > .content > .subcategories > .category:first-child > .info > .categoryname {
+        padding-inline-end: 150px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // A category with nothing in it: its name in line with the others'.
+    .category:not(.with_children) > .info > .categoryname {
+        padding-inline-start: calc(#{$salek-toggle-size} + 12px) !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // An open category's content (its course cards, its subcategories): under its title.
+    .category > .content {
+        padding: 16px 0 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's 16px indent.)
+
+        &:empty {
+            display: none;
+        }
+
+        .courses {
+            margin: 0;
+        }
+    }
+
+    .category.collapsed > .content {
+        display: none;
+    }
+
+    // A subcategory: a smaller title, set in under its category's title.
+    .category .category > .info > .categoryname {
+        font-size: 1rem;
+    }
+
+    .category > .content > .subcategories {
+        padding-inline-start: calc(#{$salek-toggle-size} + 12px);
+    }
+}
+
+// (The closed arrow points to the line's end: in right-to-left pages, to the left.)
+.dir-rtl #region-main .course_category_tree .category.with_children.collapsed > .info > .categoryname::after {
+    /*rtl:ignore*/
+    transform: scaleX(-1);
+}
+
+// Phones: the menu and "More" on the first line, the search across the line under them.
+@include media-breakpoint-down(md) {
+    #page-course-index-category #region-main .tertiary-navigation {
+        > .d-flex {
+            flex-wrap: wrap;
+            row-gap: 12px;
+        }
+
+        .navitem:has(> .urlselect) {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .navitem:has(.simplesearchform) {
+            order: 3;
+            flex: 1 1 100%;
+
+            .simplesearchform,
+            .input-group {
+                width: 100%;
+            }
+        }
+    }
+}
+
+// The course search page (course/search.php), as the categories page: no white sheet; the search
+// field on the white bar; "Search results: N" in the size of the category titles; the course
+// cards on the page's ground under it.
+body#page-course-search #page.drawers {
+    #region-main {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+        box-shadow: none;
+    }
+
+    div[role="main"] {
+        padding-inline: 0;
+
+        > .simplesearchform {
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            border-radius: $salek-card-radius;
+            background-color: $salek-surface;
+            box-shadow: $salek-card-shadow;
+        }
+
+        > h2 {
+            margin: 0 0 16px;
+            color: $salek-ink;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+    }
+}

@@ -38,6 +38,10 @@ $string['salekactivitiescount'] = '{$a} فعالیت';
 $string['salekinitialsfilter'] = 'فیلتر با حرف اول';
 $string['salekinitialsremove'] = 'حذف فیلتر';
 
+// Salek: the number of sections in the course index's title section (layout/drawers.php).
+$string['saleksectioncount'] = '{$a} بخش';
+$string['saleksectionscount'] = '{$a} بخش';
+
 // Boost Union's label above the full name at the top of the user menu (no Persian translation yet).
 $string['showfullnameinusermenussetting_loggedinas'] = 'وارد شده با نام:';
 

@@ -62,16 +62,26 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
         }
     }
 
-    .course-section.delegated-section > .section-item > .course-section-header {
+    // A lesson's arrow in the column of the activity icons (centred on it) and its title in the
+    // column of the activity names, so the lesson lines up with the rows under it. (The lessons'
+    // rules name the li: the section page, course/section.php, frames its lessons with rules
+    // one element stronger.)
+    li.course-section.delegated-section > .section-item > .course-section-header {
         margin: 0;
-        padding: 6px 0;
+        padding: 20px 0 24px; // The title 24px under the line above, 36px over the first activity.
+
+        // Closed: 24px down to the next line too.
+        &:has(.icons-collapse-expand[aria-expanded="false"]) {
+            padding-bottom: 20px;
+        }
+        padding-inline-start: 20px; // 12px row padding + (40px icon - 24px arrow) / 2.
         border-radius: 0;
     }
 
     // Closed: only the title row is left, so drop the box's bottom padding and the row
     // is centred (its own padding gives the same space above and below).
     .section-list > li.course-section:has(> .section-item > .course-section-header .icons-collapse-expand[aria-expanded="false"]),
-    .course-section.delegated-section > .section-item:has(> .course-section-header .icons-collapse-expand[aria-expanded="false"]) {
+    li.course-section.delegated-section > .section-item:has(> .course-section-header .icons-collapse-expand[aria-expanded="false"]) {
         padding-bottom: 0;
     }
 
@@ -121,11 +131,11 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
     }
 
     .activity.subsection > .activity-item {
-        padding: 4px 0;
+        padding: 0;
         border: 0;
     }
 
-    .course-section.delegated-section > .section-item {
+    li.course-section.delegated-section > .section-item {
         padding: 0;
         border: 0;
         background-color: transparent;
@@ -136,11 +146,11 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
         }
     }
 
-    .course-section.delegated-section .icons-collapse-expand {
+    li.course-section.delegated-section .icons-collapse-expand {
         font-size: .875rem; // The arrow's size in Moodle 5.0 (5.3 makes icon buttons 16px).
         width: 24px;
         height: 24px;
-        margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .me-3.
+        margin-inline-end: 20px !important; /* stylelint-disable-line declaration-no-important */ // Moodle: .me-3. Title at the names' 64px.
         border-color: transparent !important; /* stylelint-disable-line declaration-no-important */ // No circle (salek-round-toggle).
         background-color: transparent;
         box-shadow: none;
@@ -173,12 +183,30 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
 
 /* 3. Activity information box (dates, completion) at the top of activity pages. */
 .path-mod .activity-header:not(:empty) {
-    border-radius: $salek-radius-sm;
-    background-color: $salek-subtle;
+    margin: 0 15px 16px !important; /* stylelint-disable-line declaration-no-important */ // (As in 5.0; 5.3 sets 0 with !important.)
+    border: 1px solid $salek-note-border;
+    border-radius: 12px;
+    background-color: $salek-note-bg;
+
+    // (Moodle's own grey and bottom margin on the box inside: the margin is outside the box.)
+    .activity-details {
+        margin-bottom: 0;
+        background-color: transparent;
+    }
 
     .activity-information .completion-info,
     .activity-information .activity-dates {
         border-bottom-color: $salek-line;
+    }
+}
+
+// Moodle 5.3 writes the box even when it has nothing to show (no dates, no completion): its
+// empty parts left 16px, and the content's own top padding another 16px, at the top of the page.
+#region-main > .activity-header:not(:has(> :not(.activity-information))):not(:has(.activity-information > :not(.activity-details))):not(:has(.activity-details > *)) {
+    display: none;
+
+    + [role="main"] > .box.generalbox:first-child {
+        padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Bootstrap .py-3.)
     }
 }
 
@@ -278,26 +306,32 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
        completion button as an outlined pill (green when done). Section colours stay as they are. */
 
 body.path-course-view #region-main {
-    // "Collapse all / Expand all" in the General title row: a small outlined button that does
-    // not make the row taller.
+    // "Collapse all / Expand all" in the General title row: the size and shape of the count pill
+    // beside it ("17 activities", below), in the brand colour; it does not make the row taller.
     #collapsesections,
     .section-collapsemenu {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         margin-block: -6px;
-        padding: 5px 12px;
-        border: 1px solid $salek-control-border;
+        padding: 3px 12px;
+        border: 1px solid #dfe5ee;
         // Moodle's button focus styles otherwise force a 4px radius.
-        border-radius: $salek-button-radius !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 999px !important; /* stylelint-disable-line declaration-no-important */
         background-color: $salek-surface;
         color: var(--bs-primary);
-        font-size: .8125rem;
+        font-size: .75rem;
         font-weight: 500;
+        line-height: 1.65; // The count pill's height.
         text-decoration: none;
 
+        // The Latin font sits high in its line: the text 1px lower, level with the icon.
+        html[dir="ltr"] & {
+            padding-block: 4px 2px;
+        }
+
         &::before {
-            @include salek-mask-icon($salek-icon-collapse, 14px);
+            @include salek-mask-icon($salek-icon-collapse, 12px);
         }
 
         &[aria-expanded="false"]::before {
@@ -330,17 +364,36 @@ body.path-course-view #region-main {
         display: none;
     }
 
+    // (In edit mode the section's menu (⋮, Moodle's .ms-auto) is at the row's end too: the pill
+    // before it, beside it. Both pushing to the end put the menu in the middle of the row.)
+    .course-section:not(.delegated-section) > .section-item > .course-section-header:not(:has(.icons-collapse-expand[aria-expanded="false"])):has(> .salek-section-counts:not([hidden])) {
+        > .salek-section-counts {
+            order: 1;
+        }
+
+        > .section_action_menu {
+            order: 2;
+            margin-inline-start: 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-auto.)
+        }
+    }
+
+    // A lesson's count: a small soft pill beside its title, centred on the title's line.
     .delegated-section .salek-section-counts {
-        margin-inline-start: 4px;
-        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        height: 22px;
+        margin-inline-start: 10px;
+        padding: 0 8px;
         border: 0;
-        background: transparent;
+        background-color: #f1f5f9;
         color: $salek-text-muted;
-        font-weight: 400;
+        font-size: .6875rem;
+        font-weight: 500;
+        line-height: 1;
     }
 
     .delegated-section .course-section-header:has(.icons-collapse-expand[aria-expanded="false"]) > .salek-section-counts {
-        display: inline;
+        display: inline-flex;
     }
 
     .activity-item:not(.activityinline) {
@@ -506,14 +559,16 @@ body.path-course-view #region-main {
     }
 
     // Teachers: the "Completion" menu button, as an outlined pill like the students' button.
+    // (Moodle squares a focused button's corners, which it is while its menu is open.)
     .activity-completion .completion-dropdown > [class~="btn"] {
         display: inline-flex;
         align-items: center;
+        justify-content: space-between; // (Across the row on phones: the arrow at its end.)
         gap: 6px;
         height: 32px;
         padding: 0 12px;
         border: 1px solid $salek-control-border;
-        border-radius: 999px;
+        border-radius: 999px !important; /* stylelint-disable-line declaration-no-important */
         background-color: $salek-surface;
         color: $salek-text;
         font-size: .75rem;
@@ -524,6 +579,53 @@ body.path-course-view #region-main {
             border-color: #b6c0ce;
             background-color: $salek-soft;
         }
+    }
+
+    // Its menu ("Students must" and the conditions): the site's menus, the title small and quiet,
+    // each condition a line with a small blue dot (Moodle: a bold title and a black bullet).
+    .activity-completion .completion-dialog {
+        min-width: 200px;
+        padding: 6px 8px !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-ink;
+        font-size: .8125rem;
+
+        > strong {
+            display: block;
+            margin-bottom: 6px;
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        [role="list"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [role="listitem"] {
+            align-items: center;
+            gap: 8px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 4px 0;
+
+            > div:first-child:has(> img.icon) {
+                display: none;
+            }
+
+            &::before {
+                content: "";
+                flex: none;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: var(--bs-primary);
+            }
+        }
+    }
+
+    // (Moodle 5.3 rings the whole activity row while anything in it has the focus, also after a
+    // click on its completion button: for the keyboard only.)
+    .activity-item:focus-within:not(:has(:focus-visible)) {
+        outline: 0;
     }
 
     // Automatic completion conditions ("View", "Receive a grade"): small pills, green when met.
@@ -568,6 +670,17 @@ body.path-course-view #region-main .course-content {
             order: 2;
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */
         }
+
+        // Phones: the text across the row, its completion button under it (as under the other
+        // activities' names); beside it the button took the row and left the text a 40px column.
+        @include media-breakpoint-down(md) {
+            flex-wrap: wrap;
+
+            > .activity-altcontent,
+            > .activity-completion {
+                flex: 1 1 100%;
+            }
+        }
     }
 
     .section-list > li.course-section:not(:has(li.activity)):not(:has(.summarytext *)) {
@@ -576,33 +689,6 @@ body.path-course-view #region-main .course-content {
         > .section-item > .content {
             display: none;
         }
-    }
-
-    // Between activities: a hairline from the name column (after the icon), ending a little
-    // before the card's edge, in the middle of the gap: 4px to the row above and below, so the
-    // hover tint of a row does not touch it and the text is 16px from it on both sides
-    // (Moodle's 4px margin and 4px padding above each row put 8px above it and none below).
-    ul.section > li.activity:not(.subsection) + li.activity:not(.subsection) {
-        margin-top: 0;
-        padding-top: 0;
-        border-top: 0;
-
-        &::before {
-            content: "";
-            display: block;
-            height: 1px;
-            margin-block: 4px;
-            margin-inline: 64px 16px;
-            background-color: $salek-line;
-        }
-    }
-
-    // Between lessons: 2px in the brand gradient, a little longer than the hairlines.
-    ul.section > li.activity.subsection + li.activity.subsection::before {
-        height: 2px;
-        margin: 12px 0;
-        margin-inline: 48px 0;
-        background: linear-gradient(90deg, transparent, rgba(var(--bs-primary-rgb), .55) 20%, rgb(237 203 110) 80%, transparent);
     }
 
     // A little more space at the bottom of an open section card.
@@ -636,6 +722,14 @@ body.path-course-view #region-main .course-content {
             background-color: transparent;
         }
     }
+
+    // In edit mode Moodle 5.3 marks the activity under the pointer only by its card's border, which
+    // Salek removes; the outline and shadow of Moodle 5.0 mark it again (not while it is dragged).
+    .editing & .activity:not(.dragging) > .activity-item:hover:not(:has(.activity:hover)),
+    .editing & .activity-item.selected {
+        outline: 2px solid var(--bs-primary);
+        box-shadow: $box-shadow-sm;
+    }
 }
 
 // Moodle 5.3 wraps each section's summary and activities in a grey, bordered, padded box
@@ -658,14 +752,39 @@ body.path-course-view #region-main div:has(> .section-collapsemenu) {
     .section-collapsemenu {
         position: absolute;
         z-index: 1;
-        top: 35px; // (Measured: centred on the first section's title row.)
+        top: 36px; // (Measured: centred on the first section's title row.)
         inset-inline-end: 29px;
-        line-height: 21px;
 
         .icon {
             display: none;
         }
     }
+}
+
+// Phones: no room for it in the first section's title row (it squeezed the title, its pencil and
+// the count, and covered the section's menu): on a line of its own above the sections, at the end.
+@include media-breakpoint-down(md) {
+    body.path-course-view #region-main div:has(> .section-collapsemenu) {
+        display: flex;
+        justify-content: flex-end;
+        height: auto;
+        margin: 0 0 12px !important; /* stylelint-disable-line declaration-no-important */
+
+        .section-collapsemenu {
+            position: static;
+        }
+    }
+
+    body.path-course-view #region-main ul[data-for="course_sectionlist"] > li.course-section:first-child > .section-item > .course-section-header {
+        padding-inline-end: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// The first section's title row keeps the button's place free at its end, so its own items (the
+// activity count) end before the button. Theme JS coursepage measures it: the button's width
+// changes with its text ("Collapse all" / "Expand all") and the language.
+body.path-course-view #region-main ul[data-for="course_sectionlist"] > li.course-section:first-child > .section-item > .course-section-header {
+    padding-inline-end: var(--salek-collapseall-space, 0px);
 }
 
 // Moodle 5.3 indents the section summary to line up with the section title (64px at the start,
@@ -681,10 +800,114 @@ body.path-course-view #region-main div:has(> .section-collapsemenu) {
     }
 }
 
-// Moodle 5.3 gives subsections (lessons) a grey fill and no space around them; Salek's lessons
-// are not boxed (see "Level 2" above) and keep the 8px around them of Moodle 5.0.
+// A lesson without a description: Moodle still draws the (empty) description block, whose 16px
+// put the lesson's activities further from its title than anything else.
+.course-content .delegated-section .course-content-item-content > [data-for="sectioninfo"]:not(:has(> :not(.section_availability))):not(:has(.section_availability > *)) {
+    display: none;
+}
+
+// Moodle 5.3 puts text and media areas (labels, shown inline) in a grey, bordered, padded box;
+// Salek keeps them directly on the section card, as in 5.0, with the activity rows' padding.
+body.path-course-view .course-content li.activity:not(.subsection) > .activity-item.activityinline {
+    padding: 12px;
+    padding-inline-start: 64px; // Their text in the column of the activity names (see the rows below).
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+// Headings in text and media areas (often a lesson's name above its activities): the size and
+// weight of the lessons' titles, not the browser's heading sizes.
+body.path-course-view .course-content li.modtype_label .activity-altcontent {
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-bottom: 0;
+        color: $salek-ink;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.6;
+    }
+}
+
+/* The rows of a section, one rule for activities, text and media areas and lessons:
+   - icons and the lessons' arrows in one column, every text (activity names, text and media
+     areas, lesson titles) in the column of the activity names, 64px in;
+   - a lesson, or a text and media area that starts with a heading, begins a group: the brand
+     line and some space above it, no line right under it;
+   - thin lines between the other rows (from the names' column), and the brand line again after
+     a lesson's activities.
+   A heading in a text and media area also gets a faint text icon in the icons' column, like the
+   arrow of a lesson. */
+$salek-row: "body.path-course-view .course-content ul.section > li.activity";
+$salek-heading-levels: H3, H4, H5; // The editor's three heading sizes. (Capitals: see the page-header part.)
+
+@mixin salek-row-hairline {
+    content: "";
+    display: block;
+    height: 1px;
+    margin-block: 4px;
+    margin-inline: 64px 16px;
+    background: $salek-line;
+}
+
+@mixin salek-row-brand-line {
+    content: "";
+    display: block;
+    height: 2px;
+    margin: 4px 0; // As the thin lines: the text 16px from it on both sides (see below).
+    margin-inline: 12px 16px;
+    background: linear-gradient(90deg, transparent, rgba(var(--bs-primary-rgb), .55) 20%, rgb(237 203 110) 80%, transparent);
+}
+
+// (The headings in capitals and no :not() chains of them: scssphp adds a copy of every selector
+// with a lower-case heading for Bootstrap's .h3-.h5, which grew the stylesheet by kilobytes.)
+#{$salek-row} + li.activity {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+
+    &::before {
+        @include salek-row-hairline;
+    }
+}
+
+#{$salek-row} + li.activity.subsection::before,
+#{$salek-row}.subsection + li.activity::before {
+    @include salek-row-brand-line;
+}
+
+@each $h in $salek-heading-levels {
+    #{$salek-row} + li.activity.modtype_label:has(.activity-altcontent #{$h})::before {
+        @include salek-row-brand-line;
+    }
+
+    // No line right under a heading (unless a lesson follows it).
+    #{$salek-row}.modtype_label:has(.activity-altcontent #{$h}) + li.activity:not(.subsection)::before {
+        content: none;
+    }
+
+    body.path-course-view .course-content li.activity.modtype_label:has(.activity-altcontent #{$h}) > .activity-item.activityinline {
+        position: relative;
+        padding-top: 20px; // As a lesson's title: 24px under the line above,
+        padding-bottom: 24px; // 36px over the first activity.
+
+        &::before {
+            @include salek-mask-icon($salek-icon-lines, 16px);
+            position: absolute;
+            top: 25px; // On the heading's first line (20px padding, 25.6px line).
+            inset-inline-start: 24px; // Centred on the icons' column (12px + 40px / 2 - 8px).
+            color: rgba(var(--bs-primary-rgb), .4);
+        }
+    }
+}
+
+// Moodle 5.3 gives subsections (lessons) a grey fill; Salek's lessons are not boxed (see
+// "Level 2" above). No space of their own around them: the lines between the rows space them,
+// so the text is 16px from every line, thin or brand.
 .course-content .activity.subsection > .activity-item {
-    margin-block: 8px;
+    margin-block: 0;
 
     &,
     &:hover {

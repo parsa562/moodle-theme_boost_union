@@ -1,0 +1,85 @@
+// Salek: a Choice activity's options (mod/choice/view.php), as the site's other "pick one" cards
+// (the user picker's cards): each option a framed card in a grid (one to a row on phones), the
+// radio button (or checkbox, when several may be picked) and the option's text inside, the whole
+// card clickable; the chosen one with a blue frame and a light blue fill. (Moodle: the browser's
+// bare radio buttons one after the other on a line.)
+
+#page-mod-choice-view #region-main ul.choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 8px;
+    margin: 16px 0 20px;
+    padding: 0;
+
+    > li.clearfloat {
+        display: none;
+    }
+
+    > li.option {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 60px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 8px 14px;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: $salek-surface;
+        cursor: pointer;
+        transition: border-color .15s ease, background-color .15s ease;
+
+        &:hover {
+            border-color: #b6c0ce;
+        }
+
+        &:has(input:checked) {
+            border-color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), .06);
+            box-shadow: inset 0 0 0 1px var(--bs-primary);
+        }
+
+        &:has(input:focus-visible) {
+            outline: 3px solid rgba(var(--bs-primary-rgb), .35);
+            outline-offset: 2px;
+        }
+
+        // (An option that is full, or a closed choice.)
+        &:has(input:disabled) {
+            opacity: .55;
+            cursor: default;
+        }
+
+        input[type="radio"] {
+            flex: none;
+            width: 16px;
+            height: 16px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            accent-color: var(--bs-primary);
+        }
+
+        input[type="checkbox"] {
+            @include salek-checkbox;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        label {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            line-height: 1.6;
+            cursor: inherit;
+
+            // (The whole card picks the option.)
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+            }
+        }
+    }
+}

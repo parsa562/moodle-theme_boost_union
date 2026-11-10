@@ -179,10 +179,25 @@ $coursefullname = $PAGE->course?->fullname ? format_string(
 ) : '';
 $courseurl = $PAGE->course ? new \core\url('/course/view.php', ['id' => $PAGE->course->id]) : null;
 
+// Salek: the number of sections listed in the course index, shown in its title section
+// (templates/theme_boost/courseindexdrawercontrols.mustache).
+$saleksectioncount = '';
+if ($courseindex) {
+    $format = course_get_format($PAGE->course);
+    $count = 0;
+    foreach (get_fast_modinfo($PAGE->course)->get_listed_section_info_all() as $section) {
+        if ($format->is_section_visible($section)) {
+            $count++;
+        }
+    }
+    $saleksectioncount = get_string($count == 1 ? 'saleksectioncount' : 'saleksectionscount', 'theme_boost_union', $count);
+}
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'coursefullname' => $coursefullname,
     'courseurl' => $courseurl ? $courseurl->out(false) : null,
+    'saleksectioncount' => $saleksectioncount,
     'output' => $OUTPUT,
     'sidepreblocks' => $blockshtml,
     'hasblocks' => $hasblocks,
@@ -241,6 +256,12 @@ $PAGE->requires->js_call_amd('theme_boost_union/initialsfilter', 'init', [[
     'filter' => get_string('salekinitialsfilter', 'theme_boost_union'),
     'remove' => get_string('salekinitialsremove', 'theme_boost_union'),
 ]]);
+
+// Every page with a course index (and the course page): the dragged section or activity stays
+// where it was grabbed.
+if ($courseindex || strpos($PAGE->pagetype, 'course-view-') === 0) {
+    $PAGE->requires->js_call_amd('theme_boost_union/dragimage', 'init');
+}
 
 // Every page: Moodle's reactions to a dropdown's change (filter conditions…) also with the theme's
 // dropdown lists.

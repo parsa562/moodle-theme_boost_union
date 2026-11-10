@@ -65,6 +65,20 @@ class course {
             }
         }
 
+        // Salek: the site's fallback image (Boost Union's "course image with fallback image" setting)
+        // also when the list is built by an AJAX request, as when a category is opened on the
+        // course categories page: there $OUTPUT is Moodle's AJAX renderer, not the theme's, and
+        // gave Moodle's generated pattern.
+        require_once($CFG->dirroot . '/theme/boost_union/lib.php');
+        require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
+        if (get_config('theme_boost_union', 'courseoverviewimagesource') ==
+                THEME_BOOST_UNION_SETTING_COURSEOVERVIEWIMAGESOURCE_COURSEPLUSFALLBACK) {
+            $fallbackimageurl = theme_boost_union_get_course_overview_fallback_image_url();
+            if ($fallbackimageurl !== null) {
+                return $fallbackimageurl->out();
+            }
+        }
+
         // Return a generated image URL as fallback.
         return $OUTPUT->get_generated_image_for_id($this->course->id);
     }

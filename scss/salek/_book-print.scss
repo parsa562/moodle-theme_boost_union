@@ -1,0 +1,238 @@
+// Salek: a book's print page (mod/book/tool/print, "Print book" and "Print this chapter"), a page of
+// the "embedded" layout. On the screen: a sheet of paper on the page's ground, "Print book" a soft
+// button at its top; the title, then the site, course, book, who printed it and when on a line
+// between two hairlines; the description, the table of contents (a row each, as a list) and the
+// chapters, their titles at the start, a hairline above each chapter. Printed: without the sheet
+// (white paper, no shadow), Moodle's cover page and a page for each chapter kept, a heading never
+// alone at a page's end.
+
+$salek-bp-pad: 56px;
+$salek-bp-pad-sm: 20px;
+
+// (Any embedded page: Moodle's empty activity header showed as a line at the top.)
+#page > .embedded-main > .activity-header:not(:has(*)) {
+    display: none;
+}
+
+body.path-mod-book.pagelayout-embedded .book {
+    max-width: 880px;
+    margin: 32px auto;
+    padding: 40px $salek-bp-pad 48px !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: $salek-card-radius;
+    background-color: $salek-surface;
+    box-shadow: $salek-card-shadow;
+    color: $salek-ink;
+
+    @media (max-width: 767.98px) {
+        margin: 16px 12px;
+        padding: 24px $salek-bp-pad-sm 32px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // "Print book": a soft button at the sheet's top end.
+    > .text-end:first-child {
+        margin-bottom: 8px;
+
+        > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 8px 16px;
+            border-radius: $salek-button-radius;
+            background-color: $salek-button-soft;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-button-soft-hover;
+            }
+
+            .icon {
+                width: 16px;
+                height: 16px;
+                margin: 0;
+            }
+        }
+    }
+
+    // The title.
+    .book_title {
+        padding: 0 0 28px !important; /* stylelint-disable-line declaration-no-important */
+
+        h1 {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.875rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+    }
+
+    // The site, course, book / who printed it, when: on a line between hairlines, the names small
+    // and quiet, the values a little bold.
+    .book_info {
+        display: flex !important; /* stylelint-disable-line declaration-no-important */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px 32px;
+        padding: 16px 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-block: 1px solid $salek-line;
+
+        > div {
+            width: auto !important; /* stylelint-disable-line declaration-no-important */
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        table {
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+            border: 0;
+            background: none;
+        }
+
+        td {
+            padding: 3px 0;
+            border: 0;
+            background: none;
+            font-size: .875rem;
+            font-weight: 600;
+            vertical-align: baseline;
+        }
+
+        td:first-child {
+            padding-inline-end: 16px;
+            color: $salek-text-muted;
+            font-size: .8125rem;
+            font-weight: 500;
+        }
+
+        td.ps-3 {
+            padding-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The parts (description, contents, chapters): Moodle's large spaces smaller.
+    .py-5 {
+        padding-block: 32px 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .pb-5 {
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // Their titles: at the start, as the site's section titles.
+    h2 {
+        margin: 0 0 16px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text-strong;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.5;
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .book_summary:empty {
+        display: none;
+    }
+
+    p {
+        line-height: 1.9;
+    }
+
+    // The table of contents: a row each, with a hairline between; the chapters' links in the
+    // text's colour (blue under the mouse), the subchapters' indented.
+    .book_toc_numbered,
+    .book_toc_bullets,
+    .book_toc_indented,
+    .book_toc_none {
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        ul ul {
+            padding-inline-start: 24px;
+        }
+
+        li {
+            border-bottom: 1px solid $salek-preview-row-line;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+
+        li > a {
+            display: block;
+            padding: 10px 0;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+
+        ul ul li > a {
+            font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The chapters: a hairline above each, their titles a little larger.
+    .book_chapter {
+        margin-top: 8px;
+        padding-top: 32px !important; /* stylelint-disable-line declaration-no-important */
+        border-top: 1px solid $salek-line;
+
+        > h2 {
+            font-size: 1.375rem;
+        }
+
+        > h3 {
+            margin: 24px 0 12px;
+            color: $salek-text-strong;
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+    }
+
+    // A single chapter's page ("Print this chapter"): no hairline above its only chapter.
+    .book_info + .book_chapter,
+    .book_info + * > .book_chapter:first-child {
+        border-top: 0;
+    }
+}
+
+@media print {
+    // (Moodle's print.css keeps its book layout: the title down the first page as a cover, the
+    // description and each chapter from a new page.)
+    body#page-mod-book-print {
+        background: #fff !important; /* stylelint-disable-line declaration-no-important */
+
+        .book {
+            max-width: none;
+            margin: 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+
+            h1,
+            h2,
+            h3 {
+                break-after: avoid;
+            }
+
+            // (Each chapter starts a page: no hairline above it.)
+            .book_chapter {
+                margin-top: 0;
+                padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+                border-top: 0;
+            }
+        }
+    }
+}

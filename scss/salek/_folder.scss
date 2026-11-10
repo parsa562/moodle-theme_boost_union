@@ -1,0 +1,140 @@
+// Salek: a Folder activity's files (mod/folder/view.php; also a folder shown on the course page).
+// As the site's other lists of rows (the outline report, the notifications): the files in a framed
+// card under the buttons, each a row (its picture or type icon in a light grey rounded square, its
+// name), a hairline between the rows; a subfolder a row with an arrow before its name (down while
+// it is open), its files set in under it on a faint grey. (Moodle: a tree with dotted lines, a
+// black arrow picture and an empty row for the top folder, right under the buttons.)
+
+$salek-fo-line: #e6eaf0;
+
+.foldertree {
+    // The top folder's own row (only its icon): left out; its files always shown.
+    > li > p {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > li > ul {
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+        overflow: clip;
+        border: 1px solid $salek-fo-line;
+        border-radius: 16px;
+        background-color: #fff;
+    }
+
+    &,
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    // (Moodle's dotted lines.)
+    li::before,
+    ul::before {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    li {
+        margin: 0;
+        border-bottom: 1px solid $salek-preview-row-line;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    // A row: the icon, the name.
+    li > p {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 56px;
+        margin: 0;
+        padding: 8px 16px;
+        color: $salek-ink;
+        font-size: .875rem;
+        font-weight: 500;
+
+        img.icon {
+            flex: none;
+            box-sizing: border-box;
+            width: 36px !important; /* stylelint-disable-line declaration-no-important */
+            max-width: none;
+            height: 36px !important; /* stylelint-disable-line declaration-no-important */
+            max-height: none;
+            margin: 0;
+            padding: 8px;
+            border-radius: 10px;
+            background-color: #eef2f7;
+            object-fit: contain;
+        }
+
+        a {
+            min-width: 0;
+            color: inherit;
+            overflow-wrap: anywhere;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    // A subfolder: an arrow before it (Moodle's arrow pictures replaced), its name a little bolder.
+    li[aria-expanded] > p {
+        cursor: pointer;
+        font-weight: 600;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-chevron, 14px);
+            position: static;
+            background-image: none;
+            background-color: $salek-text-muted;
+            transform: rotate(90deg);
+            transition: transform .15s ease;
+        }
+
+        &::after {
+            display: none;
+        }
+
+        img.icon {
+            background-color: #fff4da; // (A folder: the light yellow of the folder icon.)
+        }
+    }
+
+    li[aria-expanded="false"] > p::before {
+        transform: none;
+    }
+
+    // Its files: on a faint grey, a line above them, each level set in 40px more (a file's icon a
+    // little further in than its folder's).
+    li[aria-expanded] > ul {
+        border-top: 1px solid $salek-preview-row-line;
+        background-color: #fbfcfd;
+    }
+
+    > li > ul > li > ul > li > p {
+        padding-inline-start: 56px;
+    }
+
+    > li > ul > li > ul > li > ul > li > p {
+        padding-inline-start: 96px;
+    }
+
+    > li > ul > li > ul > li > ul > li > ul > li > p {
+        padding-inline-start: 136px;
+    }
+}
+
+// (The arrow of a closed subfolder points to the line's end: in right-to-left pages, to the left.)
+.dir-rtl .foldertree li[aria-expanded="false"] > p::before {
+    /*rtl:ignore*/
+    transform: scaleX(-1);
+}
+
+// The folder's page: the files 16px under its buttons.
+#page-mod-folder-view #region-main .box.generalbox:has(> .filemanager > .foldertree) {
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    margin-top: 16px;
+}

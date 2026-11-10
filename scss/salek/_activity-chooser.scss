@@ -1,0 +1,366 @@
+// Salek: "Add an activity or resource" (the course's activity chooser, a dialogue). The title at
+// the start with a plain close button, a line under it; the categories in a column of their own at
+// the start (a faint tint and a line beside it, across the dialogue's height), the one shown light
+// blue; the activities' column: the search at its top, then the category's name with the number of
+// its activities at the end of the line, then the activities as framed tiles in a grid (the icon
+// in a rounded square tinted by the activity's purpose, the name, information and star quiet at the
+// tile's end, the star yellow when set); the footer as the title line.
+
+$salek-ac-pad: 28px;
+$salek-ac-nav-bg: #f7f8fa;
+
+// (Moodle gives the dialogue the focus when it opens: no dark ring around it.)
+.modal-dialog:has([data-region="chooser-container"]):focus {
+    outline: 0;
+}
+
+.modal-content:has([data-region="chooser-container"]) {
+    overflow: clip;
+    border: 0;
+    border-radius: 24px !important; /* stylelint-disable-line declaration-no-important */
+
+    // The title line.
+    > .modal-header {
+        align-items: center;
+        padding: 22px $salek-ac-pad 20px !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-line;
+
+        .modal-title {
+            margin: 0;
+            color: $salek-text-strong;
+            font-size: 1.125rem !important; /* stylelint-disable-line declaration-no-important */
+            font-weight: 700;
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .btn-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+            width: 34px;
+            height: 34px;
+            margin: 0;
+            margin-inline: auto -8px;
+            padding: 0;
+            border-radius: 50%;
+            background: none;
+            color: $salek-ink;
+            opacity: 1;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-close, 14px);
+            }
+
+            &:hover {
+                background-color: $salek-soft;
+            }
+        }
+    }
+
+    // (Over Moodle's 4px on phones, which is in .modal-body .carousel-item too.) The columns reach
+    // the dialogue's edges: their own inner space.
+    > .modal-body .carousel-item {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .modchoosercontainer {
+        gap: 0 !important; /* stylelint-disable-line declaration-no-important */
+        height: 100%;
+    }
+
+    // The categories: a column of rows, the one shown light blue.
+    .modchoosernav {
+        align-self: stretch;
+        gap: 2px;
+        min-width: 210px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's 32px beside it.)
+        padding: 20px 14px;
+        border-inline-end: 1px solid $salek-line;
+        background-color: $salek-ac-nav-bg !important; /* stylelint-disable-line declaration-no-important */
+
+        .nav-link {
+            width: 100%;
+            max-width: none;
+            padding: 9px 12px;
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's on hover, and on phones.)
+            border-radius: 10px;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+
+            &:hover {
+                background-color: $salek-soft;
+            }
+
+            &.active {
+                background-color: rgba(var(--bs-primary-rgb), .1);
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+        }
+
+        hr {
+            margin: 10px 4px !important; /* stylelint-disable-line declaration-no-important */ // (Over .ms-3.)
+            border-color: $salek-line;
+            opacity: 1;
+        }
+
+        // Phones: a line of soft pills to scroll sideways, over the activities.
+        @include media-breakpoint-down(md) {
+            flex-direction: row !important; /* stylelint-disable-line declaration-no-important */
+            gap: 6px;
+            min-width: 0;
+            padding: 12px 16px;
+            border-inline-end: 0;
+            border-bottom: 1px solid $salek-line;
+            overflow-x: auto;
+
+            .nav-link {
+                flex: none;
+                width: auto;
+                border-radius: 999px;
+                background-color: $salek-soft;
+            }
+        }
+    }
+
+    // The search: at the top of the activities' column.
+    .modchooserfilters {
+        padding: 20px $salek-ac-pad 0;
+
+        @include media-breakpoint-down(md) {
+            padding: 16px 16px 0;
+        }
+
+        .searchcontainer {
+            margin-bottom: 22px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (Moodle centres it over the whole dialogue, moved back by the categories' width.)
+        .simplesearchform {
+            left: 0 !important; /* stylelint-disable-line declaration-no-important */
+            justify-content: flex-start !important; /* stylelint-disable-line declaration-no-important */
+            width: 100%;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .searchbar {
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
+            max-width: 420px;
+        }
+    }
+
+    .modchoosercontent {
+        padding: 0 $salek-ac-pad 24px;
+
+        @include media-breakpoint-down(md) {
+            padding: 16px; // (Under the categories' line.)
+        }
+    }
+
+    // The category's name, small, and the number of its activities at the end of its line (a CSS
+    // counter over the tiles, written after them and put on the name's line).
+    .categorycontent {
+        position: relative;
+        counter-reset: salek-ac-options;
+
+        > h3 {
+            margin: 0 0 12px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text;
+            font-size: .8125rem;
+            font-weight: 700;
+            line-height: 20px;
+        }
+    }
+
+    .optionscontainer {
+        display: grid !important; /* stylelint-disable-line declaration-no-important */
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 10px;
+        position: static !important; /* stylelint-disable-line declaration-no-important */ // (The count is placed against the category.)
+
+        &::after {
+            content: counter(salek-ac-options) " items";
+            position: absolute;
+            top: 0;
+            inset-inline-end: 0;
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-weight: 500;
+            line-height: 20px;
+
+            [lang|="fa"] & {
+                content: counter(salek-ac-options, persian) " مورد";
+            }
+        }
+    }
+
+    // An activity: a framed tile.
+    .option {
+        counter-increment: salek-ac-options;
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        min-height: 72px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 12px 6px 12px 12px !important; /* stylelint-disable-line declaration-no-important */
+        padding-inline: 12px 6px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid $salek-field-border !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 14px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: #fff;
+        text-align: start;
+        transition: border-color .15s, box-shadow .15s;
+
+        &:hover,
+        &:focus-within {
+            border-color: rgba(var(--bs-primary-rgb), .35) !important; /* stylelint-disable-line declaration-no-important */
+            background-color: #fff;
+            box-shadow: 0 4px 14px rgb(15 23 42 / 6%);
+        }
+
+        > [data-region="chooser-option-info-container"] {
+            align-items: center;
+            gap: 10px !important; /* stylelint-disable-line declaration-no-important */
+            height: 100%;
+            border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            // (The name and the actions on one line.)
+            > div:last-child {
+                display: flex;
+                flex: 1;
+                align-items: center;
+                gap: 2px;
+                min-width: 0;
+            }
+        }
+
+        // The icon: in a rounded square tinted by the activity's purpose (as on the course page).
+        .optionicon {
+            flex: none;
+            width: 40px !important; /* stylelint-disable-line declaration-no-important */
+            max-width: 40px !important; /* stylelint-disable-line declaration-no-important */
+            height: 40px !important; /* stylelint-disable-line declaration-no-important */
+            max-height: 40px !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+            border-radius: 12px;
+            background-color: #eef2f7;
+
+            .activityicon {
+                width: 20px !important; /* stylelint-disable-line declaration-no-important */
+                max-width: 20px !important; /* stylelint-disable-line declaration-no-important */
+                height: 20px !important; /* stylelint-disable-line declaration-no-important */
+                max-height: 20px !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            &.assessment { background-color: #fdedf3; }
+            &.content { background-color: #e4f6f1; }
+            &.collaboration { background-color: #f1ecfe; }
+            &.communication { background-color: #eaf1fd; }
+            &.interactivecontent { background-color: #fff4da; }
+            &.administration { background-color: #eef2f7; }
+        }
+
+        .optioninfo {
+            flex: 1;
+            min-width: 0;
+        }
+
+        // (Up to three lines: Moodle cuts it after two, as "IMS content…".)
+        .optionname {
+            -webkit-line-clamp: 3 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-strong;
+            font-size: .8125rem;
+            font-weight: 600;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        // Information and star: small and quiet; the star yellow when set.
+        .optionactions {
+            position: relative;
+            z-index: 2; // (Over the name's link, which covers the tile.)
+            flex: none;
+            gap: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .optionaction {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            min-width: 0;
+            height: 28px;
+            min-height: 0;
+            padding: 0;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: .875rem;
+
+            &:hover {
+                background-color: $salek-soft;
+                color: $salek-ink;
+            }
+
+            .icon {
+                margin: 0;
+                font-size: inherit;
+            }
+
+            [data-icon="favourite-active"] {
+                color: #d97706;
+            }
+        }
+
+        // (The information: an outlined "i", as the star beside it; Moodle's is a filled circle.)
+        [data-action="show-option-summary"] {
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-info, 15px);
+            }
+        }
+    }
+
+    // The footer: as the title line.
+    // (Its own height, not Moodle's fixed 70px, which squeezed its inner space at the bottom;
+    // Moodle's 4px around its row taken off, so the row is in its middle.)
+    > .modal-footer {
+        flex-shrink: 0;
+        height: auto; // (Moodle's fixed 70px: less than its row and inner space.)
+        padding: 16px $salek-ac-pad !important; /* stylelint-disable-line declaration-no-important */
+        border-top: 1px solid $salek-line;
+
+        > * {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (The text and the button on one middle line: Moodle puts the text at the top of its
+        // 44px box.)
+        [data-region="chooser-option-summary-actions-container"] {
+            align-items: center;
+        }
+
+        [data-region="active-footer-container"] {
+            display: flex;
+            align-items: center;
+            min-height: $salek-control-height;
+        }
+
+        .activitychooserfooter {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text-muted;
+            font-size: .875rem;
+
+            a {
+                font-weight: 600;
+            }
+        }
+
+        .addoption {
+            min-width: 96px;
+        }
+    }
+}

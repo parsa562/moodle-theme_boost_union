@@ -2352,6 +2352,10 @@ $string['salekactivitiescount'] = '{$a} activities';
 $string['salekinitialsfilter'] = 'Filter by initial';
 $string['salekinitialsremove'] = 'Remove filter';
 
+// Salek: the number of sections in the course index's title section (layout/drawers.php).
+$string['saleksectioncount'] = '{$a} section';
+$string['saleksectionscount'] = '{$a} sections';
+
 // Salek: the bar above the front page's course list (amd/src/frontpagecourses).
 $string['salekcoursescards'] = 'Cards';
 $string['salekcoursescount'] = '{$a} courses';
