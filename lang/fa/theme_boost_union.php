@@ -34,6 +34,10 @@ $string['saleklessonscount'] = '{$a} درس';
 $string['salekactivitycount'] = '{$a} فعالیت';
 $string['salekactivitiescount'] = '{$a} فعالیت';
 
+// Salek: the letter filters above lists (amd/src/initialsfilter).
+$string['salekinitialsfilter'] = 'فیلتر با حرف اول';
+$string['salekinitialsremove'] = 'حذف فیلتر';
+
 // Salek: the bar above the front page's course list (amd/src/frontpagecourses).
 $string['salekcoursescards'] = 'کارتی';
 $string['salekcoursescount'] = '{$a} درس';

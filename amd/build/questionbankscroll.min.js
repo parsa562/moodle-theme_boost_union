@@ -12,6 +12,10 @@
  * question list is reloaded (filters, sorting, paging replace it). Grader report: the cell menus
  * are also positioned against the window, so the scrolling table does not cut them off.
  *
+ * Every other list table (.generaltable, .flexible) that is wider than the page and has no box of
+ * its own that scrolls (Bootstrap's .table-responsive): put in such a box, with the same scrollbar
+ * and the same menus (the assignment's submissions, with many columns, ran out of the page).
+ *
  * @module     theme_boost_union/questionbankscroll
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -94,6 +98,49 @@ define([], function() {
     };
 
     /**
+     * Menus in a scrolling box: positioned against the window, so the box does not cut them off.
+     * Bootstrap reads this when a menu is first opened, so setting it now is enough.
+     *
+     * @param {HTMLElement} box
+     */
+    const fixMenus = function(box) {
+        box.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(toggle) {
+            toggle.setAttribute('data-bs-popper-config', '{"strategy":"fixed"}');
+        });
+    };
+
+    /**
+     * Put each list table that is wider than the page, and has no scrolling box, in one.
+     */
+    const boxWideTables = function() {
+        const main = document.getElementById('region-main');
+        if (!main) {
+            return;
+        }
+        main.querySelectorAll('table.generaltable, table.flexible').forEach(function(table) {
+            if (table.closest('.salek-table-scroll, .gradeparent, #question_table, .dropdown-menu, .modal, td, th')) {
+                return;
+            }
+            const parent = table.parentElement;
+            if (!table.getClientRects().length || table.offsetWidth <= parent.clientWidth + 1) {
+                return;
+            }
+            for (let el = parent; el && el !== main; el = el.parentElement) {
+                if (getComputedStyle(el).overflowX !== 'visible') {
+                    return;
+                }
+            }
+            const box = document.createElement('div');
+            box.className = 'salek-table-scroll';
+            table.before(box);
+            box.appendChild(table);
+            fixMenus(box);
+            document.body.classList.add('salek-has-wide-table');
+            attach(box, true);
+        });
+    };
+
+    /**
      * Initialise the extra scrollbar for supported wide tables.
      */
     const init = function() {
@@ -122,11 +169,18 @@ define([], function() {
                 // The table scrolls inside .gradeparent, which would cut off the cell menus (⋯):
                 // let them position against the window. Bootstrap reads this when a menu is first
                 // opened, so setting it now is enough.
-                tableWrapper.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(toggle) {
-                    toggle.setAttribute('data-bs-popper-config', '{"strategy":"fixed"}');
-                });
+                fixMenus(tableWrapper);
             }
+            return;
         }
+
+        // The other list tables: now, and again when the window gets narrower.
+        boxWideTables();
+        let timer = null;
+        window.addEventListener('resize', function() {
+            clearTimeout(timer);
+            timer = setTimeout(boxWideTables, 200);
+        });
     };
 
     return {

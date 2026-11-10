@@ -79,57 +79,6 @@ body#page-course-view-participants #page.drawers #region-main {
         font-weight: 600;
     }
 
-    // First and last name letters: small round buttons on a light band.
-    .initialbar {
-        align-items: center;
-        gap: 4px 10px;
-        margin: 0;
-        padding: 10px $salek-card-pad;
-        background-color: $salek-band-bg;
-
-        + .initialbar {
-            padding-top: 0;
-        }
-
-        &.lastinitial {
-            border-bottom: 1px solid $salek-table-head-line;
-        }
-    }
-
-    .initialbarlabel {
-        min-width: 80px;
-        color: $salek-text-muted;
-        font-size: .8125rem;
-    }
-
-    .initialbargroups .pagination {
-        gap: 2px;
-        margin: 0;
-    }
-
-    .initialbargroups .page-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 28px;
-        height: 28px;
-        padding: 0 6px;
-        border: 0;
-        border-radius: 8px !important; /* stylelint-disable-line declaration-no-important */
-        background: transparent;
-        color: $salek-text;
-        font-size: .8125rem;
-
-        &:hover {
-            background-color: #e2e8f0;
-        }
-    }
-
-    .initialbargroups .page-item.active .page-link {
-        background-color: var(--bs-primary);
-        color: #fff;
-    }
-
     .table-responsive {
         margin: 0;
     }

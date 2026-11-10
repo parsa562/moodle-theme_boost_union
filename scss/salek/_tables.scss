@@ -21,22 +21,33 @@
             padding: 12px 14px;
         }
 
-        // Rounded corners: the corner cells follow the frame.
+        // A column's hide button beside its title, not on a line of its own under it (which set
+        // every title above the middle of the header row).
+        > thead > tr > th .commands {
+            display: inline-flex;
+            margin-inline-start: 4px;
+            vertical-align: middle;
+        }
+
+        // Rounded corners: the corner cells follow the frame. (Physical sides, flipped by the RTL
+        // build: Moodle sets number columns to direction ltr, which put a logical corner on the
+        // wrong side, as on the user grade report.)
         > thead > tr:first-child > :first-child {
-            border-start-start-radius: 15px;
+            border-top-left-radius: 15px;
         }
 
         > thead > tr:first-child > :last-child {
-            border-start-end-radius: 15px;
+            border-top-right-radius: 15px;
         }
 
-        // (And the last row's, so a row lit up under the mouse keeps the corners.)
-        > tbody:last-child > tr:last-child > :first-child {
-            border-end-start-radius: 15px;
+        // (And the last row's, so a row lit up under the mouse keeps the corners; the last row
+        // shown, before Moodle's hidden empty filler rows.)
+        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :first-child {
+            border-bottom-left-radius: 15px;
         }
 
-        > tbody:last-child > tr:last-child > :last-child {
-            border-end-end-radius: 15px;
+        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :last-child {
+            border-bottom-right-radius: 15px;
         }
 
         > tbody > tr {
@@ -88,7 +99,7 @@
     }
 
     // Page links under the lists: small rounded buttons, the current one in the brand colour.
-    // (Letter filters, .initialbar, keep Moodle's compact look.)
+    // (Letter filters, .initialbar: below.)
     nav.pagination,
     .paging {
         .pagination {
@@ -161,6 +172,24 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
     }
 }
 
+// A list table in a box that scrolls sideways (Moodle's .table-responsive, with a full-width table;
+// the theme's box around a table wider than the page): the frame on the box, so it stays whole
+// while the table scrolls inside it (on the table, its end was cut off at the box's edge and the
+// table looked broken there).
+@include salek-content-scope {
+    // (Only a box with nothing but the table: Moodle puts the overview report's titles in its box.)
+    .table-responsive:has(> table[class~="table"]:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded}))):not(:has(> :not(table))),
+    .salek-table-scroll:has(> table:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded}))) {
+        border: 1px solid #dfe5ee;
+        border-radius: 16px;
+
+        > table {
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
 // Phones and tablets: a table wider than the screen (site administration lists, reports) scrolls
 // sideways in its own place, instead of widening the whole page. (Only below desktop widths:
 // there a table's menus could be cut by the scrolling box.)
@@ -172,6 +201,46 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
             max-width: 100%;
             overflow-x: auto;
         }
+    }
+}
+
+// A list table wider than the page in its own box that scrolls sideways (theme JS
+// questionbankscroll, which adds the box only where nothing scrolls yet), with the question
+// bank's scrollbar under it, at the bottom of the window while the table is in view. Moodle keeps
+// some header rows under the navbar while the page scrolls (assignment submissions): inside the
+// box that put them over the first rows.
+#region-main .salek-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+
+    > table {
+        margin-bottom: 0;
+
+        > thead > tr,
+        > thead > tr > th {
+            position: static;
+        }
+    }
+
+    + .qbank-sticky-scroll-zone {
+        margin-bottom: 16px;
+    }
+}
+
+body.salek-has-wide-table #region-main {
+    @include salek-bottom-scrollbar(0);
+
+    .boost-union-qbank-top-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .boost-union-qbank-top-scroll-spacer {
+        height: 1px;
     }
 }
 
@@ -192,5 +261,484 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
     .icon {
         width: 30px;
         height: 24px;
+    }
+}
+
+// Check lists (Security overview, System status, Performance overview): the status as a soft
+// pill with a dot, as the enrolment status on the participants page, instead of Bootstrap's
+// solid labels.
+#region-main table.checktable td.status [class~="badge"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background-color: #f1f4f8 !important; /* stylelint-disable-line declaration-no-important */
+    color: #475569 !important; /* stylelint-disable-line declaration-no-important */
+    font-size: .75rem;
+    font-weight: 500;
+
+    &::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #94a3b8;
+    }
+
+    &[class~="bg-success"] {
+        background-color: #e8f7ee !important; /* stylelint-disable-line declaration-no-important */
+        color: #0f6b37 !important; /* stylelint-disable-line declaration-no-important */
+
+        &::before {
+            background-color: #1da453;
+        }
+    }
+
+    &[class~="bg-warning"] {
+        background-color: #fff4e0 !important; /* stylelint-disable-line declaration-no-important */
+        color: #8a5300 !important; /* stylelint-disable-line declaration-no-important */
+
+        &::before {
+            background-color: #f59e0b;
+        }
+    }
+
+    &[class~="bg-danger"] {
+        background-color: #fdecec !important; /* stylelint-disable-line declaration-no-important */
+        color: #a61b1b !important; /* stylelint-disable-line declaration-no-important */
+
+        &::before {
+            background-color: #dc2626;
+        }
+    }
+}
+
+// The list of events (Reports > Events list) is a YUI data table: the design of the list
+// tables above (frame, tinted header, row lines) instead of YUI's stripes and cell lines.
+#region-main {
+    table.yui3-datatable-table {
+        @include salek-table-base;
+        width: 100%;
+        font-family: inherit; // (YUI sets its own font.)
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #dfe5ee;
+        border-radius: 16px;
+
+        > thead > tr > th {
+            @include salek-table-head-cell;
+            padding: 12px 14px;
+            border-inline-width: 0;
+            background-image: none; // (YUI's grey gradient.)
+            text-align: start;
+        }
+
+        > thead > tr:first-child > :first-child {
+            border-top-left-radius: 15px;
+        }
+
+        > thead > tr:first-child > :last-child {
+            border-top-right-radius: 15px;
+        }
+
+        > tbody > tr {
+            @include salek-table-row;
+
+            > td {
+                border-inline-width: 0;
+            }
+        }
+    }
+}
+
+// A message in a table cell where the list is empty (Backups: "No logs found"): the quiet
+// line of the other empty tables, not a red error box with a close button.
+#region-main table td > [class~="alert"]:only-child {
+    margin: 0;
+    padding: 14px !important; /* stylelint-disable-line declaration-no-important */ // (Over the messages' padding.)
+    border: 0;
+    background-color: transparent;
+    color: $salek-text-muted;
+    text-align: center;
+
+    > [class~="btn-close"],
+    > [class~="close"] {
+        display: none;
+    }
+
+    &::before {
+        content: none;
+    }
+}
+
+// Reports > Question instances: the form at the start like the other pages, not centred.
+#page-admin-report-questioninstances-index #region-main [class~="generalbox"][class~="centerpara"] {
+    margin-inline: 0;
+    text-align: start;
+}
+
+// Letter filters above lists (participants, Activity completion, gradebook, …), the user's
+// reference design: Moodle's first and last name rows behind a "Filter by initial" button (theme
+// JS initialsfilter), the chosen letters as chips beside it, the rows on a soft surface when the
+// button opens them. Until the script has run, the rows wait hidden (at most 3s), so they do not
+// show for a moment on every load; where the script adds a header row, the first row keeps its
+// place meanwhile, so nothing below moves.
+body.jsenabled:not(.salek-ib-ready) #region-main {
+    .initialbar.firstinitial {
+        animation: salek-ib-wait 3s step-end;
+    }
+
+    .initialbar.lastinitial,
+    .table-dynamic > .initialbar.firstinitial {
+        animation: salek-ib-wait-hidden 3s step-end;
+    }
+}
+
+@keyframes salek-ib-wait {
+    from {
+        visibility: hidden;
+        height: 64px; // The header row added by the script, with its margins.
+        overflow: hidden;
+    }
+}
+
+@keyframes salek-ib-wait-hidden {
+    from {
+        display: none;
+    }
+}
+
+#region-main {
+    .salek-ib-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+
+        &:not([data-region]) {
+            margin: 12px 0;
+        }
+    }
+
+    .salek-ib-spacer {
+        flex: 1 1 auto;
+    }
+
+    .salek-ib-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 12px;
+        background-color: #f1f4f8;
+        color: #1e293b;
+        font-size: .8125rem;
+        font-weight: 600;
+        transition: background-color .15s;
+
+        &:hover {
+            background-color: #e8edf4;
+        }
+
+        &[aria-expanded="true"],
+        &.is-set {
+            background-color: #e8eef8;
+            color: #1648a8;
+        }
+
+        &[aria-expanded="true"] .salek-ib-chevron {
+            transform: rotate(180deg);
+        }
+    }
+
+    .salek-ib-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background-color: var(--bs-primary);
+        color: #fff;
+        font-size: .6875rem;
+    }
+
+    .salek-ib-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding-inline: 12px 6px;
+        border-radius: 999px;
+        background-color: #e8eef8;
+        color: #1648a8;
+        font-size: .75rem;
+        font-weight: 400;
+    }
+
+    .salek-ib-chip-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgb(255 255 255 / 80%);
+        color: #1648a8;
+        font-size: .8125rem;
+        line-height: 1;
+        text-decoration: none;
+
+        &:hover {
+            background-color: #fff;
+        }
+    }
+
+    .salek-ib-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0 0 16px;
+        padding: 10px 12px;
+        border-radius: 16px;
+        background-color: #f6f8fc;
+
+        &[hidden] {
+            display: none;
+        }
+
+        .initialbar {
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 12px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mt-2.)
+            padding: 0;
+            background: none;
+
+            @include media-breakpoint-down(md) {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .initialbarlabel {
+            flex: none;
+            width: 78px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .me-2.)
+            color: #6b7a90;
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        .initialbargroups {
+            justify-content: flex-start !important; /* stylelint-disable-line declaration-no-important */ // (Over .justify-content-center.)
+
+            .pagination {
+                flex-wrap: wrap;
+                gap: 2px;
+                margin: 0;
+            }
+
+            .page-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 30px;
+                height: 30px;
+                padding: 0 6px;
+                border: 0;
+                border-radius: 9px !important; /* stylelint-disable-line declaration-no-important */
+                background: transparent;
+                color: #334155;
+                font-size: .8125rem;
+
+                &:hover {
+                    background-color: #fff;
+                }
+            }
+
+            .page-item.active .page-link {
+                background-color: var(--bs-primary);
+                color: #fff;
+            }
+        }
+    }
+
+    // In the participants list card: the surface under the header row, at the card's inset.
+    .table-dynamic > .salek-ib-panel {
+        margin: 14px var(--salek-qb-pad, 16px);
+    }
+}
+
+// Logs and Live logs: the column titles on one line (the table scrolls in its frame).
+#region-main table.reportlog > thead th,
+#region-main table.reportloglive > thead th {
+    white-space: nowrap;
+}
+
+
+// Competency breakdown (course reports): the user switcher and the activity filter as a
+// soft card, the note as a tinted note, the list as the other list tables.
+#page-report-competency-index #region-main div[role="main"] {
+    > .clearfix > .float-end {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 300px;
+        padding: 16px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid #dfe5ee !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 16px;
+        background-color: $salek-surface;
+
+        > p:empty {
+            display: none;
+        }
+    }
+
+    [data-region="configurecoursecompetencies"] > .alert {
+        margin: 16px 0;
+    }
+
+    [data-region="competency-breakdown-report"] table[class~="table-bordered"] {
+        @include salek-table-base;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #dfe5ee;
+        border-radius: 16px;
+
+        th {
+            @include salek-table-head-cell;
+            padding: 12px 14px;
+            border-inline-width: 0;
+        }
+
+        tr:first-child > th:first-child {
+            border-top-left-radius: 15px;
+        }
+
+        tr:first-child > th:last-child {
+            border-top-right-radius: 15px;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-inline-width: 0;
+            border-bottom: 1px solid $salek-table-row-line;
+        }
+
+        tr:last-child > * {
+            border-bottom: 0;
+        }
+    }
+}
+
+// Activity completion (course reports): rows with the room of the other list tables (Moodle
+// gives its cells 2px), the completion boxes centred in their columns, the activity names'
+// header cells a little apart.
+#page-report-progress-index #completion-progress {
+    > thead > tr > th,
+    > tbody > tr > * {
+        border-inline-width: 0; // Row lines only, as the other list tables.
+    }
+
+    > thead > tr > th {
+        padding: 12px 6px;
+        vertical-align: bottom;
+
+        &.completion-sortchoice,
+        &.completion-identifyfield {
+            padding-inline: 14px;
+        }
+    }
+
+    > tbody > tr > * {
+        padding: 10px 6px;
+        vertical-align: middle;
+
+        &:nth-child(-n+2) {
+            padding-inline: 14px;
+        }
+    }
+
+    .completion-progresscell {
+        text-align: center;
+    }
+}
+
+// Activity report (course reports): the course's sections as tinted group rows, lessons as
+// smaller titles under them, the counts and dates in the text colour, the note above the list
+// as a tinted note.
+#page-report-outline-index #region-main {
+    .loginfo {
+        margin: 16px 0 !important; /* stylelint-disable-line declaration-no-important */ // (Not on the filter's line above it.)
+        padding: 10px 14px !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid $salek-note-border;
+        border-radius: 12px;
+        background-color: $salek-note-bg;
+        color: $salek-text;
+        font-size: .875rem !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    #outlinereport {
+        > tbody > tr.section > td {
+            padding-block: 10px;
+            background-color: #f6f8fb;
+
+            > H3,
+            > H4 {
+                margin: 0;
+                color: $salek-ink;
+                font-size: .9375rem;
+                font-weight: 700;
+            }
+
+            > H4 {
+                color: $salek-text;
+                font-size: .875rem;
+                font-weight: 600;
+            }
+        }
+
+        > tbody > tr.section:has(> td > H4) > td {
+            background-color: transparent;
+        }
+
+        > tbody > tr:not(.section) > td:not(.activityname) {
+            color: $salek-text;
+        }
+
+        > tbody > tr:not(.section) > td:last-child {
+            color: $salek-text-muted;
+            font-size: .8125rem;
+        }
+    }
+}
+
+// The user grade report: the table straight on the sheet, as the other tables (Moodle puts it in
+// a grey box with 10px around it, so it had two frames and was narrower than the content).
+body#page-grade-report-user-index #region-main .user-report-container {
+    padding: 0;
+    background: none;
+}
+
+// The grades overview ("My grades"): Moodle puts a line break between each title and its table,
+// which left twice the usual space under the title.
+#page-grade-report-overview-index #region-main .table-responsive {
+    > h2 + br {
+        display: none;
+    }
+
+    // ("Courses I am taking", which Moodle puts in the table's box: the same section title as
+    // "Courses I am teaching" after it, _lists.scss.)
+    > h2 {
+        margin-bottom: 12px;
+        color: $salek-ink;
+        font-size: 1.15rem;
+        font-weight: 600;
     }
 }

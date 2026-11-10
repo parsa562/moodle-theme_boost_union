@@ -2348,6 +2348,10 @@ $string['saleklessonscount'] = '{$a} lessons';
 $string['salekactivitycount'] = '{$a} activity';
 $string['salekactivitiescount'] = '{$a} activities';
 
+// Salek: the letter filters above lists (amd/src/initialsfilter).
+$string['salekinitialsfilter'] = 'Filter by initial';
+$string['salekinitialsremove'] = 'Remove filter';
+
 // Salek: the bar above the front page's course list (amd/src/frontpagecourses).
 $string['salekcoursescards'] = 'Cards';
 $string['salekcoursescount'] = '{$a} courses';

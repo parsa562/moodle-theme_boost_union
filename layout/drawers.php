@@ -204,13 +204,10 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton,
 ];
 
-// Add synchronized horizontal scrolling for supported wide tables.
+// Add synchronized horizontal scrolling for wide tables: the question bank, the grader report and,
+// on every other page, list tables wider than the page.
 $isquestionbank = $PAGE->cm && $PAGE->cm->modname === 'qbank';
-$isgraderreport = strpos($PAGE->pagetype, 'grade-report-grader') === 0;
-
-if ($isquestionbank || $isgraderreport) {
-    $PAGE->requires->js_call_amd('theme_boost_union/questionbankscroll', 'init');
-}
+$PAGE->requires->js_call_amd('theme_boost_union/questionbankscroll', 'init');
 
 // Question bank filters: the number of questions of a chosen category as a badge in its chip.
 if ($isquestionbank) {
@@ -238,6 +235,12 @@ if (strpos($PAGE->pagetype, 'course-view-') === 0) {
 
 // Every page: a "Nothing to display" row in empty list tables.
 $PAGE->requires->js_call_amd('theme_boost_union/emptytables', 'init');
+
+// Every page: the letter filters above lists (first name, last name) behind a button.
+$PAGE->requires->js_call_amd('theme_boost_union/initialsfilter', 'init', [[
+    'filter' => get_string('salekinitialsfilter', 'theme_boost_union'),
+    'remove' => get_string('salekinitialsremove', 'theme_boost_union'),
+]]);
 
 // Every page: Moodle's reactions to a dropdown's change (filter conditions…) also with the theme's
 // dropdown lists.
