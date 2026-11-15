@@ -259,7 +259,6 @@ html[dir="ltr"] body {
             content: "";
             display: block;
             height: 46px;
-            margin-inline: 8px;
             border-radius: 17px;
             background-color: $salek-field-bg;
 
@@ -272,7 +271,7 @@ html[dir="ltr"] body {
             content: "";
             position: absolute;
             top: 5px;
-            inset-inline-start: 13px;
+            inset-inline-start: 5px;
             width: 129px;
             height: 36px;
             border-radius: 12px;
@@ -289,7 +288,8 @@ html[dir="ltr"] body {
 
 // A row of filters and a search (the dashboard's timeline): one grey bar, the filters white
 // pills on it, the search the rest of the bar, no line under it.
-.block_timeline [data-region="timeline"] > [class~="px-2"] {
+// (The bar's box is the timeline's first child: Moodle 5.3.1 dropped its "px-2" class.)
+.block_timeline [data-region="timeline"] > :first-child {
     // (Moodle's line under the bar: the space separates.)
     > [class~="border-bottom"] {
         border-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
