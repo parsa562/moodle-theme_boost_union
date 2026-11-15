@@ -1,0 +1,169 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template theme_boost_union/salek_table_sizer
+
+    Salek: the content's list tables in their final shape before the browser first draws the page
+    (theme JS questionbankscroll did this after the page had loaded, so the table first showed
+    squeezed, or out of the page on narrow screens, and then jumped). Right after the content:
+    - a column whose cells all hold a short text (a date, a name, a number, an e-mail address) on
+      one line (.salek-cell-short), the others wrap (.salek-cell-long, theme CSS);
+    - a table wider than the page in a box that scrolls sideways (.salek-table-scroll); a box of
+      Moodle's that already scrolls right around it becomes that box.
+    Theme JS questionbankscroll adds the scrollbar and the menus to the boxes later, and does the
+    same for tables added after the page has loaded. Not on the question bank and the grader
+    report, which have their own.
+
+    Example context (json):
+    {}
+}}
+<script>
+(function() {
+    "use strict";
+    // (Out of the page at once: left there, it was the content's last element, and the theme's
+    // rules for the last element of the content, such as no gap under the form, missed.)
+    if (document.currentScript) {
+        document.currentScript.remove();
+    }
+    var body = document.body;
+    var main = document.getElementById('region-main');
+    if (!main || body.classList.contains('cm-type-qbank') || body.classList.contains('path-grade-report-grader')) {
+        return;
+    }
+    var tables = main.querySelectorAll('table.generaltable, table.flexible');
+    Array.prototype.forEach.call(tables, function(table) {
+        if (table.closest('.gradeparent, #question_table, .dropdown-menu, .modal, td, th')) {
+            // (Left as they are, and marked so the theme CSS does not wait for them.)
+            table.classList.add('salek-table-ready');
+            return;
+        }
+        // (A table not shown yet, inside something hidden: sized by theme JS questionbankscroll
+        // once it shows, as its cells can only be measured then.)
+        if (table.tHead && table.tBodies.length && !table.dataset.salekColumns && table.getClientRects().length) {
+            table.dataset.salekColumns = '1';
+            var head = table.tHead.rows[table.tHead.rows.length - 1];
+            var count = head.cells.length;
+            var rows = Array.prototype.filter.call(table.tBodies[0].rows, function(row) {
+                return row.cells.length === count && !Array.prototype.some.call(row.cells, function(cell) {
+                    return cell.colSpan > 1;
+                });
+            }).slice(0, 60);
+            // (The text a cell shows: not the hidden names of its icon buttons.)
+            var shown = function(cell) {
+                var copy = cell.cloneNode(true);
+                Array.prototype.forEach.call(copy.querySelectorAll('.visually-hidden, .sr-only, .accesshide, .icon'), function(el) {
+                    el.remove();
+                });
+                return copy.textContent.replace(/\s+/g, ' ').trim();
+            };
+            // (The lines a cell's text takes: its visible text only.)
+            var lines = function(cell) {
+                var tops = [];
+                var walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+                var range = document.createRange();
+                var node;
+                while ((node = walker.nextNode())) {
+                    if (!node.nodeValue.trim() || node.parentElement.closest('.visually-hidden, .sr-only, .accesshide')) {
+                        continue;
+                    }
+                    range.selectNodeContents(node);
+                    Array.prototype.forEach.call(range.getClientRects(), function(rect) {
+                        if (rect.height) {
+                            tops.push(rect.top);
+                        }
+                    });
+                }
+                tops.sort(function(x, y) {
+                    return x - y;
+                });
+                return tops.filter(function(top, k) {
+                    return !k || top - tops[k - 1] > 4;
+                }).length;
+            };
+            var cellsOf = function(i) {
+                return [head.cells[i]].concat(rows.map(function(row) {
+                    return row.cells[i];
+                }));
+            };
+            if (rows.length) {
+                table.classList.add('salek-columns-sized');
+                var candidates = [];
+                for (var i = 0; i < count; i++) {
+                    // A column of icon buttons only: left as it is (its buttons may stack; on one
+                    // line they pushed a table that fitted out of the page on phones).
+                    if (rows.every(function(row) {
+                        return !shown(row.cells[i]) && row.cells[i].querySelector('a, button');
+                    })) {
+                        continue;
+                    }
+                    if (rows.every(function(row) {
+                        return shown(row.cells[i]).length <= 40;
+                    })) {
+                        candidates.push(i);
+                    } else {
+                        cellsOf(i).forEach(function(cell) {
+                            cell.classList.add('salek-cell-long');
+                        });
+                    }
+                }
+                // A column of short texts on one line only where the table squeezed a text into
+                // three lines or more (a date in 4 lines): wrapping added two lines or more to a
+                // cell (the theme CSS keeps the cells on one line until the table is ready; a name
+                // with a link under it has two lines by itself). Where it adds one, it stays as it
+                // is, so a table that fitted the page (on phones) still does. (All measured first,
+                // then marked.)
+                var before = candidates.map(function(i) {
+                    return rows.map(function(row) {
+                        return lines(row.cells[i]);
+                    });
+                });
+                table.classList.add('salek-table-ready');
+                // (Where the table fits the page as it wraps, only a text squeezed much more, a
+                // date in 4 lines: a name in 3 lines is better than a table that no longer fits.)
+                var least = table.offsetWidth <= table.parentElement.clientWidth + 1 ? 3 : 2;
+                candidates.filter(function(i, k) {
+                    return rows.some(function(row, r) {
+                        return lines(row.cells[i]) - before[k][r] >= least;
+                    });
+                }).forEach(function(i) {
+                    cellsOf(i).forEach(function(cell) {
+                        cell.classList.add('salek-cell-short');
+                    });
+                });
+            }
+        }
+        table.classList.add('salek-table-ready');
+        if (table.closest('.salek-table-scroll') || !table.getClientRects().length) {
+            return;
+        }
+        var parent = table.parentElement;
+        if (parent !== main && getComputedStyle(parent).overflowX !== 'visible') {
+            if (parent.children.length === 1) {
+                if (Math.max(table.offsetWidth, parent.scrollWidth) > parent.clientWidth + 1) { // (Or what sticks out of it: the turned column titles of the completion report.)
+                    parent.classList.add('salek-table-scroll');
+                }
+                return;
+            }
+            parent.classList.add('salek-table-holder');
+        }
+        if (table.offsetWidth <= parent.clientWidth + 1) {
+            return;
+        }
+        for (var el = parent.classList.contains('salek-table-holder') ? parent.parentElement : parent; el && el !== main; el = el.parentElement) {
+            if (getComputedStyle(el).overflowX !== 'visible') {
+                return;
+            }
+        }
+        var box = document.createElement('div');
+        box.className = 'salek-table-scroll';
+        table.parentNode.insertBefore(box, table);
+        box.appendChild(table);
+    });
+})();
+</script>

@@ -212,6 +212,7 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
 #region-main .salek-table-scroll {
     max-width: 100%;
     overflow-x: auto;
+    padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */ // (A box of Moodle's made this box: its .py-3 inside the frame.)
 
     > table {
         margin-bottom: 0;
@@ -719,9 +720,10 @@ body.jsenabled:not(.salek-ib-ready) #region-main {
     }
 }
 
-// The user grade report: the table straight on the sheet, as the other tables (Moodle puts it in
-// a grey box with 10px around it, so it had two frames and was narrower than the content).
-body#page-grade-report-user-index #region-main .user-report-container {
+// The user grade report, wherever it is shown (the gradebook's user report, a person's grades in a
+// course, course/user.php): the table straight on the sheet, as the other tables (Moodle puts it
+// in a grey box with 10px around it, so it had two frames and was narrower than the content).
+#region-main .user-report-container {
     padding: 0;
     background: none;
 }
@@ -736,9 +738,80 @@ body#page-grade-report-user-index #region-main .user-report-container {
     // ("Courses I am taking", which Moodle puts in the table's box: the same section title as
     // "Courses I am teaching" after it, _lists.scss.)
     > h2 {
-        margin-bottom: 12px;
-        color: $salek-ink;
-        font-size: 1.15rem;
-        font-weight: 600;
+        @include salek-section-title;
     }
+}
+
+// List tables, by theme JS questionbankscroll: a column whose cells all hold a short text (a date, a
+// name, a number, an e-mail address) on one line (not a column of icon buttons only, which may
+// stack as before); the columns with longer texts wrap, but not
+// narrower than 26em (the browser squeezed every column to fit the page: a date took 4 or 5
+// lines, a log's description 12). A table wider than the page then scrolls sideways in its box.
+#region-main table.salek-columns-sized {
+    .salek-cell-short {
+        white-space: nowrap;
+    }
+
+    .salek-cell-long {
+        white-space: normal;
+    }
+
+    // (At most half the window: on phones 26em was wider than the screen, and pushed the other
+    // columns out of a table that fitted.)
+    td.salek-cell-long {
+        min-width: min(26em, 50vw);
+    }
+}
+
+// Moodle's fixed first column (.sticky-column: the names in quiz results) while a table scrolls
+// sideways: on the colour of its row (it was see-through, the other columns ran under the names
+// and showed through them), and its title in the header fixed with it (it scrolled away).
+@include salek-content-scope {
+    table:where(.generaltable, .flexible) {
+        > tbody > tr > .sticky-column {
+            z-index: 1;
+            background-color: $salek-surface;
+        }
+
+        > tbody > tr:hover > .sticky-column {
+            background-color: #f1f5fe;
+        }
+
+        > tbody > tr:has(input[type="checkbox"]:not([role="switch"]):not(.form-switch *):checked) > .sticky-column {
+            background-image: linear-gradient(rgba(var(--bs-primary-rgb), .07) 0 0);
+        }
+
+        @for $i from 0 through 4 {
+            &:has(> tbody > tr > .c#{$i}.sticky-column) > thead > tr > .c#{$i} {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+            }
+        }
+    }
+}
+
+// Until theme JS questionbankscroll has sized a list table and, when it is wider than the page, put
+// it in its scrolling box (.salek-table-ready), the box around the table cuts it at its side
+// instead of letting it run out of the page on narrow screens (only sideways: nothing is cut
+// above or below; and only for that moment).
+// (Not the tables the script leaves alone, which never get the mark: the question bank's, the grader
+// report's; with them, the question bank's table could not be scrolled.)
+body:not(.cm-type-qbank):not(.path-grade-report-grader) #region-main div:not(#question_table):not(.gradeparent):has(> table.generaltable:not(.salek-table-ready)),
+body:not(.cm-type-qbank):not(.path-grade-report-grader) #region-main div:not(#question_table):not(.gradeparent):has(> table.flexible:not(.salek-table-ready)) {
+    overflow-x: clip;
+}
+
+// (And its cells on one line meanwhile, as most of its columns will be, short: the dates and the
+// titles did not first take several lines and then one, the table jumping in height.)
+body:not(.cm-type-qbank):not(.path-grade-report-grader) #region-main table.generaltable:not(.salek-table-ready):not(#question_table *):not(.gradeparent *) > :is(thead, tbody) > tr > *,
+body:not(.cm-type-qbank):not(.path-grade-report-grader) #region-main table.flexible:not(.salek-table-ready):not(#question_table *):not(.gradeparent *) > :is(thead, tbody) > tr > * {
+    white-space: nowrap;
+}
+
+// A box of Moodle's that scrolled sideways around a table and more (the assignment's submissions
+// with "Reset table preferences"): it no longer scrolls once the theme has put the table alone in
+// its scrolling box (theme JS questionbankscroll).
+#region-main .salek-table-holder {
+    overflow: visible !important; /* stylelint-disable-line declaration-no-important */
 }
