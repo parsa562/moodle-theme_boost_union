@@ -183,7 +183,13 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
 
 /* 3. Activity information box (dates, completion) at the top of activity pages. */
 .path-mod .activity-header:not(:empty) {
-    margin: 0 15px 16px !important; /* stylelint-disable-line declaration-no-important */ // (As in 5.0; 5.3 sets 0 with !important.)
+    // (In line with the content under it: the sheet's inset, 24px, 16px on phones; 5.0's 15px set
+    // it 9px out of line. 5.3 sets 0 with !important.)
+    margin: 0 $salek-space-inset 16px !important; /* stylelint-disable-line declaration-no-important */
+
+    @include media-breakpoint-down(md) {
+        margin-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+    }
     border: 1px solid $salek-note-border;
     border-radius: 12px;
     background-color: $salek-note-bg;
