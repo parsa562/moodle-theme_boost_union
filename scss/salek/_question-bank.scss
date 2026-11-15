@@ -159,21 +159,7 @@ body.path-question #region-main {
 
         // Question type: the icon in a tinted square, coloured by type.
         td.qtype .icon {
-            box-sizing: content-box;
-            width: 18px;
-            height: 18px;
-            margin: 0;
-            padding: 10px;
-            border-radius: 11px;
-            background-color: #eef2f7;
-        }
-
-        @each $qtype, $bg in (multichoice: #eaf1fd, truefalse: #f1ecfe, shortanswer: #e4f6f1,
-                numerical: #fff4da, essay: #fdedf3, match: #e9f5fb, gapselect: #f3f0e8,
-                ddwtos: #f3f0e8, ddimageortext: #eef5e6, ddmarker: #eef5e6, multianswer: #f6ecfa) {
-            td.qtype .icon[src*="/qtype_#{$qtype}/"] {
-                background-color: $bg;
-            }
+            @include salek-qtype-icon;
         }
 
         // Question name: dark and medium weight.
@@ -211,9 +197,10 @@ body.path-question #region-main {
             }
         }
 
-        // Status: a pill with a dot, green when ready, grey for drafts.
+        // Status: a pill with a dot, green when ready, grey for drafts (a shade darker than the
+        // site's soft pills, as the type icons).
         td.questionstatus select.form-select {
-            --salek-status-bg: #e8f7ee;
+            --salek-status-bg: #d5f2e1a1; // (The shade the site's owner chose.)
             --salek-status-fg: #0f6b37;
             --salek-status-dot: #1da453;
             min-height: 0;
@@ -244,7 +231,7 @@ body.path-question #region-main {
             }
 
             &:has(option[value="draft"]:checked) {
-                --salek-status-bg: #f1f4f8;
+                --salek-status-bg: #e0e7f1;
                 --salek-status-fg: #475569;
                 --salek-status-dot: #94a3b8;
             }

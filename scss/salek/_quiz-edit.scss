@@ -408,13 +408,6 @@
             --salek-quiz-after: 0px;
         }
 
-        // (The lock that makes a question wait for the one before: in the gap above the card,
-        // at its end, as Moodle places it between the questions.)
-        .question_dependency_wrapper {
-            top: -22px;
-            right: auto;
-            inset-inline-end: 12px;
-        }
     }
 
     // The question's number in a white square.
@@ -541,7 +534,7 @@
         .instancename > .fa-pen {
             position: absolute;
             top: 50%;
-            inset-inline-end: calc(21px + var(--salek-quiz-after, 88px)); // (The card's padding, and the middle of the place kept for it.)
+            inset-inline-end: calc(21px + var(--salek-quiz-after, 88px) + var(--salek-quiz-lock, 0px)); // (The card's padding, and the middle of the place kept for it.)
             box-sizing: border-box;
             display: inline-flex;
             align-items: center;
@@ -650,6 +643,74 @@
         color: #c0262d;
     }
 
+    // The lock that makes a question wait for the one before: the last button of the question's
+    // row, after preview and delete, in their look; blue while it is on. (Moodle: in the gap
+    // between the questions, where it covered the next card and the page's "Add".) Where some
+    // question has it, a question that cannot wait (the first one) keeps its place empty, so the
+    // buttons of all the rows stay in line.
+    ul.slots li.section li.activity.slot .question_dependency_wrapper {
+        position: static !important; /* stylelint-disable-line declaration-no-important */
+        order: 99;
+        display: flex;
+        flex: none;
+        margin-inline-start: -6px; // (8px from delete, as between the other buttons: the row's gap is 14px.)
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1px solid $card-line;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #334155;
+
+            .icon {
+                margin: 0;
+                color: inherit;
+                font-size: .875rem;
+            }
+
+            &:hover {
+                border-color: #c9d3e0;
+                color: var(--bs-primary);
+            }
+
+            &:has(.fa-lock) {
+                border-color: rgba(var(--bs-primary-rgb), .3);
+                background-color: rgba(var(--bs-primary-rgb), .08);
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    ul.slots:has(.question_dependency_wrapper:not(.question_dependency_cannot_depend)) {
+        --salek-quiz-lock: 44px; // (The lock's place: the edit pencil's place moves with it.)
+
+        li.section li.activity.slot .question_dependency_wrapper.question_dependency_cannot_depend {
+            display: flex;
+            visibility: hidden;
+        }
+    }
+
+    // The page break buttons' "+" and "x": the theme's line icons in their text's grey (Moodle's
+    // pictures: a heavy black plus and cross).
+    ul.slots li.section li.activity.slot .page_split_join {
+        img.icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-plus-white, 12px);
+        }
+
+        &[data-action="removepagebreak"]::before {
+            mask-image: $salek-icon-close;
+        }
+    }
+
     // The page break buttons between the questions: under the card, in the middle, with their
     // text (Moodle's title of the button).
     ul.slots li.section li.activity.slot .page_split_join_wrapper {
@@ -701,6 +762,11 @@
             justify-content: flex-end;
         }
 
+        // (With the lock: the buttons' line leaves its place at the end, on the same line.)
+        ul.slots:has(.question_dependency_wrapper:not(.question_dependency_cannot_depend)) li.section li.activity.slot .actions {
+            width: calc(100% - 44px);
+        }
+
         ul.slots .activityinstance .sharedbank {
             margin-inline-start: 0;
         }
@@ -710,7 +776,7 @@
         ul.slots .activityinstance .instancename > .fa-pen {
             top: auto;
             bottom: 14px;
-            inset-inline-end: calc(14px + var(--salek-quiz-after, 88px));
+            inset-inline-end: calc(14px + var(--salek-quiz-after, 88px) + var(--salek-quiz-lock, 0px));
             transform: none;
         }
 
@@ -728,5 +794,81 @@
                 grid-row: auto;
             }
         }
+    }
+}
+
+/* The quiz's reports (mod/quiz/report.php: Grades, Responses, Statistics, ...): the report's options
+   (the form), then its parts (the attempts; the quiz information, the structure analysis and the
+   chart of the statistics), each part under a line across the sheet, with space above and under
+   it, as between the parts of the other pages (My badges); the parts' titles in the site's size of
+   section titles (Moodle: 26px, bigger than the page's title). (Moodle: one run of content, the
+   parts did not look apart.) */
+body#page-mod-quiz-report #region-main div[role="main"] {
+    // (First: the line's margins below replace the title's.)
+    > H2, // (Capitals and apart: the compiler adds broken .h2/.h3 copies inside :is().)
+    > H3 {
+        @include salek-section-title;
+        margin-bottom: 16px;
+    }
+
+    > form.mform + .quizattemptcounts,
+    > H2,
+    > H3 {
+        margin-top: 32px;
+        margin-inline: calc(-1 * #{$salek-space-inset});
+        padding: 24px $salek-space-inset 0;
+        border-top: 1px solid $salek-line;
+
+        @include media-breakpoint-down(md) {
+            margin-inline: calc(-1 * #{$salek-space-inset-sm});
+            padding-inline: $salek-space-inset-sm;
+        }
+    }
+}
+
+// (A part right under the page's title, the manual grading's list: the title's line is its line.)
+body#page-mod-quiz-report #region-main div[role="main"] {
+    > .tertiary-navigation + H2,
+    > .tertiary-navigation + H3 {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+    }
+}
+
+// (With the form's last part closed, the form draws its own line under it: that line is the
+// separator, the next part starts the same distance under it. Two lines one above the other.)
+body#page-mod-quiz-report #region-main div[role="main"] > form.mform:has(> fieldset.collapsible:last-of-type > .fcontainer:not(.show)) {
+    + .quizattemptcounts,
+    + H2,
+    + H3 {
+        margin-top: 0;
+        border-top: 0;
+    }
+}
+
+// Statistics, the structure analysis: each question's type in its tinted square, as in the
+// question bank.
+body#page-mod-quiz-report #region-main #questionstatistics td > img.icon[src*="/qtype_"] {
+    @include salek-qtype-icon;
+}
+
+// Statistics, the quiz information: a name and its value on each line, as the site's other lists
+// of details (the profile's cards): the name in grey at the start, the value beside it (Moodle: both
+// in the middle of their halves, the names bold).
+body#page-mod-quiz-report #region-main table.titlesleft {
+    > tbody > tr > td {
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */ // (Moodle writes the centring on each cell.)
+    }
+
+    > tbody > tr > td.c0 {
+        width: 40%;
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 500;
+    }
+
+    > tbody > tr > td.c1 {
+        color: $salek-ink;
     }
 }

@@ -11,7 +11,7 @@
      question are cards of their own on the page's ground, "Previous page" and "Next page" under
      them; on the review, the summary and each question.
    - Elsewhere (the review) each question is a card of its own. */
-$salek-quiz-que-line: #e6eaf0;
+$salek-quiz-que-line: $salek-frame-line;
 $salek-quiz-ground: #f7f8fa;
 
 body.path-mod-quiz .que {
@@ -80,6 +80,22 @@ body.path-mod-quiz .que {
             width: 14px;
             height: 14px;
             font-size: 14px;
+        }
+
+        // The site's flag (Moodle's picture: a heavy black flag): grey, red once the question is
+        // flagged, as the red dot of a flagged question in the quiz navigation. (The picture
+        // hidden, not removed: Moodle's script swaps it on each click.)
+        img.questionflagimage {
+            display: none;
+        }
+
+        a::before {
+            @include salek-mask-icon($salek-icon-flag, 14px);
+            color: #94a3b8;
+        }
+
+        &:has(img.questionflagimage[src*="/i/flagged"]) a::before {
+            color: #dc2626;
         }
     }
 
@@ -1369,5 +1385,16 @@ body.path-mod-quiz #mod_quiz_navblock {
         border-radius: 50%;
         background: #dc2626;
         box-shadow: none;
+    }
+}
+
+// Salek: in Farsi the ordering question's numbered lists (the items with "1, 2, 3" numbering, the
+// correct order and the scores) count in Persian digits. These numbers are drawn by the browser,
+// not text, so the digit script in the site's additional HTML cannot reach them.
+[lang|="fa"] .que.ordering {
+    .sortablelist.numbering123 li,
+    ol.correctorder,
+    ol.scoredetails {
+        list-style-type: persian;
     }
 }

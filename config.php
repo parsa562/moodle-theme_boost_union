@@ -251,3 +251,12 @@ if (
 $THEME->activityheaderconfig = [
     'notitle' => true
 ];
+
+// Salek: the charts' colours (the quiz results, reports). Moodle gives a series without its own
+// colour one from $CFG->chart_colorset (set only in the site's config.php, not an admin setting),
+// else from its own palette, where a chart's first series got purple. The site's colours, when the
+// site's config.php sets none. (Moodle takes the colour after adding the series: the first series
+// gets the second colour, so the brand blue is second.)
+if (empty($CFG->chart_colorset)) {
+    $CFG->chart_colorset = ['#64748b', '#0f6cbf', '#f5b301', '#1da453', '#7c3aed', '#dc2626', '#0ea5e9', '#f97316'];
+}

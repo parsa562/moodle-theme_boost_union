@@ -77,15 +77,10 @@
             width: 32px !important; /* stylelint-disable-line declaration-no-important */
         }
 
-        // Question type: the icon in a tinted square, as on the question bank page.
+        // Question type: the icon in a tinted square coloured by type, as on the question bank
+        // page (smaller).
         td.qtype .icon {
-            box-sizing: content-box;
-            width: 16px;
-            height: 16px;
-            margin: 0;
-            padding: 8px;
-            border-radius: 9px;
-            background-color: #eef2f7;
+            @include salek-qtype-icon(16px, 8px, 9px);
         }
 
         // "Add to quiz": a round button in the brand tint.
