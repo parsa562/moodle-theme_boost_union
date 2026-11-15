@@ -1,0 +1,43 @@
+// Salek: an assignment's page (mod/assign/view.php): the teacher's "Grading summary", the student's
+// "Submission status" and "Feedback".
+
+/* The parts in line with the content (Moodle's .container-fluid set them 12px further in on each
+   side: the summary, the student's "Add submission" button); their titles a section's title, as
+   "Courses I am teaching" on the grades overview (Moodle's h3 was 26px, almost the page title's
+   size); no extra space under the tables (Moodle's .py-3 box and the table box's own margin left
+   32px at the sheet's bottom). */
+body#page-mod-assign-view #region-main div[role="main"] {
+    > .container-fluid:not(.tertiary-navigation),
+    > .gradingsummary {
+        padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > .gradingsummary,
+    > .submissionstatustable,
+    > .feedback {
+        margin: 0 0 24px;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+
+        > h3,
+        > h2 {
+            @include salek-section-title;
+        }
+
+        > [class~="box"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > .table-responsive:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // (A plugin's box in a cell, as the comments: Moodle's .py-3 made its row twice as high.)
+        td > [class~="box"] {
+            padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
