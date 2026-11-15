@@ -5,7 +5,7 @@
 // access), a hairline between them; a lesson inside a section a small titled group in the card,
 // its rows set in. Empty sections (as "General" here) are left out.
 
-$salek-ro-line: #e6eaf0;
+$salek-ro-line: $salek-frame-line;
 
 body#page-report-outline-user #region-main div[role="main"] {
     // A section: a card.
@@ -156,6 +156,96 @@ body#page-report-outline-user #region-main div[role="main"] {
             &.communication { background-color: #eaf1fd; }
             &.interactivecontent { background-color: #fff4da; }
             &.administration { background-color: #eef2f7; }
+        }
+    }
+}
+
+/* The complete report (mode=complete): in each section card, each activity as a row as in the
+   outline report: its icon in a soft round tile, its type and name, a hairline between the
+   activities; its details (views, "Never seen", an assignment's submission and feedback) under
+   its name, set in as the name; the assignment's "Submission status" and "Feedback" titles small,
+   as titles inside a card (Moodle: 26px, the size of the page's title), their tables framed, in
+   line with the details and with space under them (Moodle: one table touched the card's edge,
+   the other did not). */
+body#page-report-outline-user #region-main div[role="main"] .section .content {
+    > h4 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        padding: 14px 20px 4px;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        font-weight: 500;
+
+        &:not(:first-child) {
+            border-top: 1px solid $salek-preview-row-line;
+        }
+
+        img.icon {
+            box-sizing: border-box;
+            width: 32px !important; /* stylelint-disable-line declaration-no-important */
+            max-width: none;
+            height: 32px !important; /* stylelint-disable-line declaration-no-important */
+            max-height: none;
+            margin: 0;
+            padding: 8px;
+            border-radius: 50%;
+            background-color: #eef2f7;
+        }
+
+        a {
+            color: $salek-ink;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    // The details: under the name (past the icon), as the outline report's quiet second line.
+    > ul {
+        margin: 0;
+        padding: 2px 20px 14px calc(20px + 32px + 10px);
+        color: $salek-text;
+        font-size: .875rem;
+        list-style: none;
+
+        .submissionstatustable,
+        .feedback {
+            margin: 12px 0 0;
+
+            > h3 {
+                margin: 0 0 8px;
+                color: $salek-ink;
+                font-size: .9375rem;
+                font-weight: 600;
+            }
+
+            > [class~="box"] {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+                > .table-responsive {
+                    margin-bottom: 0;
+                }
+            }
+
+            td > [class~="box"] {
+                padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        > h4 {
+            padding-inline: 16px;
+        }
+
+        > ul {
+            padding-inline: 16px;
         }
     }
 }

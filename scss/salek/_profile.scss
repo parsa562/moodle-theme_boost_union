@@ -296,13 +296,7 @@ body.pagelayout-mypublic #page #region-main .profile_tree > section.node_categor
     }
 
     h3.lead {
-        margin: 0;
-        padding: 18px $salek-space-inset;
-        border-bottom: 1px solid $salek-line;
-        color: $salek-text-strong;
-        font-size: 1rem;
-        font-weight: 700;
-        line-height: 1.4;
+        @include salek-info-card-title;
     }
 
     // (The rows' lines from edge to edge, as the title's.)
@@ -340,37 +334,19 @@ body.pagelayout-mypublic #page #region-main .profile_tree > section.node_categor
     }
 
     dl {
-        display: grid;
-        grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
-        gap: 4px 16px;
-        align-items: baseline;
-        margin: 0;
+        @include salek-detail-list;
     }
 
-    dt {
-        color: $salek-text-muted;
-        font-size: .8125rem;
-        font-weight: 500;
-        line-height: 1.6;
-    }
+    // (The courses: one per line, Moodle puts them in a list of its own.)
+    dd ul {
+        padding: 0;
 
-    dd {
-        margin: 0;
-        color: $salek-ink;
-        overflow-wrap: anywhere;
-
-        // (The courses: one per line, Moodle puts them in a list of its own.)
-        ul {
-            padding: 0;
-
-            > li {
-                padding: 0 0 6px;
-            }
+        > li {
+            padding: 0 0 6px;
         }
     }
 
     @include media-breakpoint-down(md) {
-        h3.lead,
         ul > li {
             padding-inline: $salek-space-inset-sm;
         }
@@ -381,10 +357,6 @@ body.pagelayout-mypublic #page #region-main .profile_tree > section.node_categor
 
         li.editprofile {
             inset-inline-end: $salek-space-inset-sm;
-        }
-
-        dl {
-            grid-template-columns: minmax(0, 1fr);
         }
     }
 }

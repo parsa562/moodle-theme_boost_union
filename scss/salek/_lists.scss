@@ -18,9 +18,7 @@
     // A second title after a table (the grades overview's "Courses I am teaching" under "Courses I
     // am taking"): a section's title, as on the course search page, not Moodle's page-sized h2.
     div[role="main"] > :is(.table-responsive, .salek-table-scroll, table) ~ h2 {
-        color: $salek-ink;
-        font-size: 1.15rem;
-        font-weight: 600;
+        @include salek-section-title;
     }
 
     .table-responsive {
@@ -435,4 +433,99 @@ body.path-mod-assign #region-main .gradingtable {
 // The messages above the page after an action ("Changes saved").
 #user-notifications {
     @include salek-alerts;
+}
+
+// The data retention summary (admin/tool/dataprivacy/summary.php, linked from every page's
+// footer): each area (Site, Users, Courses...) a framed box as the profile's groups, its name on a
+// line of its own with a line under it, its details as rows of a name and its value (Moodle: grey
+// card headers with page-sized titles, the details set in 48px, empty rows for an unset purpose).
+body#page-admin-tool-dataprivacy-summary #region-main div[role="main"] > div > .card {
+    overflow: clip;
+    margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+    border: 1px solid $salek-frame-line !important; /* stylelint-disable-line declaration-no-important */ // (Over the cards' border: none.)
+    border-radius: 16px !important; /* stylelint-disable-line declaration-no-important */
+    background-color: $salek-surface;
+    box-shadow: none;
+
+    > .card-header {
+        padding: 0;
+        border: 0;
+        background: none;
+
+        h3 {
+            @include salek-info-card-title;
+        }
+    }
+
+    > .card-body {
+        padding: 16px $salek-space-inset !important; /* stylelint-disable-line declaration-no-important */
+
+        h4 {
+            margin: 0 0 8px;
+            color: $salek-ink;
+            font-size: .9375rem;
+            font-weight: 600;
+        }
+
+        dl {
+            @include salek-detail-list;
+
+            > :is(dt, dd):empty {
+                display: none;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            padding-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+// A person's course completion (report/completion/user.php, "Course completion" of a participant):
+// Moodle's centred page-sized title over each group of courses (in progress, completed, not yet
+// started): a section's title at the start.
+body#page-report-completion-user #region-main div[role="main"] > h1 {
+    @include salek-section-title;
+    text-align: start;
+}
+
+// (Its table's header row is in the table's body, not in a <thead>: the tinted header of the
+// other tables all the same.)
+body#page-report-completion-user #region-main div[role="main"] > table tr.ccheader {
+    > th {
+        @include salek-table-head-cell;
+        padding: 12px 14px;
+    }
+
+    // The corner cells follow the frame (physical sides, flipped by the RTL build); also the bottom
+    // corners while it is the table's only row.
+    > th:first-child {
+        border-top-left-radius: 15px;
+    }
+
+    > th:last-child {
+        border-top-right-radius: 15px;
+    }
+
+    &:only-child {
+        > th:first-child {
+            border-bottom-left-radius: 15px;
+        }
+
+        > th:last-child {
+            border-bottom-right-radius: 15px;
+        }
+    }
+}
+
+// A chart's title (the quiz results' "Overall number of students achieving grade ranges", the
+// reports' charts): a section's title, not Moodle's 26px.
+// (H2, H3 in capitals and apart: the compiler adds copies of h2 and h3 as .h2 and .h3 inside :is(),
+// which made the rule apply to nearly every title, as the course page's section names.)
+#region-main H2:has(+ div .chart-area),
+#region-main H3:has(+ div .chart-area),
+#region-main H2:has(+ .chart-area),
+#region-main H3:has(+ .chart-area) {
+    @include salek-section-title;
+    margin-top: 32px;
 }

@@ -89,7 +89,8 @@
     }
 }
 
-// The user grade report's person line (its own markup): the same, the buttons round, icon only.
+// The user grade report's person line (its own markup): the same; its buttons with their names as on
+// the other pages (Moodle writes only the icon here: the names from their aria-label).
 #region-main .user-heading {
     gap: 16px;
     margin: 0 0 20px;
@@ -130,9 +131,29 @@
 
         [class~="btn"] {
             @include salek-user-button;
-            width: 40px;
-            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
-            border-radius: 50%;
+
+            &[aria-label]::after {
+                content: attr(aria-label);
+                white-space: nowrap;
+            }
+        }
+    }
+
+    // Phones: the buttons on a line of their own under the person (beside them they squeezed the
+    // name and ran out of the page), as on the other pages.
+    @include media-breakpoint-down(md) {
+        flex-wrap: wrap;
+        row-gap: 12px;
+
+        > .d-inline-flex {
+            flex-wrap: wrap;
+            flex-basis: 100%;
+            margin-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (No buttons, on one's own grades: their empty line added the gap under the person.)
+        > .d-inline-flex:not(:has(*)) {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 }
@@ -179,10 +200,12 @@
     }
 }
 
-// The person's report pages (outline and complete report, logs, notes), as the other pages: the
-// page's title first, "Back" at the end of its line, the sheet's line under them; then the person
-// and the report. (Moodle: "Back", the person, then a big title.)
-body:is(#page-report-outline-user, #page-report-log-user, #page-notes-index) #region-main div[role="main"]:has(> .page-context-header) {
+// The person's report pages (outline and complete report, logs, notes) and the other pages about
+// one person in a course (their forum posts and discussions, their blog entries about the course,
+// their grades: course/user.php, their statistics), as the other pages: the page's title first, "Back" at the end of
+// its line, the sheet's line under them; then the person and the report. (Moodle: "Back", the
+// person, then a big title.)
+body:is(#page-report-outline-user, #page-report-log-user, #page-notes-index, #page-mod-forum-user, #page-blog-index, #page-course-user, #page-report-stats-user) #region-main div[role="main"]:has(> .page-context-header) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
 
@@ -212,6 +235,46 @@ body:is(#page-report-outline-user, #page-report-log-user, #page-notes-index) #re
 
     > .page-context-header {
         margin-bottom: 24px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // (Room for "Back" at the title's end: a long title ran under it.)
+    &:has(> .mb-3 > form > [class~="btn"]) > h2:not(.page-context-header *) {
+        padding-inline-end: calc(#{$salek-space-inset} + 104px);
+
+        @include media-breakpoint-down(md) {
+            padding-inline-end: calc(#{$salek-space-inset-sm} + 104px);
+        }
+    }
+
+    // Without a title of its own (a person's forum posts or discussions), on wider screens: the
+    // person's row is the title row, "Back" at its end, the sheet's line under both. (On phones
+    // "Back" stays above the person, at the end.)
+    &:not(:has(> H2)) { // (H2 in capitals: the compiler rewrites h2 inside :has() into a broken copy.)
+        @include media-breakpoint-up(md) {
+            > .page-context-header {
+                grid-row: 1;
+                grid-column: 1;
+                margin-inline-start: calc(-1 * #{$salek-space-inset}) !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 0 20px $salek-space-inset;
+                border-bottom: 1px solid $salek-line;
+            }
+
+            > .mb-3:has(> form > [class~="btn"]) {
+                display: flex;
+                align-self: stretch;
+                align-items: center;
+                margin: 0 calc(-1 * #{$salek-space-inset}) 24px 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 $salek-space-inset 20px 8px;
+                border-bottom: 1px solid $salek-line;
+
+                // (As high as "Message" beside it.)
+                [class~="btn"] {
+                    min-height: 40px;
+                    padding-block: 0;
+                    font-size: .875rem;
+                }
+            }
+        }
     }
 }
 
@@ -288,4 +351,28 @@ body#page-report-competency-index #region-main .clearfix:has(> .float-end .user-
             gap: 12px;
         }
     }
+}
+
+/* The page's only message under the person (a person's posts or discussions in the forums: "You
+   have not made any posts"): it says the list is empty, not that something failed; as the site's
+   other empty lists (Moodle: a red error box with a close button). */
+body:not(.pagelayout-login) #page #region-main div[role="main"] > .page-context-header:has(> .page-header-image) + .alert:last-child {
+    display: block;
+    margin: 8px 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: $salek-text-muted;
+    font-size: .875rem;
+    text-align: center;
+
+    &::before,
+    .btn-close {
+        display: none;
+    }
+}
+
+// (Over .btn-group's: a lone "Message" stretched across the person's row on phones.)
+body:not(.pagelayout-login) #page #region-main .page-context-header .header-button-group > [class~="btn"] {
+    flex: none;
 }
