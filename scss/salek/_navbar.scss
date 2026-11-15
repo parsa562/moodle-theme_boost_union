@@ -226,14 +226,58 @@
     }
 }
 
-/* Logged-in navbar: reduce the visual prominence of Edit mode. */
-.navbar.fixed-top:not(.boost-union-menubar) {
-    .editmode-switch-form {
-        opacity: .72;
+/* Logged-in navbar: Edit mode as an icon button beside the notifications and messages (Moodle:
+   an on/off switch, which read as a setting, not as a button): the theme's pencil in their size
+   and grey, blue on hover; while editing, blue on a soft blue circle. Moodle's switch stays the
+   control (clicked, focused and read out as before), invisible over the button. (The copy in the
+   user menu on phones keeps its switch and its words, below.) */
+.navbar.fixed-top:not(.boost-union-menubar) #usernavigation > .editmode-switch-form {
+    .form-check.form-switch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border-radius: 50%;
+        color: #475569;
+        transition: color .15s ease, background-color .15s ease;
 
-        &:hover,
-        &:focus-within {
-            opacity: 1;
+        &::before {
+            @include salek-mask-icon($salek-icon-edit, 20px); // (As tall as the messages icon beside it.)
+        }
+
+        &:hover {
+            color: var(--bs-primary);
+        }
+
+        &:has(.form-check-input:checked) {
+            background-color: rgba(var(--bs-primary-rgb), .12);
+            color: var(--bs-primary);
+        }
+
+        &:has(.form-check-input:focus-visible) {
+            outline: 2px solid rgba(var(--bs-primary-rgb), .5);
+            outline-offset: 2px;
+        }
+
+        .form-check-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border: 0;
+            border-radius: 50%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            display: none;
         }
     }
 }
