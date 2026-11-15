@@ -10,7 +10,7 @@
      box a title with an arrow at its end, its rows split by hairlines.
    - The custom fields as a box too, the download link at the end of its title's line. */
 $salek-preview: "body#page-question-bank-previewquestion-preview";
-$salek-preview-line: #e6eaf0;
+$salek-preview-line: $salek-frame-line;
 $salek-preview-ground: #f7f8fa;
 $salek-preview-box-radius: 18px; // (A little rounder than the fields inside, 14px.)
 $salek-preview-row-line: #f0f2f5; // (The rows' lines inside a box: lighter than the line under its title.)

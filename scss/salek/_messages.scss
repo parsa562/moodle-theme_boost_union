@@ -16,7 +16,7 @@
 // (Moodle: grey card headers, framed rows with arrows, the name and picture over every message,
 // boxes with tails, the page's two columns squeezed on phones.)
 
-$salek-msg-line: #e6eaf0;
+$salek-msg-line: $salek-frame-line;
 $salek-msg-received: #eef1f5;
 $salek-msg-sent: #e3edfb;
 $salek-msg-pad: 16px;

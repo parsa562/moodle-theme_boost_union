@@ -8,11 +8,7 @@
 body#page-badges-mybadges #region-main div[role="main"] {
     // (The help button right after the title's last word, also when the title takes two lines.)
     > .generalbox > h2 {
-        margin: 0 0 16px;
-        color: $salek-ink;
-        font-size: 1.15rem;
-        font-weight: 600;
-        line-height: 1.4;
+        @include salek-section-title;
 
         .help-icon {
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */

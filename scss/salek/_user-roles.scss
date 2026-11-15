@@ -5,7 +5,7 @@
    40px more on a faint grey; in a course's row its roles at the end, the role's name and its two
    actions ("Assign roles", "Check permissions") as small outlined icon buttons, as on the
    participants page. (Moodle: a bulleted list of big blue links, the roles on lines of their own.) */
-$salek-ur-line: #e6eaf0;
+$salek-ur-line: $salek-frame-line;
 
 body#page-admin-roles-usersroles #region-main div[role="main"] > .generalbox {
     overflow: clip;

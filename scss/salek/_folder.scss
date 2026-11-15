@@ -5,7 +5,7 @@
 // it is open), its files set in under it on a faint grey. (Moodle: a tree with dotted lines, a
 // black arrow picture and an empty row for the top folder, right under the buttons.)
 
-$salek-fo-line: #e6eaf0;
+$salek-fo-line: $salek-frame-line;
 
 .foldertree {
     // The top folder's own row (only its icon): left out; its files always shown.

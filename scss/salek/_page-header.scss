@@ -894,6 +894,7 @@ $salek-toolbar: '.tertiary-navigation:has(> [class~="d-flex"] > .navitem > H2)';
             position: relative;
             padding-top: 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
 
+
             > .resettable {
                 position: absolute;
                 bottom: 100%;

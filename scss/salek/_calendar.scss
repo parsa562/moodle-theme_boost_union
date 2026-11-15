@@ -825,7 +825,7 @@ body#page-calendar-view .maincalendar:has(.salek-calpanel) {
 // "Upcoming events": the title at the start of the first line, the view, the course filter and
 // "New event" at its end (on phones under the title); the events under them (below). (Moodle: a
 // centred title under the buttons.)
-$salek-up-line: #e6eaf0;
+$salek-up-line: $salek-frame-line;
 
 body#page-calendar-view .maincalendar [id^="calendar-upcoming-"] {
     display: grid;

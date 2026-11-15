@@ -873,3 +873,78 @@
         @content;
     }
 }
+
+// A section's title inside a page (a second title under the page's own: "Grading summary",
+// "Courses I am teaching", "My badges from other web sites"): the size and weight of the course
+// page's section names, 16px above what it names. One place for every such title.
+@mixin salek-section-title {
+    margin: 0 0 16px;
+    color: $salek-ink;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+// A box of details with a title (the profile's groups, the data retention summary's areas): the
+// title on a line of its own with a line under it, across the box.
+@mixin salek-info-card-title {
+    margin: 0;
+    padding: 18px $salek-space-inset;
+    border-bottom: 1px solid $salek-line;
+    color: $salek-text-strong;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+
+    @include media-breakpoint-down(md) {
+        padding-inline: $salek-space-inset-sm;
+    }
+}
+
+// Details as rows of a name and its value (<dl>): the name quiet before the value, the name
+// above the value on phones.
+@mixin salek-detail-list {
+    display: grid;
+    grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 4px 16px;
+    margin: 0;
+
+    dt {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    dd {
+        margin: 0;
+        color: $salek-ink;
+        overflow-wrap: anywhere;
+    }
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+// A question type's icon in a tinted square, coloured by type (a shade darker than the site's
+// tints: on white rows they hardly showed): the question bank, its window in the quiz editor, the
+// quiz statistics.
+@mixin salek-qtype-icon($size: 18px, $pad: 10px, $radius: 11px) {
+    box-sizing: content-box;
+    width: $size;
+    height: $size;
+    margin: 0;
+    padding: $pad;
+    border-radius: $radius;
+    background-color: #dde5f0;
+
+    @each $qtype, $bg in (multichoice: #d2e2fd, truefalse: #dfd3ff, shortanswer: #d1f2e8,
+            numerical: #ffedc2, essay: #fcd5e4, match: #d3ecf9, gapselect: #ece6d7,
+            ddwtos: #ece6d7, ddimageortext: #e3efd4, ddmarker: #e3efd4, multianswer: #edd7f6) {
+        &[src*="/qtype_#{$qtype}/"] {
+            background-color: $bg;
+        }
+    }
+}
