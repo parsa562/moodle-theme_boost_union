@@ -208,6 +208,17 @@ class boostnavbar extends \theme_boost\boostnavbar {
                 }
                 $this->items = array_values($this->items);
             }
+            // The same name twice in a row (the notes: "Participants > Notes > Notes", Moodle's own
+            // item and the page's): once, the later one (the page itself, or the deeper level).
+            $items = [];
+            foreach ($this->items as $item) {
+                $previous = end($items);
+                if ($previous && trim(strip_tags((string) $previous->text)) === trim(strip_tags((string) $item->text))) {
+                    array_pop($items);
+                }
+                $items[] = $item;
+            }
+            $this->items = $items;
             parent::remove_no_link_items($removesections);
         } else {
             $this->remove_no_link_items($removesections);
@@ -287,10 +298,12 @@ class boostnavbar extends \theme_boost\boostnavbar {
 
         $active = $this->page->secondarynav->find_active_node();
         if (!$active || !$active->display || !$active->has_action()) {
+            $this->add_unlisted_page();
             return;
         }
         $action = $active->action instanceof \action_link ? $active->action->url : $active->action;
         if (!$action instanceof \moodle_url || !$action->compare($this->page->url, URL_MATCH_PARAMS)) {
+            $this->add_unlisted_page($active);
             return;
         }
         [, $courseaction] = $this->get_node_text_and_action($coursenode);
@@ -301,6 +314,62 @@ class boostnavbar extends \theme_boost\boostnavbar {
 
         $lastitem->set_last(false);
         $current = new \breadcrumb_navigation_node($active);
+        $current->set_last(true);
+        $this->items[] = $current;
+    }
+
+    /**
+     * A course's page that its navigation does not list (a report opened by its address while the
+     * course does not offer it, as the activity completion of a course without completion
+     * tracking, or "Assign roles", which marks "Participants" as its tab): after the course, the
+     * course's reports for a report or the page's tab, then the page's title. The breadcrumb
+     * ended at the course, and with the course alone it was left out.
+     *
+     * @param \navigation_node|null $tab The course's tab the page marks as its own, if any.
+     */
+    protected function add_unlisted_page(?\navigation_node $tab = null): void {
+        $url = $this->page->url;
+        if ($url->get_path() === '/course/view.php') {
+            return;
+        }
+        $title = trim(explode(\moodle_page::TITLE_SEPARATOR, $this->page->title)[0]);
+        // (Without the course's short name some pages put before it, "SAMPLE: Activity report":
+        // the course is just before it.)
+        $prefix = format_string($this->page->course->shortname) . ': ';
+        if (strpos($title, $prefix) === 0) {
+            $title = trim(substr($title, strlen($prefix)));
+        }
+        // "Assign roles" names its place in its title ("Assign roles in Course: Maths", "Assign role
+        // 'Student' in Course: Maths"; the course is already in the breadcrumb): "Assign roles",
+        // and for one role, the role after it.
+        $rolelist = null;
+        if ($url->get_path() === '/admin/roles/assign.php') {
+            $title = get_string('assignroles', 'core_role');
+            // (The page's address leaves the role out: Moodle reads it from the request.)
+            $roleid = optional_param('roleid', 0, PARAM_INT);
+            $role = $roleid ? role_get_names($this->page->context, ROLENAME_ALIAS)[$roleid] ?? null : null;
+            if ($role) {
+                $rolelist = \navigation_node::create($title, $url);
+                $title = $role->localname;
+            }
+        }
+        if ($title === '' || $title === format_string($this->page->course->fullname)) {
+            return;
+        }
+        $lastitem = end($this->items);
+        $lastitem->set_last(false);
+        if (strpos($url->get_path(), '/report/') === 0) {
+            $reports = $this->page->settingsnav->find('coursereports', \navigation_node::TYPE_CONTAINER);
+            if ($reports && $reports->has_action()) {
+                $this->items[] = new \breadcrumb_navigation_node($reports);
+            }
+        } else if ($tab && $tab->type != \navigation_node::TYPE_COURSE && $tab->key !== 'coursehome') {
+            $this->items[] = new \breadcrumb_navigation_node($tab);
+        }
+        if ($rolelist) {
+            $this->items[] = new \breadcrumb_navigation_node($rolelist);
+        }
+        $current = new \breadcrumb_navigation_node(\navigation_node::create($title));
         $current->set_last(true);
         $this->items[] = $current;
     }

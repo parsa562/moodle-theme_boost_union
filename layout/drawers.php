@@ -251,6 +251,9 @@ if (strpos($PAGE->pagetype, 'course-view-') === 0) {
 // Every page: a "Nothing to display" row in empty list tables.
 $PAGE->requires->js_call_amd('theme_boost_union/emptytables', 'init');
 
+// Every page: a page's tab menu without the page among its items, the page's name in it.
+$PAGE->requires->js_call_amd('theme_boost_union/menutitle', 'init');
+
 // Every page: the letter filters above lists (first name, last name) behind a button.
 $PAGE->requires->js_call_amd('theme_boost_union/initialsfilter', 'init', [[
     'filter' => get_string('salekinitialsfilter', 'theme_boost_union'),
@@ -271,6 +274,11 @@ if ($PAGE->pagetype === 'message-index') {
 // Every page (the course administration has the page type "r"; the script looks for the groups):
 // pages of groups of links, their untitled group titled with its tab's name.
 $PAGE->requires->js_call_amd('theme_boost_union/pagetitle', 'groupTitles');
+
+// Pages Moodle prints without a title in their content: their tab's name as their title.
+if (in_array($PAGE->pagetype, ['mod-h5pactivity-report'])) {
+    $PAGE->requires->js_call_amd('theme_boost_union/pagetitle', 'init');
+}
 
 // The messaging preferences: the settings in the page, not in the drawer over it.
 if ($PAGE->pagetype === 'message-edit') {

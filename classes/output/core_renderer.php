@@ -2102,6 +2102,29 @@ class core_renderer extends core_renderer_intermediate {
     }
 
     /**
+     * Salek: a heading.
+     *
+     * The recycle bin's title is its name alone ("Recycle bin"): Moodle puts the course's (or the
+     * category's) name before it ("Maths: Recycle bin"), which the breadcrumb above already shows,
+     * and a Persian course name at the start of an English title turned the line around.
+     *
+     * @param string $text The text of the heading
+     * @param int $level The level of importance of the heading. Defaulting to 2
+     * @param string $classes A space-separated list of CSS classes. Defaulting to null
+     * @param string $id An optional ID
+     * @return string the HTML to output.
+     */
+    public function heading($text, $level = 2, $classes = 'main', $id = null) {
+        if ($level == 2 && $this->page->pagetype === 'admin-tool-recyclebin-index') {
+            $name = get_string('pluginname', 'tool_recyclebin');
+            if (str_ends_with((string) $text, ': ' . $name)) {
+                $text = $name;
+            }
+        }
+        return parent::heading($text, $level, $classes, $id);
+    }
+
+    /**
      * Get the course pattern datauri to show on a course card.
      *
      * This renderer function is copied and modified from /lib/classes/output/core_renderer.php
