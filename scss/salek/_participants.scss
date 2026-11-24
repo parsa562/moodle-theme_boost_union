@@ -131,10 +131,11 @@ body#page-course-view-participants #page.drawers #region-main {
             text-decoration: none;
         }
 
+        // (The shape of the site's labels.)
         .salek-role {
-            padding: 2px 10px;
+            padding: 2px 9px;
             border: 1px solid #dfe5ee;
-            border-radius: 8px;
+            border-radius: 999px;
             background-color: #f1f4f8;
             color: #475569;
             font-size: .75rem;
@@ -193,17 +194,10 @@ body#page-course-view-participants #page.drawers #region-main {
             gap: 4px;
 
             .badge {
-                display: inline-flex;
-                align-items: center;
                 gap: 6px;
-                height: 28px;
                 margin-inline-end: 6px;
-                padding: 0 10px;
-                border-radius: 999px;
                 background-color: #e8f7ee !important; /* stylelint-disable-line declaration-no-important */
                 color: #0f6b37 !important; /* stylelint-disable-line declaration-no-important */
-                font-size: .75rem;
-                font-weight: 500;
 
                 &::before {
                     content: "";

@@ -62,6 +62,62 @@
     }
 }
 
+// Labels (Moodle's badges: "Hidden from students", "Questions: 11", "Disabled", "Deprecated"…):
+// round soft labels, each meaning its own soft colour (grey, blue, teal, green, orange, red), so
+// they stay apart, with a fine line of their colour, 12px text 6px from the text beside them
+// (Moodle: strong fills with white 10.5px text, of three shapes, touching the text beside them).
+// The site's own labels (a person's status, the quiz's, the gradebook's…) keep their look: these
+// rules are the weakest. Their text in the font of the English pages also on the Persian ones,
+// where English text otherwise sat 3px high in them (Persian 1px lower, unseen).
+$salek-badge-scope: ':where(#region-main, #page-header, .modal-dialog)';
+
+#{$salek-badge-scope} [class~="badge"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border: 1px solid #dde3eb;
+    border-radius: 999px;
+    background-color: #eef1f5 !important; /* stylelint-disable-line declaration-no-important */ // (Over Bootstrap's colours.)
+    color: #3f4b5e !important; /* stylelint-disable-line declaration-no-important */
+    font-family: "Salek Josefin Sans LTR", "Josefin Sans", "SQ-066B-066C", "Markazi Text", sans-serif;
+    font-size: .75rem;
+
+    // (On English pages Persian letters in the copy moved up, as in the text around: _controls.scss.)
+    html[dir="ltr"] & {
+        font-family: "Salek Josefin Sans LTR", "Josefin Sans", "SQ-066B-066C", "Salek Markazi Text LTR", "Markazi Text", sans-serif;
+    }
+    font-weight: 600;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+
+@each $name, $bg, $fg, $line in (
+    primary #e3edfb #174a8f #c7daf5,
+    info #def4f6 #0b6470 #bfe6ea,
+    success #e3f5ea #146c3a #c3e6d0,
+    warning #fff1d9 #8a5300 #f4dbaa,
+    danger #fde8e8 #a61b1b #f4c7c7,
+    secondary #e6eaf0 #334155 #d3dae4
+) {
+    #{$salek-badge-scope} [class~="badge"][class~="bg-#{$name}"],
+    #{$salek-badge-scope} [class~="badge"][class~="text-bg-#{$name}"] {
+        border-color: $line;
+        background-color: $bg !important; /* stylelint-disable-line declaration-no-important */
+        color: $fg !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// 6px from the text before it, and from the title above it in a course card.
+#{$salek-badge-scope} :where(a, span, strong, label) + [class~="badge"],
+#{$salek-badge-scope} [class~="badge"] + [class~="badge"] {
+    margin-inline-start: 6px;
+}
+
+.course-card .coursename + div:has(> [class~="badge"]) {
+    margin-top: 6px;
+}
+
 // Moodle's older (YUI) dialogues, as the quiz's "Start attempt" and the file picker: the same
 // corners and a soft shadow, the title line as the Bootstrap ones', a round close button.
 .moodle-dialogue-base .moodle-dialogue-wrap {

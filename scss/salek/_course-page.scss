@@ -501,10 +501,10 @@ body.path-course-view #region-main {
         align-items: center;
         gap: 6px;
         margin: 0;
-        padding: 2px 8px;
+        padding: 2px 9px; // (The shape of the site's labels.)
         line-height: 16px;
         border: 1px solid #f7de9c;
-        border-radius: 8px;
+        border-radius: 999px;
         background-color: #fff8e6;
         color: #5c3d00;
         font-size: .75rem;
@@ -636,12 +636,8 @@ body.path-course-view #region-main {
 
     // Automatic completion conditions ("View", "Receive a grade"): small pills, green when met.
     [data-region="completion-info"] .badge {
-        padding: 5px 10px;
-        border-radius: 999px;
         background-color: #f1f4f8 !important; /* stylelint-disable-line declaration-no-important */
         color: #475569 !important; /* stylelint-disable-line declaration-no-important */
-        font-size: .75rem;
-        font-weight: 500;
 
         &.alert-success,
         &.bg-success {

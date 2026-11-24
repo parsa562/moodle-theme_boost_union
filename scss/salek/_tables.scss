@@ -269,16 +269,9 @@ body.salek-has-wide-table #region-main {
 // pill with a dot, as the enrolment status on the participants page, instead of Bootstrap's
 // solid labels.
 #region-main table.checktable td.status [class~="badge"] {
-    display: inline-flex;
-    align-items: center;
     gap: 6px;
-    height: 26px;
-    padding: 0 10px;
-    border-radius: 999px;
     background-color: #f1f4f8 !important; /* stylelint-disable-line declaration-no-important */
     color: #475569 !important; /* stylelint-disable-line declaration-no-important */
-    font-size: .75rem;
-    font-weight: 500;
 
     &::before {
         content: "";

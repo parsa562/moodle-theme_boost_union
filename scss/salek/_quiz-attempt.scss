@@ -99,14 +99,10 @@ body.path-mod-quiz .que {
         }
     }
 
-    // The version: a soft pill.
-    .info .badge {
-        padding: 4px 10px;
-        border-radius: 999px;
-        background-color: rgba(var(--bs-primary-rgb), .1) !important; /* stylelint-disable-line declaration-no-important */
-        color: var(--bs-primary) !important; /* stylelint-disable-line declaration-no-important */
-        font-size: .6875rem;
-        font-weight: 600;
+    // The version ("v1 (latest)"): the site's label, its padding back (Moodle takes it off all of
+    // the line's parts).
+    .info > [class~="badge"] {
+        padding: 2px 9px;
     }
 
     // "Check" and the like.

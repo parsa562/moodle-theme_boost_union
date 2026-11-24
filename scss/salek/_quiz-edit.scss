@@ -556,28 +556,13 @@
             }
         }
 
+        // (The site's labels; here only their place in the row.)
         .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             height: auto !important; /* stylelint-disable-line declaration-no-important */ // (Over .h-50.)
             margin: 0 !important; /* stylelint-disable-line declaration-no-important */
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: .75rem;
-            font-weight: 600;
 
-            &[class~="bg-primary"] {
-                border: 1px solid #c6d9f3;
-                background-color: #e4eefb !important; /* stylelint-disable-line declaration-no-important */
-                color: #1a4a91 !important; /* stylelint-disable-line declaration-no-important */
-            }
-
+            // (A warning sign before a red one.)
             &[class~="bg-danger"] {
-                border: 1px solid #f3c1c1;
-                background-color: #fde6e6 !important; /* stylelint-disable-line declaration-no-important */
-                color: #b4232a !important; /* stylelint-disable-line declaration-no-important */
-
                 &::before {
                     @include salek-mask-icon($salek-icon-warning, 12px);
                 }

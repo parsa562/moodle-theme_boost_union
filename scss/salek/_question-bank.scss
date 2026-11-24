@@ -197,42 +197,44 @@ body.path-question #region-main {
             }
         }
 
-        // Status: a pill with a dot, green when ready, grey for drafts (a shade darker than the
-        // site's soft pills, as the type icons).
+        // Status: the participants page's status label ("Active": a round label with a dot, the
+        // site's labels' size), green when ready, grey for drafts; its small arrow kept, as it is a
+        // list to change it.
         td.questionstatus select.form-select {
-            --salek-status-bg: #d5f2e1a1; // (The shade the site's owner chose.)
+            --salek-status-bg: #e8f7ee;
             --salek-status-fg: #0f6b37;
+            --salek-status-line: #c3e6d0;
             --salek-status-dot: #1da453;
             min-height: 0;
-            height: 30px;
+            height: 24px;
             margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
             padding-block: 0;
-            padding-inline: 24px 30px;
-            border: 0;
+            padding-inline: 22px 26px;
+            border: 1px solid var(--salek-status-line);
             border-radius: 999px;
             background-color: var(--salek-status-bg);
             background-image: radial-gradient(circle, var(--salek-status-dot) 3.5px, transparent 4px), escape-svg($form-select-indicator);
             // The RTL step flips only the first of two positions, so each direction is written out.
             /*rtl:ignore*/
-            background-position: left 8px center, right 10px center;
+            background-position: left 7px center, right 9px center;
             background-repeat: no-repeat;
-            background-size: 10px 10px, 12px 9px;
+            background-size: 10px 10px, 10px 8px;
             box-shadow: none;
             color: var(--salek-status-fg);
-            font-size: .8125rem;
-            font-weight: 500;
-
+            font-size: .75rem;
+            font-weight: 600;
+            line-height: 1.4;
             width: auto;
-            min-width: 104px; // Room for the dot, the longest status and the arrow.
 
             [dir="rtl"] & {
                 /*rtl:ignore*/
-                background-position: right 8px center, left 10px center;
+                background-position: right 7px center, left 9px center;
             }
 
             &:has(option[value="draft"]:checked) {
-                --salek-status-bg: #e0e7f1;
+                --salek-status-bg: #f1f4f8;
                 --salek-status-fg: #475569;
+                --salek-status-line: #dde3eb;
                 --salek-status-dot: #94a3b8;
             }
         }
@@ -907,19 +909,11 @@ body.cm-type-qbank {
 
 // The ID number of each question (the one set on it; Moodle's blue badge after its name in the
 // bank, in the quiz's "from question bank" dialog and, by the theme's quiz renderer, on the quiz's
-// questions page): a small light label, apart from the tags. (The number reads left to right in
+// questions page): the site's label, apart from the tags. (The number reads left to right in
 // Persian too.)
 :is(#categoryquestions, .slot .activityinstance) .accesshide + [class~="badge"],
 :is(#categoryquestions, .slot .activityinstance) [class~="badge"]:has(> .accesshide) {
-    display: inline-block;
-    margin-inline-start: 4px;
-    padding: 1px 7px;
-    border-radius: 6px;
-    background-color: #e4edf8 !important; /* stylelint-disable-line declaration-no-important */ // (Over .bg-primary.)
-    color: $salek-text-muted !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-white.)
-    font-size: .75rem;
-    font-weight: 500;
-    line-height: 1.5;
+    margin-inline-start: 6px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     unicode-bidi: isolate;
