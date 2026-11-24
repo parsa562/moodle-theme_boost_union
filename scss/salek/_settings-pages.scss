@@ -96,3 +96,211 @@ body.salek-settings-page #page.drawers #region-main {
         }
     }
 }
+
+// The plugin privacy registry (admin/tool/dataprivacy/pluginregistry.php): the page's title with
+// the site's line under it (Moodle: a separator line); the icons' key in a soft box, each badge
+// beside its meaning; "Expand all" the forms' outlined button; the plugin types a framed list,
+// a hairline between the rows (Moodle: 26px blue headings one under the other, on the page).
+body#page-admin-tool-dataprivacy-pluginregistry #region-main .dataprivacy-main {
+    > h2:first-child {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        margin-top: 0;
+    }
+
+    > hr {
+        display: none;
+    }
+
+    > p:has(> strong:only-child) {
+        margin: 0 0 12px;
+        color: $salek-text-strong;
+        font-size: .9375rem;
+    }
+
+    > dl {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        align-items: center;
+        gap: 10px 16px;
+        margin: 0;
+        padding: 16px 18px;
+        border: 1px solid $salek-frame-line;
+        border-radius: 16px;
+        background-color: #f5f7fb;
+
+        > dt,
+        > dd {
+            margin: 0;
+        }
+
+        > dd {
+            color: $salek-text-muted;
+            font-size: .875rem;
+        }
+
+        // (Phones: each meaning under its badge; beside it the text had a third of the width.)
+        @include media-breakpoint-down(md) {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 4px;
+
+            > dd:not(:last-child) {
+                margin-bottom: 10px;
+            }
+        }
+    }
+
+    > .clearfix:has(.tool_dataprivacy-expand-all) {
+        display: flex;
+        justify-content: flex-end;
+        margin: 24px 0 12px;
+
+        .tool_dataprivacy-expand-all {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 0 14px;
+            border: 1px solid $salek-control-border;
+            border-radius: $salek-button-radius;
+            background-color: $salek-surface;
+            color: var(--bs-primary);
+            font-size: .8125rem;
+            font-weight: 500;
+            text-decoration: none;
+
+            &:hover {
+                border-color: var(--bs-primary);
+            }
+        }
+    }
+
+    // The plugin types: one framed list.
+    > .clearfix ~ div {
+        overflow: hidden; // (The hover's tint inside the first and last rows' rounded corners.)
+        border: 1px solid $salek-frame-line;
+        border-top-width: 0;
+        background-color: $salek-surface;
+    }
+
+    > .clearfix + div {
+        border-top-width: 1px;
+        border-start-start-radius: 16px;
+        border-start-end-radius: 16px;
+    }
+
+    > .clearfix ~ div:last-child {
+        border-end-start-radius: 16px;
+        border-end-end-radius: 16px;
+    }
+
+    a.type-expand {
+        display: block;
+        padding: 12px 16px;
+        color: $salek-text-strong;
+        text-decoration: none;
+
+        &:hover {
+            background-color: #f1f5fe;
+        }
+
+        h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            color: inherit;
+            font-size: .9375rem;
+            font-weight: 600;
+
+            .icon {
+                margin: 0;
+                color: $salek-text-muted;
+                font-size: .75rem;
+            }
+        }
+    }
+
+    // A type's plugins, once opened: each level starting under the text of the one above it (the
+    // type's name 36px in: the row's 16px, the arrow and its gap), quiet lines across the row, the
+    // site's text size (Moodle: 48px and 96px steps, lines short of the row's edges).
+    [data-plugintarget] {
+        padding: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+
+        > .container-fluid {
+            padding: 0;
+        }
+
+        hr {
+            margin: 0;
+            border-color: $salek-table-row-line;
+            opacity: 1;
+        }
+
+        a.component-expand {
+            display: block;
+            padding: 10px 16px !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline-start: 36px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-ink;
+            text-decoration: none;
+
+            &:hover {
+                background-color: #f1f5fe;
+            }
+        }
+
+        h4 {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: inherit;
+            font-size: .875rem;
+            font-weight: 500;
+
+            .icon {
+                margin: 0;
+                color: $salek-text-muted;
+                font-size: .6875rem;
+            }
+        }
+
+        // A plugin's details: under its name.
+        [data-section] > [class~="ps-6"] {
+            padding: 10px 16px 12px !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline-start: 56px !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-text;
+            font-size: .875rem;
+        }
+    }
+}
+
+// The site home's Settings tab (admin/settings.php?section=frontpagesettings, an admin settings
+// form): the plain title row of the pages on the sheet (the title's size, the line across the sheet
+// 20px under it; as high as the other titles without buttons, as the recycle bin's), a hairline between the settings (the forms' rows, section 27).
+// (Moodle: a small heading, the settings without lines.)
+body#page-admin-setting-frontpagesettings #region-main form#adminsettings > .settingsform {
+    > h2 {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        display: flex;
+        align-items: center;
+        margin-top: 0;
+    }
+
+    > fieldset > .form-item {
+        margin-block: 0;
+        padding-block: 12px;
+        background: linear-gradient($salek-form-row-line, $salek-form-row-line) center bottom / calc(100% - 24px) 1px no-repeat;
+
+        &:last-child {
+            background: none;
+        }
+
+        // The names at the start of their column, in line with the title (as the forms; Moodle
+        // sets them at the column's end, an empty space before them).
+        > .form-label {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-sm-end.)
+        }
+    }
+}

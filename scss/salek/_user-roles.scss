@@ -153,3 +153,66 @@ body#page-admin-roles-usersroles #region-main div[role="main"] > .generalbox {
         }
     }
 }
+
+/* Moodle puts a few page-level links and buttons in their own "mx-3 mb-1" boxes (Switch role's
+   roles and Cancel, Add a block's Cancel/Back), 16px inside the text above them; line them up
+   with the text instead (the utility margins are !important). */
+#region-main div[role="main"] > div[class~="mx-3"][class~="mb-1"] {
+    margin-right: 0 !important; /* stylelint-disable-line declaration-no-important */
+    margin-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* Switch role (course/switchrole.php): the roles as buttons of one width (320px, the whole line on
+   phones), 8px apart, white with a thin outline, as the small outlined buttons of the role pages
+   (above); Cancel the forms' soft grey button, 16px below them.
+   (Moodle: grey buttons as wide as their names, so a ragged column, and Cancel a bare link.) */
+body#page-course-switchrole #region-main div[role="main"] {
+    > div[class~="mx-3"][class~="mb-1"] {
+        max-width: 320px;
+        margin-bottom: 8px !important; /* stylelint-disable-line declaration-no-important */
+
+        .singlebutton,
+        form {
+            display: block;
+            margin: 0;
+        }
+
+        [class~="btn"] {
+            width: 100%;
+            border: 1px solid #cfd6e0;
+            background-color: $salek-surface;
+            color: $salek-text-strong;
+
+            &:hover {
+                border-color: $salek-control-border;
+                background-color: $salek-field-bg;
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    // Cancel.
+    > div[class~="mx-3"][class~="mb-1"]:last-child {
+        max-width: none;
+        margin-top: 16px;
+
+        > a {
+            @include salek-button-soft;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: $salek-control-height;
+            padding: 0 20px;
+            border-radius: $salek-button-radius;
+            background-color: $salek-button-soft;
+            color: $salek-text-strong;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-button-soft-hover;
+                color: $salek-ink;
+            }
+        }
+    }
+}
