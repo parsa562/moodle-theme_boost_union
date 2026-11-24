@@ -1,0 +1,330 @@
+// Salek: a Feedback activity's "Edit questions" page (mod/feedback/edit.php).
+
+/* Each question a white card with the site's 16px corner and pale frame line, 20px between the
+   cards; its first line the move handle (the quiz's dots, muted grey, blue under the pointer), the
+   question's name in line with it and the menu at the line's end, all on the line's middle and
+   starting at the card's content edge, as the answers under them.
+   (Moodle: an 8px corner and a grey border, 16px apart; the move button a black four-way arrow;
+   the line 12px in from the answers, the name at its top, the menu 7px above it.) */
+$salek-fb-pad: 18px;
+
+body#page-mod-feedback-edit #region-main div[role="main"] {
+    // (Only the rows: a label's own text carries the class too.)
+    [class~="fitem"].feedback_itemlist {
+        margin: 0 0 20px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 16px $salek-fb-pad !important; /* stylelint-disable-line declaration-no-important */
+        border: 1px solid $salek-frame-line !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 16px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: $salek-surface !important; /* stylelint-disable-line declaration-no-important */
+
+        > .col-form-label,
+        > .felement {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .itemtitle {
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        margin-bottom: 12px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .itemname {
+        display: flex;
+        align-items: center;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .itemactions {
+        top: 16px !important; /* stylelint-disable-line declaration-no-important */
+        inset-inline-end: $salek-fb-pad !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The move handle: the dots at the line's start.
+    .itemhandle [class~="btn-icon"] {
+        justify-content: flex-start;
+        width: 16px;
+        min-width: 0;
+        color: #9aa6b8;
+        cursor: grab;
+
+        .icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-grip, 16px);
+            display: block;
+        }
+
+        &:hover,
+        &:focus-visible {
+            color: var(--bs-primary);
+        }
+    }
+}
+
+/* The activity's other pages, as the quiz's page (_quiz-attempt.scss), the site's activity page:
+   - Overview (view.php): "Overview" as the page title, its buttons ("Edit questions", "Preview
+     questions") 8px apart at the end of its row, the line across the sheet under it; the numbers ("Submitted answers",
+     "Questions") on one line of small muted words, the number in bold; the titles inside the page
+     ("Overview", "Page after submit") as the quiz's ("Summary of your previous attempts"); the
+     text shown after submitting in a white framed card.
+   - Show responses (show_entries.php): its name as the page title, with the line under it; the
+     list's title ("Anonymous entries (0)") as the titles above.
+   - Analysis (analysis.php): its name as the page title, "Export to Excel" at the end of that row
+     (as the title rows with a button, 65px; on phones under it), the numbers as on Overview,
+     each question's analysis a white framed card: the question on its band, the result under it.
+   (Moodle: 18px and 22px headings on lines of their own, bold labels, 25px under the buttons, an
+   empty toolbar 10px high, the analysis a bare table with a line above it.) */
+@mixin salek-fb-title {
+    margin: 32px 0 14px;
+    color: $salek-text-strong;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+@mixin salek-fb-numbers {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0 0 4px;
+    margin-inline-end: 24px;
+    vertical-align: top;
+    color: $salek-text-muted;
+    font-size: .875rem;
+    font-weight: 500;
+    line-height: 1.6;
+
+    > .feedback_info {
+        font-weight: 500;
+    }
+
+    > .feedback_info_value {
+        color: $salek-text-strong;
+        font-weight: 700;
+    }
+}
+
+@mixin salek-fb-card {
+    overflow: clip;
+    border: 1px solid $salek-frame-line;
+    border-radius: 18px;
+    background-color: #fff;
+}
+
+// Overview: "Overview" as the page's title, its buttons at the end of the title's row (as the
+// title rows with a button, 65px; on phones above the title), the line across the sheet under it.
+body#page-mod-feedback-view #region-main div[role="main"] {
+    position: relative;
+
+    > .tertiary-navigation {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > .clearer {
+        display: none;
+    }
+
+    > h3 {
+        @include salek-fb-title;
+    }
+
+    > .tertiary-navigation + h3 {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        display: flex;
+        align-items: center;
+        min-height: calc(#{$salek-control-height} + 20px);
+        margin-top: 0;
+    }
+
+    @include media-breakpoint-up(md) {
+        > .tertiary-navigation {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            inset-inline-end: $salek-space-inset;
+            width: auto; // (Moodle's .container-fluid: the sheet's width.)
+        }
+
+        > .tertiary-navigation + h3 {
+            padding-inline-end: calc(#{$salek-space-inset} + 320px);
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        > .tertiary-navigation {
+            margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > .feedback_info {
+        @include salek-fb-numbers;
+    }
+
+    > .feedback_after_submit {
+        @include salek-fb-card;
+        padding: 16px 24px !important; /* stylelint-disable-line declaration-no-important */
+
+        .no-overflow > :last-child,
+        .text_to_html > :last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+body#page-mod-feedback-show_entries #region-main div[role="main"] {
+    > .tertiary-navigation:first-child {
+        display: none;
+    }
+
+    > .tertiary-navigation:first-child + h3,
+    > h3:first-child {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        margin-top: 0;
+    }
+
+    > h4 {
+        @include salek-fb-title;
+        margin-top: 0;
+    }
+}
+
+body#page-mod-feedback-analysis #region-main div[role="main"] {
+    position: relative;
+
+    > h3:first-child {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        display: flex;
+        align-items: center;
+        min-height: calc(#{$salek-control-height} + 20px);
+        margin-top: 0;
+    }
+
+    // "Export to Excel" at the end of the title's row (md and up; on phones under the title).
+    @include media-breakpoint-up(md) {
+        > h3:first-child {
+            padding-inline-end: calc(#{$salek-space-inset} + 200px);
+        }
+
+        > h3:first-child + .form-buttons {
+            position: absolute;
+            top: 0;
+            inset-inline-end: $salek-space-inset;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        > h3:first-child + .form-buttons {
+            margin-bottom: 16px;
+        }
+    }
+
+    > .feedback_info {
+        @include salek-fb-numbers;
+    }
+
+    table.analysis {
+        @include salek-fb-card;
+        width: 100%;
+        margin: 20px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        border-collapse: separate;
+        border-spacing: 0;
+
+        th,
+        td {
+            padding: 12px 24px;
+            border: 0;
+        }
+
+        // The question.
+        tr:first-child > th {
+            border-bottom: 1px solid $salek-line;
+            background-color: $salek-surface;
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 700;
+        }
+
+        td b {
+            font-weight: 600;
+        }
+    }
+}
+
+/* Answering a Feedback (complete.php, also its preview): "Mode: Anonymous" a small muted line;
+   each question's text the size of the site's text, in bold, over its answer; the options of a
+   choice question as the Choice activity's options (_choice.scss): a framed card each, in a grid
+   (one to a row on phones), the whole card clickable, the chosen one with a blue frame and a light
+   blue fill; a number's field 240px wide; a long answer's field 160px high (it grows as typed).
+   (Moodle: small names, the options 42px apart, the number's field across the page, a 30-line
+   text field.) */
+body:is(#page-mod-feedback-complete, #page-mod-feedback-print) #region-main div[role="main"] form.feedback_form {
+    .feedback_mode {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+    }
+
+    .feedback_itemlist > .col-form-label {
+        > p,
+        > label {
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 600;
+        }
+    }
+
+    // A choice question's options: a plain list, the site's radio buttons, 12px apart.
+    .feedback_itemlist .felement > fieldset > [class~="d-flex"] {
+        flex-direction: column;
+        align-items: flex-start !important; /* stylelint-disable-line declaration-no-important */
+        gap: 12px;
+
+        > [class~="w-100"],
+        > .invalid-feedback:empty {
+            display: none;
+        }
+
+        > label.form-check-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: $salek-ink;
+            cursor: pointer;
+
+            > input {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    .feedback-item-numeric input[type="text"] {
+        max-width: 240px;
+    }
+
+    .feedback-item-textarea textarea {
+        height: 160px;
+        min-height: 120px;
+        field-sizing: content;
+        max-height: 480px;
+    }
+}
