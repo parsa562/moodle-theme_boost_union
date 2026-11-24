@@ -1002,6 +1002,19 @@
         mask-image: $salek-icon-users;
     }
 
+    // (Move, duplicate and preview: a Lesson's pages. They showed the pencil.)
+    &:has(.fa-arrows-up-down, .fa-arrows)::before {
+        mask-image: $salek-icon-move;
+    }
+
+    &:has(.fa-clone, .fa-copy)::before {
+        mask-image: $salek-icon-copy;
+    }
+
+    &:has(.fa-magnifying-glass-plus, .fa-search-plus)::before {
+        mask-image: $salek-icon-zoom;
+    }
+
     &:hover {
         border-color: #b6c0ce;
         background-color: $salek-soft;

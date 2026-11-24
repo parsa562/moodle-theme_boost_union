@@ -1,0 +1,466 @@
+// Salek: a Lesson's question pages (mod/lesson/view.php, a page with a question).
+
+/* The question and its answers from the content's edge, as the site's forms with each name over
+   its field (_forms.scss): no empty band above them (Moodle's empty section header and toolbar),
+   the question's text (bold, the site's text size) 16px above its answers, the answers a plain list of the site's radio
+   buttons 12px apart, "Submit" on the buttons' band from the content's edge.
+   (True or false too.) (Moodle: the answers in the fields' column, three quarters of the way across, "Submit" there
+   too, under an empty band with a line.) */
+body#page-mod-lesson-view #region-main div[role="main"] {
+    > .tertiary-navigation:first-child {
+        display: none;
+    }
+
+    > form.mform {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > #id_pageheader {
+            // (Its header is empty: Moodle gives the question page's section no name.)
+            > legend + [class~="d-flex"] {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > .fcontainer {
+                padding: 24px 0 16px !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // The question's text: the size of the site's text, bold, as a Feedback's questions.
+        #id_pageheadercontainer > .contents {
+            margin-bottom: 16px;
+            color: $salek-text-strong;
+            font-size: .9375rem;
+            font-weight: 600;
+
+            p {
+                font-size: inherit;
+            }
+
+            > .no-overflow > :last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .answeroption {
+            margin-bottom: 12px;
+
+            > .fitem {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+                background: none !important; /* stylelint-disable-line declaration-no-important */
+
+                > .col-form-label {
+                    display: none;
+                }
+
+                > [class~="col-md-9"] {
+                    width: 100%;
+                    max-width: none;
+                    flex: 0 0 100%;
+                    padding: 0;
+                }
+            }
+
+            .form-check {
+                min-height: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            .form-check-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+                color: $salek-ink;
+                cursor: pointer;
+
+                > input {
+                    float: none;
+                    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // True or false: the two answers in one group, on a line (Moodle): a list too.
+        .answeroptiongroup {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+
+            > .felement > div > [class~="d-flex"] {
+                flex-direction: column;
+                align-items: flex-start !important; /* stylelint-disable-line declaration-no-important */
+                gap: 12px;
+
+                > .invalid-feedback:empty {
+                    display: none;
+                }
+
+                > .form-check-label {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                    color: $salek-ink;
+                    cursor: pointer;
+
+                    > input {
+                        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                    }
+                }
+            }
+        }
+
+        // The answers' rows and "Submit" from the content's edge: no label column.
+        .answeroptiongroup,
+        > .fitem[id$="_submitbutton"]:not(fieldset) {
+            > .col-form-label {
+                display: none !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex.)
+            }
+
+            > .felement {
+                flex: 0 0 100%;
+                width: 100%;
+                max-width: none;
+                padding: 0;
+            }
+        }
+
+        > .fitem[id$="_submitbutton"]:not(fieldset) {
+            padding-inline: var(--salek-sheet-pad);
+        }
+    }
+}
+
+/* Editing a Lesson (mod/lesson/edit.php) and its reports (report.php): the title's row as the
+   site's other pages with buttons: the page's title at its start, its buttons and menus ("Back",
+   the view's menu: Collapsed / Expanded, Overview / Detailed statistics) at its end (md and up; on
+   phones above the title), the line across the sheet under it. (Moodle: the buttons on a row of
+   their own over the title.) */
+@mixin salek-lesson-title-row($reserve) {
+    position: relative;
+
+    > .tertiary-navigation {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > .tertiary-navigation + h2 {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        display: flex;
+        align-items: center;
+        min-height: calc(#{$salek-control-height} + 20px);
+        margin-top: 0;
+    }
+
+    @include media-breakpoint-up(md) {
+        > .tertiary-navigation {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            inset-inline-end: $salek-space-inset;
+            width: auto;
+        }
+
+        > .tertiary-navigation + h2 {
+            padding-inline-end: calc(#{$salek-space-inset} + #{$reserve});
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        > .tertiary-navigation {
+            margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+body#page-mod-lesson-edit #region-main div[role="main"] {
+    @include salek-lesson-title-row(280px);
+}
+
+body#page-mod-lesson-report #region-main div[role="main"] {
+    @include salek-lesson-title-row(240px);
+
+    // "View all course grades": a quiet link under the title's line.
+    > .allcoursegrades {
+        margin: 0 0 16px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        font-size: .875rem;
+    }
+
+    // (24px between the tables of the detailed statistics, a question each.)
+    .table-responsive {
+        margin-bottom: 24px;
+    }
+}
+
+/* The reports' tables (the attempts on Overview, a table a question on Detailed statistics):
+   the site's list tables (_tables.scss: frame, tinted header, row lines, hover, the theme's
+   checkboxes), as wide as the page, their texts at the start; Moodle's empty last row left out.
+   (Moodle: its other table class, so bare striped tables, 60% wide, the texts set right.) */
+body#page-mod-lesson-report #region-main div[role="main"] table.table-striped:not(.generaltable) {
+    @include salek-table-base;
+    width: 100% !important; /* stylelint-disable-line declaration-no-important */
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+
+    > thead > tr > th {
+        @include salek-table-head-cell;
+        padding: 12px 14px;
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > tbody > tr {
+        @include salek-table-row;
+
+        > * {
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > tbody > tr.lastrow:has(> td.c0:empty) {
+        display: none;
+    }
+
+    // (So the row before it is the last one shown: no line under it.)
+    > tbody > tr:has(+ tr.lastrow > td.c0:empty) > * {
+        border-bottom: 0;
+    }
+
+    input[type="checkbox"] {
+        @include salek-checkbox;
+    }
+
+    label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+}
+
+/* Expanded view: each page a card, 56px apart; between two cards (and before the first and after
+   the last) Moodle's "add" links as an insertion bar: small framed pills, centred on a dashed line
+   across the content, so they read as "add here", in that gap (Moodle: plain links split by "|",
+   as near to the card above as to the one below).
+   A card: its header the page's name, the page's actions (move, edit, duplicate, preview, delete:
+   the site's row action buttons) at the line's end; under it the page's text and its type
+   (Multichoice, Content…) as a small label; then its answers, a row each: the name (Answer 1, Score,
+   Jump…) small and muted in a 160px column at the start, the value beside it (on phones under
+   it), a hairline between the rows. (Moodle: the name centred with the icons after it, the type on
+   a centred row under the text, the names right-aligned against the values in the middle.) */
+body#page-mod-lesson-edit #region-main div[role="main"] .edit_pages_box {
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    .addlinks {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 16px 0;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0; // (Moodle's "|" between the links.)
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            inset-inline: 0;
+            border-top: 1px dashed #cfd6e0;
+        }
+
+        > a {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border: 1px solid $salek-frame-line;
+            border-radius: 999px;
+            background-color: $salek-surface;
+            color: var(--bs-primary);
+            font-size: .75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            text-decoration: none;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-plus-line, 11px);
+            }
+
+            &:hover {
+                border-color: rgba(var(--bs-primary-rgb), .35);
+                background-color: #f1f5fe;
+            }
+        }
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        // (On phones the pills wrap on several lines: no line through them.)
+        @include media-breakpoint-down(md) {
+            &::before {
+                content: none;
+            }
+        }
+    }
+
+    .table-responsive {
+        margin: 0;
+        overflow: visible;
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    table.generaltable {
+        display: block;
+        overflow: clip;
+        margin: 0;
+        border: 1px solid $salek-frame-line !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 16px !important; /* stylelint-disable-line declaration-no-important */
+        background-color: #fff;
+
+        > thead,
+        > tbody {
+            display: flex;
+            flex-direction: column;
+        }
+
+        tr {
+            display: grid;
+            grid-template-columns: 160px minmax(0, 1fr);
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        th,
+        td {
+            border: 0 !important; /* stylelint-disable-line declaration-no-important */
+            background: none !important; /* stylelint-disable-line declaration-no-important */
+            box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+            text-align: start !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's inline alignments.)
+        }
+
+        [colspan] {
+            grid-column: 1 / -1;
+        }
+
+        // The header: name, actions.
+        > thead th {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            min-height: 56px;
+            padding: 10px 16px;
+            // (The site's table header: its tint and line.)
+            border-bottom: 1px solid $salek-table-head-line !important; /* stylelint-disable-line declaration-no-important */
+            background-color: $salek-table-head-bg !important; /* stylelint-disable-line declaration-no-important */
+            color: #1e293b;
+            font-size: .9375rem;
+            font-weight: 700;
+
+            > a:has(> .icon:only-child) {
+                @include salek-row-action;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+            > a:has(> .icon:only-child):nth-of-type(2) {
+                margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // The page's text.
+        > tbody > tr:first-child > td {
+            padding: 14px 16px;
+            color: $salek-text-strong;
+
+            .no-overflow > :last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // Its type: a small label at the start of the line under the text.
+        > tbody > tr:nth-child(2) > td {
+            padding: 0 16px 14px;
+
+            > strong {
+                display: inline-block;
+                padding: 2px 10px;
+                border-radius: 999px;
+                background-color: $salek-soft;
+                color: $salek-text-muted;
+                font-size: .75rem;
+                font-weight: 600;
+            }
+        }
+
+        // The answers' rows.
+        > tbody > tr:nth-child(n + 3) {
+            border-top: 1px solid $salek-preview-row-line;
+
+            > td {
+                padding: 10px 16px;
+            }
+
+            > td.c0 {
+                color: $salek-text-muted;
+                font-size: 0; // (The ":" after the name.)
+
+                > label {
+                    margin: 0;
+                    font-size: .8125rem;
+                    font-weight: 500;
+                }
+            }
+
+            > td.c1 {
+                padding-inline-start: 0;
+                color: $salek-text-strong;
+                font-size: .875rem;
+            }
+        }
+
+        // (A row's first answer: the line above it a little stronger, it starts a group.)
+        > tbody > tr:nth-child(3) {
+            border-top-color: $salek-frame-line;
+        }
+
+        @include media-breakpoint-down(md) {
+            tr {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            > tbody > tr:nth-child(n + 3) {
+                > td.c0 {
+                    padding-bottom: 0;
+                }
+
+                > td.c1 {
+                    padding: 4px 16px 10px;
+                }
+            }
+        }
+    }
+}
