@@ -632,3 +632,95 @@ body#page-report-completion-user #region-main div[role="main"] > table tr.cchead
     @include salek-section-title;
     margin-top: 32px;
 }
+
+// The content bank (contentbank/index.php): the columns' sort arrows as in the question bank (the
+// theme's small grey up-and-down arrows beside the title, the sorted column's arrow in the brand
+// colour; Moodle: heavy black arrows, under the title when it wrapped); the search field as high
+// as the buttons and lists beside it (Moodle's hidden label made its box 2px higher).
+#region-main .content-bank-container {
+    .cb-btnsort {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        width: auto !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0;
+        border: 0;
+        font-weight: inherit;
+
+        .icon {
+            margin: 0;
+            font-size: .75rem;
+        }
+
+        .default .icon {
+            width: 12px;
+            height: 12px;
+            background-color: #94a3b8;
+            mask: $salek-icon-sort center / contain no-repeat;
+
+            &::before {
+                content: none;
+            }
+        }
+
+        :is(.asc, .desc) .icon {
+            color: var(--bs-primary);
+        }
+    }
+
+    .cb-search-container .input-group.searchbar {
+        height: 44px;
+        align-items: center;
+    }
+}
+
+// A button right above a list table ("Add new learning plan" on a person's learning plans):
+// 16px above the table, as the site's other buttons over lists (Moodle: no space, the button
+// touched the table's frame).
+#region-main div[role="main"] div:has(> .singlebutton):has(+ table),
+#region-main div[role="main"] div:has(> .singlebutton):has(+ .salek-table-scroll),
+#region-main div[role="main"] div:has(> .singlebutton):has(+ .table-responsive) {
+    margin-bottom: 16px;
+}
+
+// (Or a button alone in a box of Moodle's: the data requests' "New request", in .mb-1.)
+#region-main div[role="main"] div:has(> [class~="btn"]:only-child):has(+ table),
+#region-main div[role="main"] div:has(> [class~="btn"]:only-child):has(+ .salek-table-scroll),
+#region-main div[role="main"] div:has(> [class~="btn"]:only-child):has(+ .table-responsive) {
+    margin-bottom: 16px !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Logs (report/log/index.php): opened from an activity, the activity's description at the
+// content's edges and 16px above the filters (it sat on them, out past the content's edges).
+body#page-report-log-index #region-main {
+    .activity-header {
+        margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding-inline: $salek-space-inset !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            padding-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // The filters, "Get these logs" under them, the page links and the table: 16px apart, the
+    // table 24px under the controls above it (Moodle: 8px, then 16px and 20px from its margins).
+    form.logselecform {
+        margin: 0;
+
+        > [class~="mt-2"] {
+            margin-top: 16px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    form.logselecform + nav.pagination {
+        margin: 24px 0 16px;
+
+        > .pagination {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    form.logselecform + .table-responsive {
+        margin-top: 24px;
+    }
+}
