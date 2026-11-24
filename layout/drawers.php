@@ -268,6 +268,10 @@ if ($PAGE->pagetype === 'message-index') {
     $PAGE->requires->js_call_amd('theme_boost_union/messagesback', 'init', [get_string('back')]);
 }
 
+// Every page (the course administration has the page type "r"; the script looks for the groups):
+// pages of groups of links, their untitled group titled with its tab's name.
+$PAGE->requires->js_call_amd('theme_boost_union/pagetitle', 'groupTitles');
+
 // The messaging preferences: the settings in the page, not in the drawer over it.
 if ($PAGE->pagetype === 'message-edit') {
     $PAGE->requires->js_call_amd('theme_boost_union/messageprefs', 'init');

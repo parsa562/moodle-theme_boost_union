@@ -385,21 +385,182 @@ html[dir="ltr"] body {
     opacity: 1;
 }
 
-// Grouped settings links (core/settings_link_page), not forms, tables or tab labels.
-#region-main .tab-content > .tab-pane[id^="link"] > .container-fluid {
-    > .row > :is(.col, .col-sm-9) > ul.list-unstyled {
-        line-height: 1.9;
-    }
+// Pages of links: the groups of links of the course administration and the site administration
+// (core/settings_link_page: a tab's links, then groups each with a title) and the single lists of
+// the course's Reports, Course reuse and penalty pages (core/report_link_page). One design for
+// all: the links rows across the sheet with a line between them, the last one at the sheet's end;
+// each group's title a grey band across the sheet (Moodle: titles of three looks, blue links of
+// 22px, one black, the tab's own group without one, short lines between the groups; the lists
+// small blue links). The untitled group's title, its tab's name: theme JS pagetitle.
+$salek-link-groups: '#region-main .tab-content > .tab-pane[id^="link"] > .container-fluid';
+$salek-link-list: '#region-main div[role="main"] > .container-fluid:has(> div > ul.list-unstyled[class~="ms-0"])';
 
-    > hr {
-        margin-bottom: 1.9rem;
+// (Across the sheet, out to its edges: Bootstrap's width and padding off.)
+#{$salek-link-groups},
+#{$salek-link-list} {
+    width: auto;
+    max-width: none;
+    margin-inline: calc(-1 * #{$salek-space-inset});
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    @include media-breakpoint-down(md) {
+        margin-inline: calc(-1 * #{$salek-space-inset-sm});
     }
 }
 
-// The same spacing for the link lists of the course's Reports, Course reuse and penalty pages
-// (core/report_link_page).
-#region-main div[role="main"] > .container-fluid > div > ul.list-unstyled[class~="ms-0"] {
-    line-height: 1.9;
+#{$salek-link-groups} > .row ul.list-unstyled,
+#{$salek-link-list} > div > ul.list-unstyled {
+    @include salek-link-rows;
+}
+
+// (The sheet's last link: its hover with the sheet's corners.)
+#{$salek-link-groups} > .row:last-child ul.list-unstyled > li:last-child > a,
+#{$salek-link-list} > div > ul.list-unstyled > li:last-child > a {
+    border-end-start-radius: $salek-card-radius;
+    border-end-end-radius: $salek-card-radius;
+}
+
+// The groups: one under the other, a line between them, the title's band over the links.
+#{$salek-link-groups} {
+    > hr {
+        display: none;
+    }
+
+    > .row {
+        display: block;
+        margin: 0;
+
+        + .row {
+            border-top: 1px solid #d9e1ec;
+        }
+
+        > * {
+            flex: none;
+            width: 100%;
+            max-width: none;
+            padding: 0;
+        }
+
+        > [class~="col-sm-3"]:empty {
+            display: none;
+        }
+
+        > [class~="col-sm-3"] > :is(h3, h4, .salek-group-title) {
+            @include salek-link-group-title;
+        }
+    }
+
+    // (A group without links, the site administration's Users tab's own: left out; it showed a
+    // title band right over the next one. The group after it is then the first.)
+    // (Moodle puts a line, hidden here, between the groups.)
+    > .row:not(:has(ul.list-unstyled > li)) {
+        display: none;
+
+        + .row,
+        + hr + .row {
+            border-top: 0;
+        }
+    }
+}
+
+// The links right under the title's line and at the sheet's end (no space over or under them).
+#region-main:has(> div[role="main"] > .tab-content > .tab-pane[id^="link"]),
+#region-main:has(> div[role="main"] > .container-fluid > div > ul.list-unstyled[class~="ms-0"]) {
+    padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    div[role="main"] > h2 {
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    div[role="main"] > .tab-content {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// The site administration has no title in its sheet (its tabs are the tab bar over it): the
+// first group's band at the sheet's top, with its corners.
+body#page-admin-search #region-main:has(.tab-pane[id^="link"]) {
+    padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    .tab-pane[id^="link"] > .container-fluid > .row:first-child > [class~="col-sm-3"] > :is(h3, h4, .salek-group-title),
+    .tab-pane[id^="link"] > .container-fluid > .row:first-child:not(:has(ul.list-unstyled > li)) + .row > [class~="col-sm-3"] > :is(h3, h4, .salek-group-title),
+    .tab-pane[id^="link"] > .container-fluid > .row:first-child:not(:has(ul.list-unstyled > li)) + hr + .row > [class~="col-sm-3"] > :is(h3, h4, .salek-group-title) {
+        border-start-start-radius: $salek-card-radius;
+        border-start-end-radius: $salek-card-radius;
+    }
+}
+
+// Course administration (course/admin.php; found by its tab, Moodle gives the page the id
+// "page-r"): its tabs a small switch at the end of the title's row, the chosen one in the brand
+// colour (Moodle: a tab bar of its own under the title); on phones under the title, as wide as
+// the content.
+#region-main div[role="main"]:has(> .tab-content > #linkcourseadmin) {
+    position: relative;
+
+    > h2 {
+        padding-inline-end: 280px;
+    }
+
+    > .nav-tabs {
+        position: absolute;
+        top: -6px; // (Its middle on the title's.)
+        inset-inline-end: $salek-space-inset; // (In line with the content, as the title.)
+        flex-wrap: nowrap;
+        gap: 2px;
+        margin: 0;
+        padding: 3px;
+        border: 1px solid #d9e1ec; // (A frame round both, so the other tab reads as one to choose.)
+        border-radius: 14px;
+        background-color: $salek-field-bg;
+
+        .nav-item {
+            margin: 0;
+        }
+
+        // (Inside the switch: its 14px corners less its 1px frame and 3px edge, so the corners
+        // run alike.)
+        .nav-link {
+            margin: 0;
+            padding: 8px 18px;
+            border: 0;
+            border-radius: 10px;
+            background-color: transparent;
+            color: $salek-text-muted;
+            font-size: .875rem;
+            font-weight: 600;
+            white-space: nowrap;
+
+            &:hover {
+                background-color: $salek-field-bg-hover;
+                color: $salek-text-strong;
+            }
+
+            &.active {
+                background-color: var(--bs-primary);
+                color: #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        > h2 {
+            padding-inline-end: 0;
+        }
+
+        > .nav-tabs {
+            position: static;
+            margin: 16px 0;
+
+            .nav-item {
+                flex: 1;
+            }
+
+            .nav-link {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
 }
 
 /* 8. Slightly more line spacing for reading text (Persian script needs it most). */
