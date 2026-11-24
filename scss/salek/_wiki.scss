@@ -1,0 +1,206 @@
+// Salek: a Wiki's pages (mod/wiki: View, Edit, Comments, History, Map, Files, Administration).
+
+/* The title row, as the site's pages with a page menu (the grade reports, the permissions page):
+   the menu of the page's views (View, Edit, Comments, History, Map, Files…) is the page's title (the
+   title's size, no frame, the arrow in a round button), "Print" at the row's end; the wiki page's
+   name under it as the title's subtitle ("Permissions in course: …"), the line across the sheet
+   under both (Files, without a name: under the menu). (Moodle: the menu a small field on a row of
+   its own, 25px under it, the name under that in a small heading, no line.) */
+body.path-mod-wiki #region-main div[role="main"] {
+    > .tertiary-navigation {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // "Print" at the row's end.
+        .navitem + .navitem {
+            margin-inline-start: auto !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (Moodle's empty place for "Print" on the pages without it.)
+        .navitem:not(:has(*)) {
+            display: none;
+        }
+
+        .navitem:first-child {
+            flex: 0 1 auto;
+            min-width: 0;
+        }
+
+        // (As wide as the chosen view's name: with the toolbar's 100% the longer ones, "Page map",
+        // broke on two lines.)
+        @include salek-urlselect-title;
+    }
+
+    // The page's name: the subtitle, 4px under the title's row, the line under it.
+    > .tertiary-navigation + .wiki_headingtitle {
+        @include salek-title-line;
+        margin-top: 4px;
+
+        > h3 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            color: $salek-text;
+            font-size: .9375rem;
+            font-weight: 500;
+
+            > .help-icon {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+    }
+
+    // Files: no name, the line under the menu.
+    > .tertiary-navigation:not(:has(+ .wiki_headingtitle)) {
+        @include salek-title-line;
+        // (Over the toolbars' 0, above: to the sheet's edges, the menu at the content's edge.)
+        margin: 0 calc(-1 * #{$salek-space-inset}) $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 $salek-space-inset 20px !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            margin-inline: calc(-1 * #{$salek-space-inset-sm}) !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // A view's own menu or link under the title ("Map menu", "Administration menu", "Add comment"):
+    // 16px above what it opens.
+    > .midpad {
+        margin: 0 0 16px;
+        padding: 0;
+
+        > .singleselect {
+            margin: 0;
+        }
+    }
+}
+
+/* History: "Created: …" a small muted line, 12px above the table (Moodle: italic, touching it). */
+body#page-mod-wiki-history #region-main div[role="main"] > .wiki_headingtime {
+    margin: 0 0 12px;
+    color: $salek-text-muted;
+    font-size: .8125rem;
+    font-style: normal;
+}
+
+/* Comments: "Add comment" as the site's "add" links (a blue word with a plus); "No comments" a
+   plain muted line (Moodle: a bare link, the message in bold). */
+body#page-mod-wiki-comments #region-main div[role="main"] {
+    > .midpad > a {
+        @include salek-preview-word-button;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--bs-primary);
+        font-size: .875rem;
+        font-weight: 600;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-plus-line, 12px);
+        }
+    }
+
+    > p.bold {
+        color: $salek-text-muted;
+        font-size: .875rem;
+        font-weight: 400;
+    }
+}
+
+/* Files: "No files" a plain muted line, 16px above "Edit wiki files" (Moodle: two nested boxes
+   with their padding). */
+body#page-mod-wiki-files #region-main div[role="main"] > .generalbox {
+    margin: 0 0 16px;
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    > .generalbox {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text-muted;
+        font-size: .875rem;
+    }
+}
+
+/* Map: its lists (the page list; on "Links" the pages linking here and the pages linked from
+   here) the site's list tables (frame, tinted header, row lines), the list's name and its help in
+   the header (Moodle: its other table classes, so bare tables). */
+body#page-mod-wiki-map #region-main div[role="main"] :is(table.generalbox:not(.generaltable), table.wiki_navigation_from, table.wiki_navigation_to) {
+    @include salek-table-base;
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+
+    > thead > tr > th {
+        @include salek-table-head-cell;
+        padding: 12px 14px;
+        text-align: start !important; /* stylelint-disable-line declaration-no-important */
+
+        .help-icon {
+            margin: 0 4px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > tbody > tr {
+        @include salek-table-row;
+    }
+
+    // (An empty list: Moodle's empty first row out, its message muted.)
+    > tbody.empty > tr:first-child {
+        display: none;
+    }
+
+    > tbody.empty td {
+        color: $salek-text-muted;
+        font-size: .875rem;
+    }
+}
+
+// "Links": the two lists side by side, 16px apart, top-aligned, without the scrollbars Moodle's
+// boxes put under them (on phones one under the other).
+body#page-mod-wiki-map #region-main div[role="main"] .wiki_navigation_container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+    margin: 0;
+
+    > [class~="col-md-6"] {
+        width: auto;
+        max-width: none;
+        padding: 0;
+    }
+
+    .table-responsive {
+        overflow: visible;
+        margin: 0;
+    }
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Edit: the form's first section right under the title's line, as on the site's other form pages
+   (_page-header.scss): there was an empty strip between the two lines. */
+body#page-mod-wiki-edit #region-main div[role="main"] > .wiki_headingtitle ~ form.mform:has(> fieldset.collapsible) { // (An empty element of Moodle's between them.)
+    margin-top: calc(-1 * #{$salek-page-header-gap}) !important; /* stylelint-disable-line declaration-no-important */
+
+    > fieldset:first-of-type > [class~="d-flex"]:has(> .ftoggler) {
+        border-top: 0;
+    }
+}
