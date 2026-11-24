@@ -1,0 +1,551 @@
+// Workshop.
+
+/* Main page, the phases plan: one framed box like the site's list tables (tinted header row, row
+   lines), the phases as equal columns (on phones one under the other), the current phase kept in
+   Moodle's light green, the tasks with the site's check-circle (grey to do, green done, red failed,
+   blue info) instead of Moodle's clipboard pictures. (Moodle: floated 20% columns in a square grey
+   frame, 180px-tall cells, narrow 70% columns on phones.) */
+body.path-mod-workshop #region-main .userplan {
+    display: flex;
+    margin: 0 0 24px;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+    background-color: $salek-surface;
+    color: $salek-text-strong;
+    font-size: .8125rem;
+
+    > dl.phase {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-width: 0;
+        width: auto;
+        float: none;
+        margin: 0;
+        border: 0;
+
+        + dl.phase {
+            border-inline-start: 1px solid #dfe5ee;
+        }
+    }
+
+    dt {
+        float: none;
+        width: auto;
+        margin: 0;
+        padding: 12px 14px;
+        border: 0;
+        border-bottom: 1px solid $salek-table-head-line;
+        background-color: $salek-table-head-bg;
+        color: #1e293b;
+
+        .phasetitle {
+            display: block;
+            font-size: .875rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            color: $salek-text-muted;
+            font-size: .75rem;
+
+            .icon {
+                width: 12px;
+                height: 12px;
+                margin: 0 4px;
+                font-size: 12px;
+                vertical-align: -1px;
+            }
+        }
+    }
+
+    dd {
+        flex: 1 1 auto;
+        float: none;
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 12px 14px;
+        border: 0;
+        background-color: transparent;
+        color: $salek-text-strong;
+    }
+
+    dt.active,
+    dd.active {
+        border-inline: 0;
+        background-color: #e7f1c3;
+        color: $salek-text-strong;
+    }
+
+    dt.active {
+        border-bottom-color: #cfdca0;
+    }
+
+    dd.phasetasks {
+        .tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            display: grid;
+            grid-template-columns: 16px minmax(0, 1fr);
+            column-gap: 8px;
+            min-height: 0;
+            margin: 0;
+            background-image: none;
+
+            &::before {
+                @include salek-mask-icon($salek-icon-circle-check, 16px);
+                grid-row: 1 / span 2;
+                margin-top: 2px;
+                color: #94a3b8;
+            }
+
+            &.completed::before {
+                color: #1da453;
+            }
+
+            &.fail::before {
+                mask-image: $salek-icon-error;
+                color: #dc2626;
+            }
+
+            &.info::before {
+                mask-image: $salek-icon-info;
+                color: #2563eb;
+            }
+        }
+
+        .title,
+        .details {
+            grid-column: 2;
+            padding: 0;
+        }
+
+        .title {
+            line-height: 1.5;
+        }
+
+        .details {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            line-height: 1.6;
+
+            &:empty {
+                display: none;
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        flex-direction: column;
+
+        > dl.phase {
+            flex: none;
+        }
+
+        > dl.phase + dl.phase {
+            border-inline-start: 0;
+            border-top: 1px solid #dfe5ee;
+        }
+
+        // (Moodle's script gives every header and every cell the tallest one's height: on phones,
+        // one phase under the other, each its own height.)
+        dt {
+            height: auto !important; /* stylelint-disable-line declaration-no-important */
+            border-bottom: 0;
+        }
+
+        dd {
+            height: auto !important; /* stylelint-disable-line declaration-no-important */
+            border-top: 1px solid $salek-table-head-line;
+        }
+
+        dd.active {
+            border-top-color: #cfdca0;
+        }
+
+        dd:empty {
+            display: none;
+        }
+    }
+}
+
+/* Submissions allocation (manual): the allocations table as the site's list tables (frame, tinted
+   header, row lines, no zebra), cells top-aligned with the site's padding, the participant's
+   picture and name in one line with the submission under it, the "add" pickers' labels as small
+   text over their selectors, the notes muted (not italic); on phones the table scrolls sideways
+   instead of squeezing its three columns. (Moodle: grey odd rows, 5px cells, dark column lines.) */
+body.path-mod-workshop #region-main .manual-allocator {
+    overflow-x: auto;
+
+    table.allocations {
+        @include salek-table-base;
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        border: 1px solid #dfe5ee;
+        border-radius: 16px;
+
+        > thead > tr > th {
+            @include salek-table-head-cell;
+            padding: 12px 14px;
+            text-align: start;
+        }
+
+        > tbody > tr {
+            @include salek-table-row;
+            background-color: transparent;
+
+            &:hover {
+                background-color: transparent;
+            }
+
+            > td {
+                vertical-align: top;
+                padding: 12px 14px;
+            }
+
+            > td.peer {
+                border-inline: 1px solid $salek-table-row-line;
+            }
+
+            &.highlightreviewedby > td.reviewedby,
+            &.highlightreviewerof > td.reviewerof {
+                background-color: #fff3d2;
+            }
+        }
+
+        .peer {
+            font-weight: 500;
+
+            .userpicture {
+                margin: 0;
+                margin-inline-end: 8px;
+                vertical-align: middle;
+            }
+
+            .submission {
+                margin-top: 8px;
+                font-size: .8125rem;
+                font-weight: 400;
+            }
+
+            .grade {
+                color: $salek-text-muted;
+            }
+        }
+
+        .info {
+            color: $salek-text-muted;
+            font-size: .75rem;
+            font-style: normal;
+
+            + .info,
+            + div.singleselect {
+                margin-top: 4px;
+            }
+        }
+
+        div.singleselect {
+            display: block;
+            margin: 0;
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start !important; /* stylelint-disable-line declaration-no-important */
+                gap: 6px;
+            }
+
+            label {
+                align-self: flex-start;
+                margin: 0;
+                color: $salek-text-muted;
+                font-size: .8125rem;
+            }
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+
+            &:not(:empty) {
+                margin-top: 8px;
+            }
+
+            li {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                list-style: none;
+
+                + li {
+                    margin-top: 4px;
+                }
+
+                .userpicture {
+                    margin: 0;
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        table.allocations {
+            min-width: 640px;
+        }
+    }
+}
+
+/* Submissions allocation (all its methods): the menu of the methods is the page's title (as the
+   wiki's views: the title's size, the arrow in a round button), the line across the sheet under
+   it; Moodle's heading repeating the chosen method hidden (kept for screen readers).
+   (Moodle: the menu a small field on its own row, the same name again in a heading under it.) */
+body.path-mod-workshop #region-main div[role="main"]:has(> .allocator-ui) {
+    > .tertiary-navigation {
+        @include salek-title-line;
+        // (Over the toolbars' 0: to the sheet's edges, the menu at the content's edge.)
+        margin: 0 calc(-1 * #{$salek-space-inset}) $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 $salek-space-inset 20px !important; /* stylelint-disable-line declaration-no-important */
+        // (Over the phones' rule for page menus on their own, which takes their line away.)
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            margin-inline: calc(-1 * #{$salek-space-inset-sm}) !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .navitem {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        @include salek-urlselect-title;
+    }
+
+    > .tertiary-navigation + h3 {
+        @include visually-hidden;
+    }
+
+    // (The page's form: its first section's band right under the line.)
+    > .allocator-ui > div > form.mform {
+        margin-top: calc(-1 * #{$salek-page-header-gap});
+    }
+}
+
+/* A submission (and an example submission): a framed box like the site's list tables (16px
+   corners, the tinted header band with its line), the author's picture at the band's start beside
+   the title, "by …" and the dates in small muted text, the text with the site's padding.
+   (Moodle: a grey band with square corners, 3px padding, tiny italic dates.) */
+body.path-mod-workshop #region-main .submission-full {
+    margin: 0 0 24px;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+    background-color: $salek-surface;
+
+    > .header {
+        position: relative;
+        min-height: 0;
+        padding: 12px 14px;
+        padding-inline-start: 86px;
+        border-bottom: 1px solid $salek-table-head-line;
+        background-color: $salek-table-head-bg;
+        color: #1e293b;
+
+        .title,
+        .author,
+        .userdate {
+            margin: 0;
+        }
+
+        .title {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .author {
+            font-size: .8125rem;
+            color: $salek-text-muted;
+
+            .picture {
+                position: absolute;
+                top: 50%;
+                right: auto;
+                left: auto;
+                inset-inline-start: 14px;
+                transform: translateY(-50%);
+
+                // (White with a line: Moodle's grey initials melted into the band.)
+                .userinitials,
+                img {
+                    width: 56px;
+                    height: 56px;
+                    margin: 0;
+                    border: 1px solid $salek-table-head-line;
+                    background-color: $salek-surface;
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        .userdate {
+            display: inline;
+            padding: 0;
+            color: $salek-text-muted;
+            font-size: .75rem;
+
+            span {
+                font-style: normal;
+            }
+
+            &.modified {
+                margin-inline-start: 8px;
+                padding-inline-start: 8px;
+                border: 0;
+                border-inline-start: 1px solid $salek-table-head-line;
+            }
+        }
+    }
+
+    &.anonymous > .header,
+    &.example > .header {
+        padding-inline-start: 14px;
+    }
+
+    > .content,
+    > .attachments {
+        padding: 14px;
+    }
+
+    > .content .no-overflow > :last-child {
+        margin-bottom: 0;
+    }
+
+    > .attachments:empty {
+        display: none;
+    }
+}
+
+/* A workshop's pages with a heading and instructions on top (a submission, an assessment): the
+   heading the page's title (the title's size, the line across the sheet under it); each
+   instructions part a section with the round open/close button of the forms before its name, its
+   text in the site's light note box. (Moodle: a small heading, a link with a tiny arrow picture,
+   the text loose on the page.) */
+body.path-mod-workshop #region-main div[role="main"] {
+    > h3.main:first-child {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        display: flex;
+        align-items: center;
+        margin-top: 0;
+    }
+
+    > .collapsibleregion[id^="workshop-viewlet-"] {
+        margin: 0 0 24px;
+
+        // (As high as its button: the caption's large line box made it 41px.)
+        .collapsibleregioncaption {
+            display: flex;
+            min-height: 0;
+        }
+
+        .collapsibleregioncaption a {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            color: $salek-text-strong;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+
+            // The round button of the forms' sections (salek-round-toggle): open, blue with a
+            // white arrow down; closed, white with a grey ring and a blue arrow to the side.
+            &::before {
+                content: "";
+                flex: none;
+                box-sizing: border-box;
+                width: $salek-toggle-size;
+                height: $salek-toggle-size;
+                border: 1px solid var(--bs-primary);
+                border-radius: 50%;
+                background-color: var(--bs-primary);
+                transition: background-color .15s ease, border-color .15s ease;
+            }
+
+            // (The arrow inside the button: Font Awesome's chevron, as in the forms, 16px.)
+            &::after {
+                content: "\f078";
+                position: absolute;
+                top: 50%;
+                inset-inline-start: 0;
+                width: $salek-toggle-size;
+                margin-top: -8px;
+                color: #fff;
+                font-family: "Font Awesome 6 Free";
+                font-size: 16px;
+                font-weight: 900;
+                line-height: 16px;
+                text-align: center;
+            }
+
+            img {
+                display: none;
+            }
+        }
+
+        &.collapsed .collapsibleregioncaption a {
+            &::before {
+                border-color: #c3ccd9;
+                background-color: $salek-surface;
+            }
+
+            &:hover::before {
+                border-color: var(--bs-primary);
+            }
+
+            &::after {
+                content: "\f054";
+                color: var(--bs-primary);
+            }
+        }
+
+        &:is([dir="rtl"] *).collapsed .collapsibleregioncaption a::after {
+            content: "\f053";
+        }
+
+        .collapsibleregioninner > .box {
+            margin: 12px 0 0;
+            padding: 14px 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+            border: 1px solid $salek-note-border;
+            border-radius: 12px;
+            background-color: $salek-note-bg;
+
+            .no-overflow > :last-child,
+            .text_to_html > :last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+// The title with a form after it (the assessment form's editor): the form's first section band
+// right under the title's line (as the settings pages), not 24px below it.
+body.path-mod-workshop #region-main div[role="main"] > h3.main:first-child + form.mform:has(> fieldset.collapsible:first-of-type) {
+    margin-top: calc(-1 * #{$salek-page-header-gap});
+}
