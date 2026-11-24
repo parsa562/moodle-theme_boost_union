@@ -338,26 +338,11 @@
                     min-height: $salek-control-height;
                 }
 
-                // Add: the main action of the page.
                 #add {
                     margin-bottom: 16px;
-                    border-color: var(--bs-primary);
-                    background-color: var(--bs-primary);
-                    color: #fff;
                 }
 
-                // Remove: red outline, as it unenrols people.
-                #remove {
-                    border: 1px solid #f3c4c4;
-                    background-color: $salek-surface;
-                    color: #dc2626;
-
-                    &:hover {
-                        border-color: #e9a3a3;
-                        background-color: #fef2f2;
-                        color: #b91c1c;
-                    }
-                }
+                @include salek-add-remove-buttons;
             }
         }
     }

@@ -767,65 +767,7 @@ $salek-toolbar: '.tertiary-navigation:has(> [class~="d-flex"] > .navitem > H2)';
 
     // The filter menus.
     #{$salek-toolbar} :is(.initialswidget, .extrafilters > .dropdown-toggle, .select-menu > .dropdown-toggle) {
-        display: inline-flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex/.d-block.)
-        align-items: center;
-        gap: 6px;
-        min-height: $salek-control-height;
-        padding: 0 46px 0 14px !important; /* stylelint-disable-line declaration-no-important */ // (Over .p-0; the end for the arrow chip.)
-        border: 0 !important; /* stylelint-disable-line declaration-no-important */
-        border-radius: $salek-field-radius;
-        position: relative;
-        background-color: $salek-field-bg;
-        box-shadow: none;
-        color: $salek-text-strong;
-        font-size: .875rem;
-        font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */ // (Over .fw-bold.)
-        white-space: nowrap;
-
-        // The arrow chip at the end, in place of Moodle's caret.
-        &::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            inset-inline-end: 7px;
-            width: 30px;
-            height: 30px;
-            margin: 0;
-            border: 0;
-            background: $salek-select-chip no-repeat center / 30px 30px;
-            transform: translateY(-50%);
-        }
-
-        &:hover {
-            background-color: $salek-field-bg-hover;
-        }
-
-        &:focus-visible,
-        &[aria-expanded="true"] {
-            outline: 0;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
-        }
-
-        // "Status" and its value on one line: "Status: All".
-        > div {
-            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
-        }
-
-        [class~="small"] {
-            display: inline !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-block.)
-            color: $salek-text-muted;
-            font-size: inherit;
-
-            &::after {
-                content: ":";
-                margin-inline-end: 4px;
-            }
-        }
-
-        [class~="fw-bold"] {
-            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
-        }
+        @include salek-filter-menu;
     }
 
     // "Advanced": its panel's "Close" as a quiet button beside "Apply".

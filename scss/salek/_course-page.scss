@@ -235,7 +235,7 @@ body.path-course-view:has(.course-content) #page.drawers #region-main {
         opacity: 0;
     }
 
-    .divider:has(.btn.add-content:hover) hr {
+    .divider:has([class~="btn"].add-content:hover) hr {
         border-top-color: rgba(var(--bs-primary-rgb), .35);
     }
 

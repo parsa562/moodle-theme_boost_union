@@ -185,6 +185,200 @@
 
 // Shared by the question bank and the participants page (section 18): the filters card and
 // the checkboxes of the filters and tables.
+// A radio button in the look of the site's checkbox (salek-checkbox): the same size, frame and
+// colours, round; chosen: the frame in the brand colour and a dot in its middle.
+@mixin salek-radio {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    border: 1.5px solid #b6c0ce;
+    border-radius: 50%;
+    background-color: $salek-surface;
+    vertical-align: middle;
+    cursor: pointer;
+
+    &::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--bs-primary);
+        transform: scale(0);
+        transition: transform .12s ease-in-out;
+    }
+
+    &:hover {
+        border-color: #94a3b8;
+    }
+
+    &:checked {
+        border-color: var(--bs-primary);
+
+        &::before {
+            transform: scale(1);
+        }
+    }
+
+    &:disabled {
+        opacity: .55;
+        cursor: default;
+    }
+
+    &:focus-visible {
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .25);
+    }
+}
+
+// The buttons between two lists that move items from one to the other (the add and remove pages
+// of groups and enrolments, the outcomes used in a course): Add the main action of the page,
+// Remove in a red outline, as it takes people or items out.
+@mixin salek-add-remove-buttons {
+    #add {
+        border-color: var(--bs-primary);
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+
+    #remove {
+        border: 1px solid #f3c4c4;
+        background-color: $salek-surface;
+        color: #dc2626;
+
+        &:hover {
+            border-color: #e9a3a3;
+            background-color: #fef2f2;
+            color: #b91c1c;
+        }
+    }
+}
+
+// A filter menu of a page's toolbar (the assignment's "Status: All", the grade reports' item
+// picker): a filled field with its label and value on one line and the arrow chip at its end.
+@mixin salek-filter-menu {
+    display: inline-flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex/.d-block.)
+    align-items: center;
+    gap: 6px;
+    min-height: $salek-control-height;
+    padding: 0 46px 0 14px !important; /* stylelint-disable-line declaration-no-important */ // (Over .p-0; the end for the arrow chip.)
+    border: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: $salek-field-radius;
+    position: relative;
+    background-color: $salek-field-bg;
+    box-shadow: none;
+    color: $salek-text-strong;
+    font-size: .875rem;
+    font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */ // (Over .fw-bold.)
+    white-space: nowrap;
+
+    // The arrow chip at the end, in place of Moodle's caret.
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        inset-inline-end: 7px;
+        width: 30px;
+        height: 30px;
+        margin: 0;
+        border: 0;
+        background: $salek-select-chip no-repeat center / 30px 30px;
+        transform: translateY(-50%);
+    }
+
+    &:hover {
+        background-color: $salek-field-bg-hover;
+    }
+
+    &:focus-visible,
+    &[aria-expanded="true"] {
+        outline: 0;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+    }
+
+    // "Status" and its value on one line: "Status: All".
+    > div {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    [class~="small"] {
+        display: inline !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-block.)
+        color: $salek-text-muted;
+        font-size: inherit;
+
+        &::after {
+            content: ":";
+            margin-inline-end: 4px;
+        }
+    }
+
+    [class~="fw-bold"] {
+        font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// Pages of links (course and site administration, the course's Reports): a list's links as rows
+// across the sheet, a line between them, the row lit up under the mouse.
+@mixin salek-link-rows {
+    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    padding: 0;
+    line-height: 1.5;
+
+    > li {
+        margin: 0;
+        padding: 0;
+    }
+
+    > li + li {
+        border-top: 1px solid $salek-field-bg;
+    }
+
+    > li > a {
+        display: flex;
+        align-items: center;
+        min-height: 46px;
+        padding: 0 $salek-space-inset;
+        color: $salek-ink;
+        font-size: .875rem;
+        font-weight: 500;
+        text-decoration: none;
+
+        &:hover {
+            background-color: #f1f5fe;
+            color: var(--bs-primary);
+        }
+
+        @include media-breakpoint-down(md) {
+            padding-inline: $salek-space-inset-sm;
+        }
+    }
+}
+
+// A group's title over its links (the same pages): a grey band across the sheet.
+@mixin salek-link-group-title {
+    margin: 0;
+    padding: 12px $salek-space-inset;
+    border-bottom: 1px solid #d9e1ec;
+    background-color: #e3eaf4;
+    color: $salek-text-strong;
+    font-size: .9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    @include media-breakpoint-down(md) {
+        padding-inline: $salek-space-inset-sm;
+    }
+}
+
 @mixin salek-checkbox {
     appearance: none;
     display: inline-grid;
@@ -946,5 +1140,157 @@
         &[src*="/qtype_#{$qtype}/"] {
             background-color: $bg;
         }
+    }
+}
+
+// Forms' required fields: a small red dot before the label, Moodle's red exclamation icon hidden
+// (on a form's label column, .col-form-label).
+@mixin salek-required-dot {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin-inline-end: 8px;
+    border-radius: 50%;
+    background-color: #dc2626;
+}
+
+@mixin salek-required-label {
+    .col-form-label:has(> .form-label-addon > .text-danger)::before {
+        @include salek-required-dot;
+        margin-top: 9px;
+    }
+
+    .form-label-addon > .text-danger {
+        display: none;
+    }
+}
+
+// The form's note on required fields: the dot and "Required" (Moodle: "Required" after the red
+// icon; in Persian a sentence with the icon in its middle).
+@mixin salek-required-note {
+    display: flex;
+    align-items: center;
+    color: $salek-text-muted;
+    font-size: .8125rem;
+
+    .icon {
+        display: none;
+    }
+
+    &::before {
+        @include salek-required-dot;
+    }
+
+    &:lang(fa),
+    &:lang(en) {
+        font-size: 0;
+
+        &::after {
+            font-size: .8125rem;
+        }
+    }
+
+    &:lang(fa)::after {
+        content: "الزامی";
+    }
+
+    &:lang(en)::after {
+        content: "Required";
+    }
+}
+
+// Help beside a label (Moodle's "?" icon): a small round button with a question mark.
+@mixin salek-help-button {
+    a[data-bs-toggle="popover"]:has(> .fa-circle-question) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        margin: 2px 0 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
+        border-radius: 50%;
+        background-color: rgba(var(--bs-primary-rgb), .1);
+        color: var(--bs-primary);
+
+        .icon {
+            display: none;
+        }
+
+        &::before {
+            @include salek-mask-icon($salek-icon-question, 12px);
+        }
+
+        &:hover,
+        &:focus-visible {
+            background-color: rgba(var(--bs-primary-rgb), .18);
+        }
+    }
+
+    &:is([dir="rtl"] *) a[data-bs-toggle="popover"]:has(> .fa-circle-question)::before {
+        transform: scaleX(-1); // The Persian question mark (؟) faces the other way.
+    }
+}
+
+
+// A page's menu of its views as the page's title (the wiki, a workshop's allocation): the title's
+// size, no frame, the arrow in a round button, as wide as the chosen view's name. Included in the
+// menu's container (the select inside it).
+@mixin salek-urlselect-title {
+    select.urlselect {
+        field-sizing: content;
+        max-width: none;
+        min-height: 46px;
+        white-space: nowrap;
+        margin-inline-start: -10px;
+        padding: 6px 10px;
+        padding-inline-end: 56px;
+        border: 0;
+        border-radius: 14px;
+        background: escape-svg($form-select-indicator) right 19px center / 14px no-repeat,
+            radial-gradient(circle closest-side, #fff calc(100% - 1.5px), #c3ccd9 calc(100% - 1px), #c3ccd9 100%, transparent 100%) right 10px center / 32px 32px no-repeat;
+        box-shadow: none;
+        @include salek-page-title-text;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            background-color: rgb(255 255 255 / 70%);
+        }
+
+        @supports (appearance: base-select) {
+            option {
+                font-size: .9375rem;
+                font-weight: 400;
+            }
+        }
+    }
+
+    &:is([dir="rtl"] *) select.urlselect {
+        /*rtl:ignore*/
+        background-position: left 19px center, left 10px center;
+    }
+}
+
+// The title of a part of a main menu page (the front page's "Available courses", the Dashboard's
+// and My courses' cards): large and bold, a short brand-coloured line under it ($salek-home-gold:
+// _home.scss, before the pages that include this).
+@mixin salek-accent-title {
+    position: relative;
+    padding-bottom: 14px;
+    color: $salek-text-strong;
+    font-size: 1.75rem;
+    font-weight: 700;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        inset-inline-start: 0;
+        width: 44px;
+        height: 3px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--bs-primary), $salek-home-gold);
     }
 }
