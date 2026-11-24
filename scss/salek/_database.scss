@@ -1,0 +1,623 @@
+// Salek: the Database activity's records (mod/data/view.php, Moodle's default list and single
+// templates).
+
+/* Each record a framed card, as the site's other boxes of rows (_user-roles.scss): at its top the
+   author (a 40px picture, the name, the date it was added under it), when it was last edited and
+   the record's menu, a hairline under them; then the fields, one row each (the name, the value
+   beside it; on phones under it), a hairline between the rows. 16px between the cards.
+   (Moodle: no frame, 48px of padding and 48px around each record, a 64px picture; on phones the
+   name and "Last edited" squeezed into narrow columns, a few letters a line.) */
+$salek-db-line: $salek-frame-line;
+$salek-db-pad: 20px;
+
+// The name over a column of the Templates page ("Available tags", the template's name).
+@mixin salek-db-column-name {
+    margin: 0;
+    color: $salek-text-strong;
+    font-size: .875rem;
+    font-weight: 600;
+    line-height: 28px;
+}
+
+@mixin salek-db-card {
+    margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border: 1px solid $salek-db-line !important; /* stylelint-disable-line declaration-no-important */ // (Over the site's "no border" on cards: theme settings, Raw SCSS.)
+    border-radius: 16px;
+    background-color: $salek-surface;
+    box-shadow: none;
+
+    // The top: picture, author and date, last edited, menu.
+    > div:first-child {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 12px $salek-db-pad;
+        border-bottom: 1px solid $salek-db-line;
+
+        > div {
+            width: auto;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        > div:last-child {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .userinitials,
+        .userpicture {
+            width: 40px;
+            height: 40px;
+            font-size: .8125rem;
+        }
+
+        > div:last-child > div {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2px 16px;
+            height: auto !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+
+            > div {
+                width: auto;
+                max-width: none;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0;
+            }
+
+            // The author, the date under it.
+            > div:first-child {
+                flex: 1 1 auto;
+                min-width: 0;
+                line-height: 1.5;
+
+                > a {
+                    color: $salek-text-strong;
+                    font-weight: 600;
+                    text-decoration: none;
+
+                    &:hover {
+                        color: var(--bs-primary);
+                    }
+                }
+            }
+
+            .data-timeinfo {
+                color: $salek-text-muted;
+                font-size: .8125rem;
+            }
+
+            // "Last edited: …".
+            > .data-timeinfo {
+                flex: 0 1 auto;
+                text-align: end;
+
+                > [class~="fw-bold"] {
+                    font-weight: 500 !important; /* stylelint-disable-line declaration-no-important */
+                }
+            }
+
+            // The menu (and the approval status).
+            > div:last-child {
+                flex: none;
+                gap: 8px;
+            }
+
+            // Phones: the author and the menu on the first line, "Last edited" under the author.
+            @include media-breakpoint-down(md) {
+                > div:first-child {
+                    flex-basis: 0;
+                }
+
+                > .data-timeinfo {
+                    flex-basis: 100%;
+                    order: 3;
+                    text-align: start !important; /* stylelint-disable-line declaration-no-important */ // (Over .text-end.)
+                }
+            }
+        }
+    }
+
+    // (Moodle's line between the top and the fields: the top's own line.)
+    > hr {
+        display: none;
+    }
+}
+
+// One field: its name, the value beside it (on phones under it).
+@mixin salek-db-field-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 200px) minmax(0, 1fr);
+    gap: 4px 16px;
+    margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    padding: 12px 0;
+    border-bottom: 1px solid $salek-preview-row-line;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    > * {
+        width: auto;
+        max-width: none;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0;
+    }
+
+    // The name.
+    > :first-child {
+        color: $salek-text-muted;
+        font-size: .875rem;
+        font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The value (in the single view a text field's value comes as three parts: Moodle wraps it
+    // in a paragraph, which the browser splits around it into two empty ones).
+    > :not(:first-child) {
+        grid-column: 2;
+        color: $salek-text-strong;
+        overflow-wrap: anywhere;
+
+        > :last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    > p:empty:not(:only-of-type) {
+        display: none;
+    }
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: minmax(0, 1fr);
+
+        > :not(:first-child) {
+            grid-column: 1;
+        }
+    }
+}
+
+body#page-mod-data-view #region-main div[role="main"] {
+    // The search and sort row: 24px from the lines above and under it (Moodle: 48px and 80px).
+    > .datapreferences {
+        margin: 24px 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > .datapreferences + hr {
+        margin: 0 0 24px;
+    }
+
+    .defaulttemplate-listentry {
+        @include salek-db-card;
+    }
+
+    .defaulttemplate-list-body {
+        padding: 0 $salek-db-pad;
+
+        > div {
+            @include salek-db-field-row;
+        }
+    }
+
+    #defaulttemplate-single {
+        margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .defaulttemplate-single-body {
+        @include salek-db-card;
+
+        > div:last-child {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 $salek-db-pad;
+
+            > div:not(.tag_otherfields) {
+                @include salek-db-field-row;
+            }
+
+            // (The fields left out of the template: only when there are some.)
+            > .tag_otherfields {
+                display: contents;
+            }
+        }
+    }
+}
+
+/* The title row of the activity's pages with one (Fields, Templates, Presets; Add entry): closed by
+   the site's line across the sheet, 24px above the content, the title in the middle of the row,
+   as on the other pages. (Moodle draws its own line under the row, short of the sheet's edges; on
+   Templates under the site's line, so two lines. Add entry: its title a plain heading in the form.)
+   (The records page has no title: its row of controls under the activity's description keeps
+   Moodle's line, which parts it from the search.) */
+@each $salek-db-page in "field-", templates, preset {
+    body#page-mod-data-#{$salek-db-page} #region-main div[role="main"] {
+        > .tertiary-navigation {
+            @include salek-title-line;
+            padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            [class~="col"] {
+                display: flex;
+                align-items: center;
+            }
+
+            h2 {
+                margin: 0;
+                @include salek-page-title-text;
+            }
+        }
+
+        > .tertiary-navigation + hr {
+            display: none;
+        }
+    }
+}
+
+/* Add entry (mod/data/edit.php, Moodle's default "add" template): the site's form (_forms.scss,
+   as "Edit group settings"): each field a row, its name in the label column (a quarter of the
+   row, 7px down so it sits on the field's middle), the field after it, a hairline between the
+   rows; one-line fields 430px wide, the text editor as high as the other forms' editors; the
+   tags' selection, field and "Manage standard tags" link under one another; the buttons on the
+   light band across the sheet's foot, under the fields. On phones the name over its field.
+   (Moodle: names over fields with 60px between the rows, a 35-line editor, the tags' link
+   before its field, the buttons in a loose row.) */
+body#page-mod-data-edit #region-main div[role="main"] > form > div > .generalbox:first-of-type {
+    --salek-sheet-pad: #{$salek-sheet-pad};
+    padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+    @include media-breakpoint-down(md) {
+        --salek-sheet-pad: 16px;
+    }
+
+    > h2:first-child {
+        @include salek-title-line;
+        @include salek-page-title-text;
+        margin-top: 0;
+    }
+
+    #defaulttemplate-addentry > div {
+        display: grid;
+        grid-template-columns: calc((100% + 24px) / 4) minmax(0, 1fr);
+        align-items: start;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-block: 12px !important; /* stylelint-disable-line declaration-no-important */
+        background: linear-gradient($salek-form-row-line, $salek-form-row-line) center bottom / 100% 1px no-repeat;
+
+        &:first-child {
+            padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        &:last-child {
+            background: none;
+        }
+
+        // The name.
+        > :first-child {
+            padding: 7px 0 0;
+            padding-inline-end: 12px;
+            color: #1e293b;
+            font-size: .8125rem;
+            font-weight: 600 !important; /* stylelint-disable-line declaration-no-important */
+            line-height: 1.5;
+        }
+
+        // The field. (Its name again, for screen readers only, in a label of its own before it:
+        // out of the flow, or it took a line of its own above the field.)
+        > :not(:first-child) {
+            position: relative;
+            min-width: 0;
+
+            > label:first-child {
+                position: absolute;
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+
+            > :first-child {
+                padding-top: 0;
+            }
+        }
+    }
+
+    .basefieldinput {
+        display: block !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-inline.)
+        width: 100%;
+        max-width: 430px;
+    }
+
+    // A text field with its editor and its format.
+    #defaulttemplate-addentry [class~="d-inline-flex"] {
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .mod-data-input {
+        width: 100%;
+
+        textarea {
+            height: 300px;
+        }
+
+        .tox-tinymce {
+            height: 320px !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .form-select {
+            width: auto;
+            margin-top: 8px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Tags: the chosen tags, the field, then the link.
+    .datatagcontrol {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        .form-autocomplete-selection {
+            order: 1;
+            min-height: 0;
+            margin: 0;
+            padding: 0;
+            font-size: .875rem;
+        }
+
+        .form-autocomplete-input {
+            order: 2;
+            width: 100%;
+            max-width: 430px;
+            margin: 0;
+        }
+
+        > a {
+            order: 3;
+            font-size: .8125rem;
+        }
+    }
+
+    // The buttons.
+    > #defaulttemplate-addentry + div {
+        @include salek-sheet-bleed;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: calc(-1 * var(--salek-sheet-pad));
+        padding-block: 16px;
+        padding-inline-start: calc(var(--salek-sheet-pad) + (100% + 24px) / 4); // (100%: the form's width.)
+        border-top: 1px solid $salek-form-section-line;
+        background-color: $salek-subtle;
+        // (The sheet's corners at its foot, as the other forms' bands; on phones the sheet has none.)
+        border-end-start-radius: $salek-radius;
+        border-end-end-radius: $salek-radius;
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .875rem;
+        }
+
+        @include media-breakpoint-down(md) {
+            padding-inline-start: var(--salek-sheet-pad);
+            border-radius: 0;
+        }
+    }
+}
+
+/* Templates (mod/data/templates.php): the list of the tags beside the editor, as high as it, the
+   site's field (a soft grey box, rounded), its groups' names small and muted, each tag a row that
+   lights up under the pointer; both names ("Available tags", the template's) at the start, over
+   their parts. On phones the list over the editor, 240px high.
+   (Moodle: a 250px list, the tags cut off at its edge, centred beside the editor, the editor's
+   name centred over it.) */
+// The page's explanation ("Define the interface for…"): 16px above the tags and the editor (it
+// touched the tags' name).
+body#page-mod-data-templates #region-main div[role="main"] > .tertiary-navigation ~ div:not([class]) {
+    margin-bottom: 16px;
+    color: $salek-text;
+    font-size: .875rem;
+}
+
+// "Enable code editor" 16px under the editor; "Save" on the light band across the sheet's foot, as
+// the buttons of the site's forms (_forms.scss).
+body#page-mod-data-templates #region-main div[role="main"] #edittemplateform {
+    > [class~="container-fluid"] {
+        margin-top: 16px !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0;
+
+        > [class~="row"] {
+            margin: 0;
+
+            > div {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0;
+                color: $salek-text;
+                font-size: .875rem;
+
+                input[type="checkbox"] {
+                    @include salek-checkbox;
+                    margin: 0;
+                }
+
+                label {
+                    margin: 0;
+                }
+            }
+        }
+    }
+
+    > div:last-child {
+        --salek-sheet-pad: #{$salek-sheet-pad};
+        @include salek-sheet-bleed;
+        margin-top: 24px;
+        margin-bottom: calc(-1 * var(--salek-sheet-pad));
+        padding-block: 16px;
+        border-top: 1px solid $salek-form-section-line;
+        background-color: $salek-subtle;
+        border-end-start-radius: $salek-radius;
+        border-end-end-radius: $salek-radius;
+
+        [class~="btn"] {
+            min-height: $salek-control-height;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .875rem;
+        }
+
+        @include media-breakpoint-down(md) {
+            --salek-sheet-pad: 16px;
+            border-radius: 0;
+        }
+    }
+}
+
+body#page-mod-data-templates #region-main div[role="main"] #edittemplateform {
+    > [class~="flex-row"] {
+        align-items: stretch !important; /* stylelint-disable-line declaration-no-important */
+        gap: 24px;
+
+        // The tags.
+        // (A grid: the name and its help on the first line, the list filling the rest.)
+        > [class~="p-2"] {
+            display: grid;
+            flex: 0 0 320px;
+            grid-template-columns: auto auto minmax(0, 1fr);
+            grid-template-rows: 28px minmax(240px, 1fr); // (The names' row as high on both sides.)
+            align-items: center;
+            gap: 8px 6px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            > label {
+                @include salek-db-column-name;
+            }
+
+            > .help-icon {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        // The editor.
+        > [class~="flex-column"] {
+            flex: 1 1 auto;
+            min-width: 0;
+
+            > div {
+                margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        @include media-breakpoint-down(md) {
+            flex-direction: column !important; /* stylelint-disable-line declaration-no-important */
+
+            > [class~="p-2"] {
+                flex-basis: auto;
+            }
+        }
+    }
+
+    // (Moodle: 10px above it, so 10px lower than the tags' name.)
+    .template_heading {
+        display: flex;
+        align-items: center;
+        height: 28px;
+        margin: 0 0 8px;
+        text-align: start;
+
+        label {
+            @include salek-db-column-name;
+        }
+    }
+
+    // (The box cuts the list at its corners, its scrollbar too, with the editor's radius.)
+    #availabletags_wrapper {
+        position: relative;
+        grid-column: 1 / -1;
+        align-self: stretch;
+        max-width: none;
+        overflow: hidden;
+        border: 1px solid $salek-frame-line;
+        border-radius: 18px;
+        // (Above the list the first group's band, under it the list's grey: no strip shows.)
+        background: linear-gradient(#eef1f5, #eef1f5) top / 100% 8px no-repeat, $salek-subtle;
+
+        &:focus-within {
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+        }
+    }
+
+    // The list: a faint grey box, each group's name in bold on the site's grey band (#eef1f5)
+    // across the list, each tag a row that turns white under the pointer,
+    // the chosen one tinted blue; a thin scrollbar.
+    // (8px inside its box at the top and the foot: Chrome draws the list's own scrollbar track
+    // white, whatever its colour, so in the corners it squared them.)
+    #availabletags {
+        position: absolute;
+        inset: 8px 0;
+        width: 100%;
+        height: calc(100% - 16px);
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background-color: $salek-subtle;
+        background-image: none;
+        box-shadow: none;
+        color: $salek-text-strong;
+        font-size: .8125rem;
+        scrollbar-width: thin;
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        // (A group's tags are inside it: its band is a background as high as its name only, or
+        // the tags would sit on it too.)
+        optgroup {
+            padding: 7px 16px 6px; // (16px: the group's name over the tags' text.)
+            background: linear-gradient(#eef1f5, #eef1f5) top / 100% 32px no-repeat; // (7px, its line, 7px.)
+            color: $salek-text-strong;
+            font-size: .75rem;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 18px;
+        }
+
+        option {
+            display: block;
+            box-sizing: border-box;
+            width: calc(100% + 20px); // (Chrome draws a list's rows as wide as their text: the hover as a pill.)
+            margin: 2px -10px 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background-color: transparent;
+            color: $salek-text-strong;
+            font-size: .8125rem;
+            font-weight: 400;
+            line-height: 1.5;
+            cursor: pointer;
+
+            // (Under the group's band: 7px, then 6px.)
+            &:first-child {
+                margin-top: 13px;
+            }
+
+            &:hover {
+                background-color: $salek-surface;
+                color: var(--bs-primary);
+            }
+
+            &:checked {
+                background: rgba(var(--bs-primary-rgb), .12) linear-gradient(rgba(var(--bs-primary-rgb), .12), rgba(var(--bs-primary-rgb), .12));
+                color: var(--bs-primary);
+            }
+        }
+    }
+}
