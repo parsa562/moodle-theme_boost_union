@@ -1,0 +1,44 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template theme_boost_union/salek_filter_space
+
+    Salek: a filter card (the question bank's, the participants'…) as high as it ended last time,
+    from the first drawing of the page. Moodle builds its conditions in several steps after the
+    page has loaded (one empty row, then none, then the real ones, then their chosen values), and
+    the list under it jumped with every step for 3 seconds. Theme JS filtersready keeps the card's
+    rows hidden until they are all built, then shows them at once and keeps their height for the
+    next time (in this browser only).
+
+    Example context (json):
+    {}
+}}
+<script>
+(function() {
+    "use strict";
+    // (Out of the page at once: left there, it was the content's last element.)
+    if (document.currentScript) {
+        document.currentScript.remove();
+    }
+    var cards = document.querySelectorAll('#region-main .filter-group[data-filterverb]');
+    Array.prototype.forEach.call(cards, function(card, i) {
+        var height = null;
+        try {
+            height = window.localStorage.getItem('salek-filter-height:' + location.pathname + ':' + i);
+        } catch (e) {
+            return;
+        }
+        // (Its height while it is built: neither shorter nor longer; its buttons at its foot.)
+        if (height && +height > 0) {
+            card.style.height = height + 'px';
+            card.classList.add('salek-filters-reserved');
+        }
+    });
+})();
+</script>

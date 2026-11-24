@@ -1045,3 +1045,169 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) .tertiary-na
         }
     }
 }
+
+// The question categories (question/bank/managecategories/category.php): Moodle's "Edit categories"
+// heading only repeats the page's title ("Categories"): its words read out, not shown, its help
+// (?) on the toolbar's line after "Show descriptions"; "Question categories for …" the header of
+// the list's card, with the line under it (the site's titled cards); the name's pencil small and
+// grey and the row's menu (⋮) a small outlined button, as in the question bank (Moodle: three
+// headings one under the other, a heavy black pencil, a bare menu).
+body#page-question-bank-managecategories-category #region-main div[role="main"] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+
+    > * {
+        grid-column: 1 / -1;
+    }
+
+    > div:has(H2) {
+        grid-row: 2;
+        grid-column: 2;
+
+        H2 {
+            margin: 0;
+            font-size: 0;
+            line-height: 0;
+        }
+
+        .help-icon {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    > [class~="d-flex"]:has(> div > [class~="btn-primary"]) {
+        grid-row: 2;
+        grid-column: 1;
+        align-items: center;
+        gap: 16px;
+
+        > [class~="col-6"] {
+            width: auto;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        [class~="btn"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .editing {
+        width: 100%;
+        margin-top: $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+        > .context-heading {
+            @include salek-info-card-title;
+            margin: 0;
+            padding-inline: 18px;
+            border: 1px solid $salek-frame-line;
+            border-bottom-color: $salek-line;
+            border-radius: 16px 16px 0 0;
+            background-color: $salek-surface;
+
+            // (The list's frame, Moodle's, closes the card under the header.)
+            + [class~="box"] {
+                padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+                > .qbank_managecategories-categorylist {
+                    margin: 0;
+                    padding: 8px 18px;
+                    border-color: $salek-frame-line;
+                    border-top: 0;
+                    border-radius: 0 0 16px 16px;
+                }
+            }
+        }
+    }
+
+    .qbank_managecategories-item {
+        // The row starting under the card's header (Moodle: 70px further in: the drag handle's
+        // empty place, its icon not drawn, and the row's 12px).
+        > .container {
+            padding-inline: 0;
+        }
+
+        .qbank_managecategories-handlecontainer {
+            display: flex;
+            align-items: center;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin-inline-end: 6px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            color: #94a3b8;
+
+            .qbank_managecategories-draghandle {
+                display: flex;
+                cursor: move;
+
+                > i {
+                    display: none;
+                }
+
+                &::before {
+                    @include salek-mask-icon($salek-icon-grip, 16px);
+                }
+            }
+        }
+
+        // The row on one line: the arrow, the name, the menu at its end (Moodle's fixed column
+        // widths put the menu in the middle, on phones on a line of its own).
+        .qbank_managecategories-contentcontainer {
+            flex: 1 1 0;
+            width: auto;
+            min-width: 0;
+
+            > [class~="row"] {
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 8px;
+
+                > * {
+                    width: auto;
+                }
+            }
+        }
+
+        .icons-collapse-expand {
+            flex: none; // (Round: in the row's line it was squeezed.)
+            width: 32px !important; /* stylelint-disable-line declaration-no-important */
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .row > *'s gutters.)
+        }
+
+        .qbank_managecategories-details {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .qbank_managecategories-actioncontainer {
+            flex: none;
+            margin-inline-start: auto;
+        }
+
+        .quickediticon {
+            color: #94a3b8;
+            font-size: .75rem;
+        }
+
+        .action-menu .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border: 1px solid #cfd6e0;
+            border-radius: 9px;
+            background-color: $salek-surface;
+            color: #334155;
+
+            &:hover,
+            &[aria-expanded="true"] {
+                border-color: #b6c0ce;
+                background-color: $salek-soft;
+            }
+        }
+    }
+}

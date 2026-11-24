@@ -354,6 +354,12 @@ define([], function() {
                 if (tableWrapper && !tableWrapper.classList.contains('boost-union-wide-table-scroll')) {
                     attach(tableWrapper, true);
                 }
+                // The question's menu (⋯) against the window, not cut off by the table's scrolling
+                // box (with one or two questions the box is short, only "Preview" showed). Again
+                // for the rows of each new list.
+                if (tableWrapper) {
+                    fixMenus(tableWrapper);
+                }
             };
             attachToQuestionTable();
 

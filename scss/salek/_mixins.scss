@@ -429,10 +429,22 @@
 
 @mixin salek-filter-card {
     // Filters card.
-    // Before its script runs, Moodle draws one empty row, then replaces it with the real ones
-    // (a flash of the wrong row on every load): the rows wait until the card is ready.
+    // Before its script runs, Moodle draws one empty row, then replaces it with the real ones and
+    // fills in their values, in several steps (a flash of the wrong rows on every load): the rows
+    // wait until the card is ready (theme JS filtersready; shown after 6 seconds anyway).
     @at-root body.jsenabled .filter-group[data-filterverb]:not(.salek-filters-ready) :is([data-filterregion="filtermatch"], [data-filterregion="filters"]) {
-        animation: salek-filters-wait 3s step-end;
+        animation: salek-filters-wait 6s step-end;
+    }
+
+    // (While it is built at the height it had last time, template salek_filter_space: its buttons
+    // at its foot, where they will be, not moving down with each row Moodle adds.)
+    @at-root .filter-group[data-filterverb].salek-filters-reserved {
+        display: flex;
+        flex-direction: column;
+
+        > [data-filterregion="actions"] {
+            margin-top: auto !important; /* stylelint-disable-line declaration-no-important */ // (Over the cards' own gaps.)
+        }
     }
 
     .filter-group[data-filterverb] {

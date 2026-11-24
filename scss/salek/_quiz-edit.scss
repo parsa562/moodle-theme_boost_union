@@ -730,26 +730,63 @@
             padding: 14px;
         }
 
+        // (Moodle makes the row a plain block on phones: every part fell on a line of its own.
+        // Each line's parts on its middle: the box, the number and the type's icon.)
         ul.slots li.section li.activity.slot .mod-indent-outer {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */
             flex-wrap: wrap;
-            align-items: flex-start;
+            align-items: center;
             gap: 10px;
         }
 
-        ul.slots li.section li.activity.slot .activityinstance {
-            display: flex !important; /* stylelint-disable-line declaration-no-important */
-            flex: 1 1 0;
+        // (The drag handle on the middle of that first line: 40px high, the number's square.)
+        ul.slots li.section li.activity.slot > div > .editing_move {
+            margin-top: 11px;
         }
 
+        // (The type's icon on the number's line, the question's name and text under them across
+        // the card, then its bank: beside the number the text had a third of the card's width.)
+        ul.slots li.section li.activity.slot .activityinstance,
+        ul.slots li.section li.activity.slot .activityinstance > div:not(.sharedbank),
+        ul.slots li.section li.activity.slot .activityinstance > div > a {
+            display: contents !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        ul.slots li.section li.activity.slot .activityinstance :is(.instancename, .sharedbank) {
+            flex: 1 1 100%;
+            min-width: 0;
+        }
+
+        // (Where they do not fit on one line, the version on a line of its own, the mark and the
+        // buttons under it at their size; Moodle squeezed the buttons.)
         ul.slots li.section li.activity.slot .actions {
             display: flex !important; /* stylelint-disable-line declaration-no-important */
+            flex-wrap: wrap;
+            row-gap: 8px;
             width: 100%;
             justify-content: flex-end;
+
+            > :is(a, .instancemaxmarkcontainer) {
+                flex: none;
+                margin: 0; // (Moodle's 2px on each side on phones: the pencil's place no longer matched.)
+            }
         }
 
-        // (With the lock: the buttons' line leaves its place at the end, on the same line.)
-        ul.slots:has(.question_dependency_wrapper:not(.question_dependency_cannot_depend)) li.section li.activity.slot .actions {
-            width: calc(100% - 44px);
+        // (The lock at the end of the buttons' last line, in the place kept for it there, as the
+        // pencil: the lines of all the cards end at the same edge.)
+        ul.slots li.section li.activity.slot .question_dependency_wrapper {
+            position: absolute !important; /* stylelint-disable-line declaration-no-important */
+            inset: auto; // (Moodle's top and right.)
+            bottom: 14px;
+            inset-inline-end: 14px;
+            margin: 0;
+        }
+
+        ul.slots:has(.question_dependency_wrapper:not(.question_dependency_cannot_depend)) li.section li.activity.slot .actions::after {
+            content: "";
+            order: 3;
+            width: 36px;
+            height: 36px;
         }
 
         ul.slots .activityinstance .sharedbank {
