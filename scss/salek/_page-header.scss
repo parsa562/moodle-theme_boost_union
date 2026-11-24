@@ -333,6 +333,16 @@
         font-weight: 500;
     }
 
+    // Overrides (quiz, assignment, lesson): Moodle's heading under the title only repeats the title
+    // (the menu's chosen item, "User overrides"): read out, not shown; its line stays, 20px under
+    // the title row as on the other pages.
+    @at-root body:is(#page-mod-quiz-overrides, #page-mod-assign-overrides, #page-mod-lesson-overrides) #region-main div[role="main"] > .tertiary-navigation:has(.tertiary-navigation-selector) + h2 {
+        margin-top: calc(-1 * #{$salek-page-header-gap});
+        color: transparent;
+        font-size: 0;
+        line-height: 0;
+    }
+
     // (The permissions table's box adds its own space above it: the 24px under the line are enough.)
     div[role="main"] > .tertiary-navigation:has(.tertiary-navigation-selector) + h2 + [class~="box"] {
         padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
@@ -364,6 +374,11 @@ $salek-sheet-page: "body:not(.pagelayout-login):not(.pagelayout-frontpage)" +
     > [class~="d-flex"]:has(> H2, > H3):has([class~="btn"]:not(.btn-link, .btn-icon)),
     > .badges-heading {
         @include salek-title-line;
+    }
+
+    // (Moodle gives the badges' button bar a fixed 50px: the row as high as its 44px button.)
+    > .badges-heading > .tertiary-navigation {
+        height: auto !important; /* stylelint-disable-line declaration-no-important */
     }
 
     > .tertiary-navigation + :is(p, .otherusersdesc) {
@@ -605,6 +620,61 @@ $salek-sheet-page: "body:not(.pagelayout-login):not(.pagelayout-frontpage)" +
 
         &:has(.breadcrumb) {
             transform: translateY(8px);
+        }
+    }
+}
+
+// A page's own button or search, which Moodle 5.3 puts beside the breadcrumb (its "page
+// button", after #page-navbar: a wiki's "Search wikis", "Manage tags" on the tag search): placed
+// as the search of the site administration pages (the header's actions in Moodle 5.0): on the
+// middle of the header's row, the breadcrumb 8px below the middle, the tabs right under the
+// header (Moodle 5.3 moved the button down with the breadcrumb, and 8px more, .mt-2, so it
+// touched the tabs). Without a breadcrumb (the tag search) 16px between it and the sheet.
+// Only these pages (and not the profiles: their own header).
+body:not(.pagelayout-mypublic) #page-header:has(#page-navbar + .ms-auto > *) {
+    #page-navbar + .ms-auto > .simplesearchform[class~="mt-2"] {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // (The row is moved 8px down for the breadcrumb: the button back up.)
+    > .w-100 > [class~="d-flex"]:first-child:has(.breadcrumb) {
+        align-items: center;
+
+        > #page-navbar + .ms-auto {
+            transform: translateY(-8px);
+        }
+    }
+
+    &:not(:has(#page-navbar .breadcrumb)) {
+        margin-bottom: 16px;
+    }
+
+    @include media-breakpoint-down(md) {
+        &:has(#page-navbar .breadcrumb):has(#page-navbar + .ms-auto > .simplesearchform) {
+            margin-bottom: 8px;
+
+            // (The activity's icon on the breadcrumb's line, the lower one, not between the two.)
+            > .w-100 > .d-flex.align-items-center > .me-auto {
+                align-self: stretch;
+                justify-content: flex-end;
+                transform: translateY(15px); // (Its middle on the breadcrumb's, as on the other pages: under it an empty part of Moodle's.)
+            }
+        }
+    }
+
+    // (Phones: as there, the search on its own line above the breadcrumb, across the header.)
+    @include media-breakpoint-down(md) {
+        #page-navbar + .ms-auto:has(> .simplesearchform) {
+            flex: 1 1 100%;
+            order: -1;
+            margin: -8px 0 24px !important; /* stylelint-disable-line declaration-no-important */
+            transform: none !important; /* stylelint-disable-line declaration-no-important */
+
+            .simplesearchform,
+            form,
+            .input-group {
+                width: 100%;
+            }
         }
     }
 }

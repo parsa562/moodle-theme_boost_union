@@ -104,3 +104,41 @@ body:not(.pagelayout-course) .page-context-header:has(> .page-header-headings:on
         margin-top: calc(#{$navbar-height} + 40px);
     }
 }
+
+/* The site home's tabs (Settings, Participants, Reports, Question banks, Filters...): the space of
+   the site home itself above their tab bar (Moodle's top padding of the content, which the other
+   pages drop for their breadcrumb's row), so the tab bar stays in the same place as on the site
+   home. (These pages have no breadcrumb: Moodle's empty breadcrumb element is still there. The tabs found by the Home tab's link: the
+   tab bar's script redraws it after loading, without the items' keys.) */
+body.course-1:not(.pagelayout-frontpage) #page.drawers .main-inner:has(.secondary-navigation a[href$="/course/view.php?id=1"]):not(:has(#page-navbar .breadcrumb-item)) {
+    padding-top: 1.5rem;
+
+    // (Phones: the site home's .2rem.)
+    @include media-breakpoint-down(md) {
+        padding-top: .2rem;
+    }
+}
+
+/* Desktop: the pages with nothing above their first box (no breadcrumb, no search box beside it:
+   the Dashboard, My courses, the calendar, a profile's or a course's header card...): that box as
+   far under the top bar as on the site home (Moodle's 24px top padding back, which these pages
+   dropped with the others for a breadcrumb's row they don't have). The pages with a breadcrumb or
+   a search box keep theirs; the messages (as high as the window) and phones as they were.
+   (#topofscroll, the .main-inner: Boost Union extends .main-inner, and scssphp wrote that copy
+   of this selector broken, which took the whole rule away.) */
+@include media-breakpoint-up(md) {
+    body:not(.pagelayout-frontpage):not(#page-message-index) #page.drawers #topofscroll:not(:has(#page-navbar .breadcrumb-item)):not(:has(#page-header .simplesearchform)) {
+        padding-top: 1.5rem;
+
+        // (The first box itself at that place, not lower: the course header's empty row for its
+        // buttons (8px) when it has none; the person's header kept 14px for a breadcrumb it
+        // doesn't have.)
+        #bucourseheader > [class~="d-flex"]:first-child:not(:has(.header-actions-container > *)) {
+            display: none !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-flex.)
+        }
+
+        #page-header > .w-100 #page-navbar:not(:has(.breadcrumb)) {
+            margin-top: 0;
+        }
+    }
+}

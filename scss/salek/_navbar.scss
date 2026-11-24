@@ -1047,3 +1047,12 @@ body.jsenabled #page .secondary-navigation .secondarynav-tabbar > nav.moremenu {
         }
     }
 }
+
+/* Phones, while logged in as another user (or with a switched role): Moodle's words beside the
+   avatar ("You are logged in as …") pushed the avatar past the screen's edge; only the avatars
+   (the user's over the real user's) show, the words are at the top of the user menu. */
+@include media-breakpoint-down(md) {
+    .usermenu .userbutton > .usertext {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+}

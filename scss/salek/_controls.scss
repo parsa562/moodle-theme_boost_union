@@ -942,7 +942,7 @@ body:not(.pagelayout-frontpage) #page.drawers #region-main {
         }
 
         > input[type="text"] {
-            min-height: $salek-control-height;
+            min-height: calc(#{$salek-control-height} - 2px); // (The whole field 44px: with the frame's 1px lines.)
             border: 0;
             border-radius: 0 !important; /* stylelint-disable-line declaration-no-important */
             background-color: transparent;
