@@ -274,6 +274,11 @@ if ($PAGE->pagetype === 'message-index') {
     $PAGE->requires->js_call_amd('theme_boost_union/messagesback', 'init', [get_string('back')]);
 }
 
+// A forum's pages: the initials of an author without a picture, as in the site's lists.
+if (strpos($PAGE->pagetype, 'mod-forum-') === 0) {
+    $PAGE->requires->js_call_amd('theme_boost_union/forumposts', 'init');
+}
+
 // Every page (the course administration has the page type "r"; the script looks for the groups):
 // pages of groups of links, their untitled group titled with its tab's name.
 $PAGE->requires->js_call_amd('theme_boost_union/pagetitle', 'groupTitles');

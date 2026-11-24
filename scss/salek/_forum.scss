@@ -1,0 +1,169 @@
+// Salek: a forum discussion (mod/forum/discuss.php).
+
+// The title row and the toolbar under it 24px apart, as the site's other pages (Moodle: 32px).
+body#page-mod-forum-discuss #region-main div[role="main"] {
+    .discussionheader {
+        margin-bottom: $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // The toolbar (how the replies show, "Move this discussion to", "Settings"): its parts on one
+    // line, on its middle, 12px apart (Moodle: the first 4px lower, its own margin); on phones they
+    // wrap, "Settings" at the end.
+    .discussionheader + div > [class~="flex-column"]:first-child {
+        flex-direction: row !important; /* stylelint-disable-line declaration-no-important */
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+
+        > :empty {
+            display: none;
+        }
+
+        > [class~="ms-2"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .singleselect,
+        .urlselect,
+        form {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+// The posts, in any forum page that shows them: in the look of the site's messages (the messages
+// page): no frame, the soft fill of a received message, rounded 18px, the corner by the author's
+// picture 6px, as a speech bubble from it (Moodle: a white box with a grey frame).
+#region-main [data-region="post"] .forumpost {
+    padding: 16px 18px !important; /* stylelint-disable-line declaration-no-important */
+    border: 0 !important; /* stylelint-disable-line declaration-no-important */
+    border-radius: 18px !important; /* stylelint-disable-line declaration-no-important */
+    border-start-start-radius: 6px !important; /* stylelint-disable-line declaration-no-important */
+    background-color: $salek-msg-received;
+}
+
+// An author without a picture: their initials in a coloured circle (theme JS forumposts), as in
+// the site's lists, the colour by the person.
+#region-main [data-region="post"] .salek-post-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    margin: 0;
+    border-radius: 50%;
+    font-size: .9375rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px #fff; // (A white ring: on the post's grey the light circle did not stand out.)
+
+    @each $i, $bg, $fg in (1, #fff4da, #8a5a00), (2, #e3edfb, #1859c9), (3, #f1ecfe, #6236c9),
+            (4, #e4f6f1, #0b7261), (5, #fdedf3, #ae2161), (6, #eef2f7, #475569) {
+        &.salek-initials-tone-#{$i} {
+            background-color: $bg;
+            color: $fg;
+        }
+    }
+}
+
+// The author's name: in the text's colour, without an underline, blue on hover.
+#region-main [data-region="post"] .authorsubheading a {
+    color: $salek-ink;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+        color: var(--bs-primary);
+    }
+}
+
+// The post's actions (Permalink, Edit, Delete, Reply): quiet grey words 16px apart (Moodle: blue,
+// 48px apart, three lines on phones), blue on hover; "Reply", the main one, in the brand colour.
+#region-main [data-region="post"] [data-region="post-actions-container"] {
+    column-gap: 16px !important; /* stylelint-disable-line declaration-no-important */
+    row-gap: 6px !important; /* stylelint-disable-line declaration-no-important */
+
+    > a {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        text-decoration: none;
+
+        &:hover {
+            color: var(--bs-primary);
+        }
+
+        &[href*="reply="] {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+    }
+}
+
+// Phones: the post's text across the bubble (Moodle keeps an empty column the picture's width
+// beside it, the space of the author's groups, a sixth of the phone's width).
+@include media-breakpoint-down(md) {
+    #region-main [data-region="post"] .author-groups-container:not(:has(*)) {
+        display: none;
+    }
+}
+
+// (A person's own picture the same: a white ring on the post's grey.)
+#region-main [data-region="post"] header img.rounded-circle {
+    box-shadow: 0 0 0 2px #fff;
+}
+
+// The forum summary report: the title first, with the site's line under it, as on the other pages
+// (Moodle: under the forum's selector, 68px above the "Dates" filter); the selector and the filter
+// on one line under it, the table 24px under them.
+body#page-mod-forum-report-summary-index #region-main div[role="main"] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+
+    > * {
+        grid-column: 1 / -1;
+    }
+
+    > h2 {
+        @include salek-title-line;
+        grid-row: 1;
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding-bottom: 20px !important; /* stylelint-disable-line declaration-no-important */
+        @include salek-page-title-text;
+    }
+
+    > .singleselect {
+        grid-row: 2;
+        grid-column: 1;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > div:has(> #filtersform) {
+        grid-row: 2;
+        grid-column: 2;
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > #summaryreport {
+        margin-top: $salek-page-header-gap;
+    }
+
+    // Phones: the selector and the filter each on a line of their own.
+    @include media-breakpoint-down(md) {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 12px;
+
+        > div:has(> #filtersform) {
+            grid-row: 3;
+            grid-column: 1;
+        }
+    }
+}
+
+// The "Dates" filter: a soft button, as the site's other filters (the assignment's submissions;
+// Moodle: the page's main blue button).
+#region-main #filter-dates-button {
+    @include salek-button-soft;
+}

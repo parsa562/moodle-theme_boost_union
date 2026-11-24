@@ -1051,6 +1051,13 @@ table.question-bank-table {
     }
 }
 
+// A forum's discussion list: Moodle's box for the buttons under the toolbar ("Add discussion",
+// grading) took 32px with no button in it, the list or "No discussions" ended 57px under the
+// search: hidden when empty, 25px as elsewhere.
+#region-main [id^="discussion-list-"] > .py-3:not(:has(*)) {
+    display: none;
+}
+
 // "Add a block" (edit mode, in the blocks drawer and in the page's block areas): Moodle's dashed
 // button, with the site's buttons' rounder corners.
 [data-region="add-block-button"] .btn-add-content {

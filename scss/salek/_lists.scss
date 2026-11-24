@@ -378,6 +378,38 @@ body.path-mod-assign #region-main .gradingtable {
     }
 }
 
+// The bar with two rows (a forum discussion: "Go to all discussions" over the course's "Previous"
+// and "Next"), two bars one on the other: one row, the link in its middle, where the row is empty.
+// On phones the row has no room for it: the page's "Forum" tab goes to the same list.
+#sticky-footer.stickyfooter:has(.course-linear-navigation) {
+    .sticky-footer-supplementary-wrapper {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        height: auto !important; /* stylelint-disable-line declaration-no-important */ // (On the row's middle: Moodle's 40px.)
+        border: 0 !important; /* stylelint-disable-line declaration-no-important */
+        pointer-events: none; // (Clicks pass to the row under it, except on the link.)
+
+        > * {
+            pointer-events: auto;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        .sticky-footer-supplementary-wrapper {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+// Phones: the bar above the phone's bottom bar (Boost Union's bottom menu, 60px), not under it (the
+// course's "Previous" and "Next" were hidden under it).
+@include media-breakpoint-down(md) {
+    :root:has(.boost-union-bottom-menu .nav-link) #sticky-footer.stickyfooter {
+        bottom: 60px;
+    }
+}
+
 // Rows that wrap on phones touched each other: the quiz's controls above its questions (maximum
 // grade, Repaginate), the course search when importing from a course, the "View by" label of the
 // grade single view above its buttons.
