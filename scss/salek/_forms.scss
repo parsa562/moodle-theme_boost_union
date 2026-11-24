@@ -14,6 +14,8 @@
 // dialogue's edges.
 body:not(.pagelayout-login) #region-main div[role="main"] > form.mform,
 body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > form.mform,
+body.path-mod-workshop #region-main div[role="main"] > .allocator-ui > div > form.mform, // (A workshop's scheduled and random allocation.)
+body.path-mod-scorm #region-main div[role="main"] > #scormtablecontainer > form.mform, // (A SCORM report's preferences.)
 .modal-body > form.mform {
     --salek-sheet-pad: #{$salek-sheet-pad};
     margin-top: $salek-page-header-gap; // After the title (its 12px margin collapses into this) or other content.
@@ -101,7 +103,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
 
     // The last section, when closed: a hairline under it too (before the buttons' band, the
     // band's own line is enough).
-    > fieldset:last-of-type:not(:has(+ .fitem[data-groupname="buttonar"])) > [class~="d-flex"]:has(.fheader[aria-expanded="false"]) {
+    > fieldset:last-of-type:not(:has(+ .fitem[data-groupname="buttonar"])):not(:has(+ .fitem[id$="_submitbutton"])) > [class~="d-flex"]:has(.fheader[aria-expanded="false"]) {
         border-bottom: 1px solid $salek-form-section-line;
     }
 
@@ -116,7 +118,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
     // The line stops at the content edges (the row is 12px wider on each side), so the lines
     // inside a section read differently from the full-width lines between sections.
     // (Also the fields shown by "Show more…", in Moodle's box of their own.)
-    > .fitem:not(fieldset):not([data-groupname="buttonar"]),
+    > .fitem:not(fieldset):not([data-groupname="buttonar"]):not([id$="_submitbutton"]),
     > fieldset > .fcontainer > .fitem,
     > fieldset > .fcontainer > #form-advanced-div > .fitem {
         margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
@@ -174,56 +176,23 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
     }
 
     // Required: a red dot before the label (the red exclamation icon is hidden).
-    .col-form-label:has(> .form-label-addon > .text-danger)::before {
-        content: "";
-        flex: none;
-        width: 6px;
-        height: 6px;
-        margin-top: 9px;
-        margin-inline-end: 8px;
-        border-radius: 50%;
-        background-color: #dc2626;
-    }
-
-    .form-label-addon > .text-danger {
-        display: none;
-    }
+    @include salek-required-label;
 
     // Help (beside labels, checkboxes and section titles): a small round button with a
     // question mark.
-    a[data-bs-toggle="popover"]:has(> .fa-circle-question) {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 18px;
-        height: 18px;
-        margin: 2px 0 0 !important; /* stylelint-disable-line declaration-no-important */
-        margin-inline-start: 6px !important; /* stylelint-disable-line declaration-no-important */
-        border-radius: 50%;
-        background-color: rgba(var(--bs-primary-rgb), .1);
-        color: var(--bs-primary);
-
-        .icon {
-            display: none;
-        }
-
-        &::before {
-            @include salek-mask-icon($salek-icon-question, 12px);
-        }
-
-        &:hover,
-        &:focus-visible {
-            background-color: rgba(var(--bs-primary-rgb), .18);
-        }
-    }
-
-    &:is([dir="rtl"] *) a[data-bs-toggle="popover"]:has(> .fa-circle-question)::before {
-        transform: scaleX(-1); // The Persian question mark (؟) faces the other way.
-    }
+    @include salek-help-button;
 
     // Read-only values in line with their labels, which have 7px above the text.
     .felement[data-fieldtype="static"] {
         padding-top: 7px;
+    }
+
+    // (Not one holding a button or a field, as the grade history's "Select users": it is as high as
+    // the fields and stands where they stand; it was 7px lower.)
+    .felement[data-fieldtype="static"]:has([class~="btn"]),
+    .felement[data-fieldtype="static"]:has(select),
+    .felement[data-fieldtype="static"]:has(input:not([type="hidden"])) {
+        padding-top: 0;
     }
 
     // "Enable" beside a date or a duration: a filled piece like the fields next to it.
@@ -247,7 +216,9 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
     }
 
     // The form buttons: on a light band across the sheet at the end, as high as the fields.
-    > .fitem[data-groupname="buttonar"] {
+    // (Also a form's lone button, Moodle's "submit" row: exporting questions.)
+    > .fitem[data-groupname="buttonar"],
+    > .fitem[id$="_submitbutton"]:not(fieldset) {
         @include salek-sheet-bleed;
         // A Bootstrap row: its columns add 12px, so the buttons stay under the fields.
         padding-inline: calc(var(--salek-sheet-pad) - 12px);
@@ -285,47 +256,13 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
     }
 
     > .fdescription.required {
-        display: flex;
-        align-items: center;
-        color: $salek-text-muted;
-        font-size: .8125rem;
-
-        .icon {
-            display: none;
-        }
-
-        &::before {
-            content: "";
-            flex: none;
-            width: 6px;
-            height: 6px;
-            margin-inline-end: 8px;
-            border-radius: 50%;
-            background-color: #dc2626;
-        }
-
-        &:lang(fa),
-        &:lang(en) {
-            font-size: 0;
-
-            &::after {
-                font-size: .8125rem;
-            }
-        }
-
-        &:lang(fa)::after {
-            content: "الزامی";
-        }
-
-        &:lang(en)::after {
-            content: "Required";
-        }
-
+        @include salek-required-note;
     }
 
     // Only when the buttons' band is there: some forms (grade import…) have their buttons in a
     // bar at the bottom of the window; there the note is a line at the end of the form.
-    > .fitem[data-groupname="buttonar"] ~ .fdescription.required {
+    > .fitem[data-groupname="buttonar"] ~ .fdescription.required,
+    > .fitem[id$="_submitbutton"]:not(fieldset) ~ .fdescription.required {
         @include media-breakpoint-up(md) {
             position: absolute;
             inset-block-end: 0;
@@ -341,7 +278,7 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
         }
     }
 
-    > .fdescription.required:not(.fitem[data-groupname="buttonar"] ~ *) {
+    > .fdescription.required:not(.fitem[data-groupname="buttonar"] ~ *):not(.fitem[id$="_submitbutton"] ~ *) {
         padding-top: 16px;
     }
 }
@@ -349,11 +286,15 @@ body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > fo
 // Section 27, continued: when the form ends the page with its buttons' band, the band reaches
 // the bottom of the white sheet (instead of a 24px white strip under it), with the sheet's
 // rounded corners. (Forms without that band, like report options, keep the sheet's padding.)
-body:not(.pagelayout-login) #region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> .fitem[data-groupname="buttonar"]) {
+body:not(.pagelayout-login) #region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> .fitem[data-groupname="buttonar"]),
+body:not(.pagelayout-login) #region-main > div[role="main"]:last-child > form.mform:last-of-type:has(> .fitem[id$="_submitbutton"]),
+body.path-mod-workshop #region-main > div[role="main"]:last-child > .allocator-ui:last-child > div > form.mform:has(> .fitem[id$="_submitbutton"]),
+body.path-mod-scorm #region-main > div[role="main"]:last-child > #scormtablecontainer:last-child > form.mform:last-child:has(> .fitem[id$="_submitbutton"]) {
     margin-bottom: -24px;
 
     @include media-breakpoint-up(md) {
-        > .fitem[data-groupname="buttonar"] {
+        > .fitem[data-groupname="buttonar"],
+        > .fitem[id$="_submitbutton"]:not(fieldset) {
             border-end-start-radius: $salek-radius;
             border-end-end-radius: $salek-radius;
         }
@@ -403,7 +344,9 @@ body:not(.pagelayout-login) #region-main div[role="main"] > form.mform + form.mf
 // The page's last form without the buttons' band (its buttons in the bar at the bottom of the
 // window: grade export and import), its last section closed: that section's band at the bottom
 // edge of the sheet (no line under it and no white strip).
-body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:last-child > fieldset.collapsed:last-of-type:not(:has(~ .fitem)):not(:has(~ .fdescription)) {
+// (The form the page's last element but for scripts after it; the section closed from the start
+// or by the reader: importing questions.)
+body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:not(:has(~ :not(script))) > fieldset:last-of-type:has(> [class~="d-flex"] .fheader[aria-expanded="false"]):not(:has(~ .fitem)):not(:has(~ .fdescription)) {
     margin-bottom: calc(-1 * var(--salek-sheet-pad)) !important; /* stylelint-disable-line declaration-no-important */
 
     > [class~="d-flex"]:has(.ftoggler) {
@@ -622,6 +565,125 @@ body:not(.pagelayout-login) #region-main div[role="main"] > form.mform:last-chil
         [class~="btn"] {
             min-height: $salek-control-height;
             min-width: 110px;
+        }
+    }
+}
+
+// Controls one against the other (Moodle sets no space between them): 8px apart, as the site's
+// other controls.
+// - A text box's format menu ("Moodle auto-format", with the plain text editor) under it: the
+//   menu touched the box (every description and question text).
+// - In a group, the field after a button ("Add" and "Add one more item", in an Ordering
+//   question's items): only Moodle's space between them, 4px.
+#region-main form.mform .felement div:has(> textarea) + div:has(> select[name$="[format]"]) {
+    margin-top: 8px;
+}
+
+#region-main form.mform .felement .fitem:has(> [data-fieldtype="submit"]) + .fitem,
+#region-main form.mform .felement .fitem:has(> [data-fieldtype="button"]) + .fitem {
+    margin-inline-start: 4px;
+}
+
+// Forms with each name over its field (Moodle's "vertical" forms, .full-width-labels: answering a
+// Feedback, the quiz's start check, report builder conditions, the H5P editor): their rows are not
+// the 24px wider Bootstrap rows of the other forms, so the names, the lines between the rows and
+// the buttons' band are set for that: names and fields from the content's edge, 16px between a name
+// and its field, the lines across the content, the buttons from the content's edge too. (They stood
+// 12px in, the lines 12px short at each end, the buttons 12px out past the fields.)
+body:not(.pagelayout-login) #region-main div[role="main"] > form.mform.full-width-labels,
+body:not(.pagelayout-login) #region-main div[role="main"] > .box.generalbox > form.mform.full-width-labels,
+.modal-body > form.mform.full-width-labels {
+    > .fitem:not(fieldset):not([data-groupname="buttonar"]):not([id$="_submitbutton"]),
+    > fieldset > .fcontainer > .fitem {
+        background-size: 100% 1px;
+
+        > .col-form-label {
+            margin-bottom: 16px;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+            // (A row without a name: no space for it.)
+            &:not(:has(> label, > p)) {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        > .felement {
+            padding-inline: 0;
+        }
+
+        > .felement[data-fieldtype="static"] {
+            padding-top: 0;
+        }
+    }
+
+    > .fitem[data-groupname="buttonar"],
+    > .fitem[id$="_submitbutton"]:not(fieldset) {
+        padding-inline: var(--salek-sheet-pad);
+    }
+}
+
+/* The grade field of activity settings and a workshop's assessment form (Moodle's "modgrade":
+   Type, Scale, Maximum grade): no frame of its own (Moodle's grey box with 16px padding, on phones
+   wider than the column), each part's name and field on one row, the names in one 140px column,
+   12px between the rows. (Moodle: the names loose before their fields, spaces and line breaks
+   between them.) */
+#region-main form.mform .felement[data-fieldtype="modgrade"] {
+    margin: 0;
+    padding: 0 calc(var(--bs-gutter-x) * .5); // (The column's gutters, as the other fields; not Moodle's 1rem.)
+    border: 0;
+    border-radius: 0;
+
+    > fieldset > [class~="d-flex"] {
+        align-items: center;
+        // (Moodle's &nbsp; between the parts are items too: no gap across, margins. Over the
+        // forms' 8px gap of field groups.)
+        gap: 12px 0 !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 0; // (And those &nbsp; without width.)
+
+        > label {
+            flex: 0 0 140px;
+            margin: 0;
+            margin-inline-end: 16px;
+            font-size: .875rem;
+        }
+
+        // A name with its help button after it (assignments: "Rescale existing grades"): the
+        // two together in the names' column.
+        > label:has(+ .help-icon) {
+            flex-basis: 112px;
+            margin-inline-end: 8px;
+        }
+
+        > .help-icon {
+            flex: 0 0 20px;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin-inline-end: 16px !important; /* stylelint-disable-line declaration-no-important */
+            font-size: .875rem;
+        }
+
+        // A note above the parts (grades given already): across the row.
+        > .alert {
+            flex: 0 0 100%;
+            margin: 0;
+            font-size: .875rem;
+        }
+
+        // (Up to the row's end, a few pixels short: exactly the rest wrapped it under its name.)
+        > .fitem {
+            flex: 1 1 calc(100% - 160px);
+            min-width: 0;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .mb-3.)
+            font-size: .9375rem;
+
+            // The fields their own width, as elsewhere in the forms (not across the column).
+            :is(select, input[type="text"]) {
+                width: auto;
+                max-width: 100%;
+            }
+        }
+
+        > br {
+            display: none;
         }
     }
 }

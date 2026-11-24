@@ -66,6 +66,42 @@
         }
     }
 
+    // Rows of several labels with their lists (the participation report's options: a list, then
+    // the next one's label): 8px between a label and its list and before the button, 16px before
+    // the next label; lines that wrap 8px apart. (Moodle: 4 or 5px everywhere, the next label
+    // close to the list before it, as if it were its label.) And the permissions' filter: its
+    // label, field and button 8px apart (Moodle: 4px).
+    div:not([hidden]):has(> select + label:not([class~="visually-hidden"]):not([class~="sr-only"]):not([class~="accesshide"])),
+    .capabilitysearchui {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+
+        > label,
+        > select,
+        > input {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle's .mx-1, .me-1, the labels' 5px.)
+        }
+
+        > select:has(+ label) {
+            margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    // Rows of buttons Moodle spaces with .me-1 (the quiz results' "Delete selected attempts" and
+    // "Regrade attempts"): 8px apart, also when they wrap (Moodle: 4px, on phones one on the other).
+    div:has(> [class~="btn"][class~="me-1"] + [class~="btn"]) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+
+        > [class~="btn"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
     // A list on its own line starts where the content starts; a second list next to it, or
     // the groups overview's lists after "Filter groups by:" (a text, which CSS cannot see), 8px
     // apart from what comes before them.

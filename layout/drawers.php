@@ -308,6 +308,7 @@ if ($PAGE->pagetype === 'calendar-view' || $PAGE->pagetype === 'my-index') {
 $PAGE->requires->js_call_amd('theme_boost_union/userpicker', 'init', ['#chooseusersubmit', [
     'selected' => get_string('selected', 'form'),
     'none' => get_string('noselection', 'form'),
+    'selectall' => get_string('selectall'),
 ]]);
 
 // Include the template content for the course related hints.

@@ -21,6 +21,10 @@
  * The two lists of the groups page are drawn the same way: the groups as rows with checkboxes and
  * their number of members, and the members of the chosen group (to look at, not to choose).
  *
+ * So are the lists of several choices of the forms (resetting a course's "Unenrol users", a role's
+ * "Allow role assignments"): rows with checkboxes and the names only (Moodle: a bare box of lines
+ * to pick with Ctrl), above a "Select all" row; Ctrl+A in the list chooses all, as in Moodle's.
+ *
  * "Search options" (Moodle's collapsible region next to the search) opens and closes at once
  * instead of after Moodle's animation: the theme draws it as a button with a panel under the
  * search, and the classes set here say which of the two is shown.
@@ -74,8 +78,11 @@ define([], function() {
      * @param {Boolean} counted A list of groups: the number in brackets is the number of members.
      * @return {Object}
      */
-    const person = function(option, counted) {
+    const person = function(option, counted, plain) {
         const text = option.textContent.trim();
+        if (plain) {
+            return {name: text, details: '', number: ''};
+        }
         if (counted) {
             const count = text.match(COUNT);
             return {name: count ? count[1] : text, details: '', number: count ? count[2] : ''};
@@ -107,11 +114,12 @@ define([], function() {
      * @param {Object} strings The words "Selected" and "No selection".
      * @param {Boolean} readonly Only to look at (the members of a group): no checkboxes.
      * @param {Boolean} counted A list of groups (no headings), each with its number of members.
+     * @param {Boolean} plain A form's list of several choices: names only, no initials.
      */
-    const enhance = function(select, footer, strings, readonly, counted) {
+    const enhance = function(select, footer, strings, readonly, counted, plain) {
         const multi = select.multiple;
         const picker = make('div', 'salek-userpicker' + (multi ? ' salek-userpicker-multi' : '') +
-            (counted ? ' salek-userpicker-grouplist' : ''));
+            (counted ? ' salek-userpicker-grouplist' : '') + (plain ? ' salek-userpicker-plain' : ''));
         picker.setAttribute('role', multi ? 'group' : 'radiogroup');
         const label = document.querySelector('label[for="' + select.id + '"]');
         if (label) {
@@ -138,7 +146,7 @@ define([], function() {
         };
 
         const item = function(option) {
-            const p = person(option, counted);
+            const p = person(option, counted, plain);
             if (readonly) {
                 const row = make('div', 'salek-userpicker-row');
                 row.append(make('span', 'salek-userpicker-avatar', initials(p.name)), nameAndDetails(p));
@@ -150,6 +158,7 @@ define([], function() {
             input.name = select.id + '_salekpick';
             input.value = option.value;
             input.checked = option.selected;
+            input.disabled = select.disabled; // (Moodle's "disabled if" on the list.)
             input.addEventListener('change', function() {
                 if (multi) {
                     option.selected = input.checked;
@@ -158,7 +167,11 @@ define([], function() {
                 }
                 changed();
             });
-            el.append(input, make('span', 'salek-userpicker-avatar', initials(p.name)), nameAndDetails(p));
+            if (plain) {
+                el.append(input, nameAndDetails(p));
+            } else {
+                el.append(input, make('span', 'salek-userpicker-avatar', initials(p.name)), nameAndDetails(p));
+            }
             if (p.number) {
                 el.append(make('span', 'salek-userpicker-count', p.number));
             }
@@ -206,9 +219,75 @@ define([], function() {
             return box;
         };
 
+        // "Select all" (a form's list): chooses all its choices, or none when all are chosen; in
+        // between while some are. (One listener for the list, whatever it shows after a search.)
+        let syncAll = null;
+        picker.addEventListener('change', function(e) {
+            if (syncAll && !e.target.closest('.salek-userpicker-all')) {
+                syncAll();
+            }
+        });
+        const allCheckbox = function(options) {
+            const box = document.createElement('input');
+            box.type = 'checkbox';
+            box.setAttribute('aria-label', strings.selectall);
+            const sync = function() {
+                const count = options.filter(function(o) {
+                    return o.selected;
+                }).length;
+                box.checked = count === options.length;
+                box.indeterminate = count > 0 && count < options.length;
+            };
+            box.addEventListener('change', function() {
+                options.forEach(function(o) {
+                    o.selected = box.checked;
+                });
+                picker.querySelectorAll('input').forEach(function(input) {
+                    if (input !== box) {
+                        input.checked = box.checked;
+                        input.indeterminate = false;
+                    }
+                });
+                changed();
+            });
+            syncAll = sync;
+            sync();
+            return box;
+        };
+
+        // Ctrl+A in the list (as in Moodle's): all chosen.
+        if (plain && multi) {
+            picker.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a' && !select.disabled) {
+                    e.preventDefault();
+                    Array.from(select.options).forEach(function(o) {
+                        o.selected = !o.disabled;
+                    });
+                    picker.querySelectorAll('input').forEach(function(input) {
+                        input.checked = !input.disabled;
+                        input.indeterminate = false;
+                    });
+                    changed();
+                }
+            });
+        }
+
         const draw = function() {
             picker.replaceChildren();
-            if (counted) {
+            const enabled = Array.from(select.options).filter(function(o) {
+                return !o.disabled;
+            });
+            // ("Select all" at the end of the list.)
+            let allRow = null;
+            syncAll = null;
+            if (plain && multi && enabled.length > 1) {
+                allRow = make('label', 'salek-userpicker-group salek-userpicker-all');
+                allRow.append(allCheckbox(enabled), make('span', 'salek-userpicker-group-name', strings.selectall),
+                    make('span', 'salek-userpicker-count', String(enabled.length)));
+                allRow.querySelector('input').disabled = select.disabled;
+            }
+            picker.classList.toggle('salek-userpicker-disabled', select.disabled);
+            if (counted || (plain && !select.querySelector('optgroup'))) {
                 const items = make('div', 'salek-userpicker-rows');
                 Array.from(select.options).forEach(function(option) {
                     if (!option.disabled) {
@@ -216,6 +295,9 @@ define([], function() {
                     }
                 });
                 picker.append(items);
+                if (allRow) {
+                    picker.append(allRow);
+                }
                 return;
             }
             const groups = Array.from(select.querySelectorAll('optgroup'));
@@ -258,12 +340,17 @@ define([], function() {
                     picker.append(make('div', 'salek-userpicker-message', labelText));
                 }
             });
+            if (allRow) {
+                picker.append(allRow);
+            }
             showChosen();
         };
 
         draw();
-        // Moodle's search replaces the groups of the list.
-        new MutationObserver(draw).observe(select, {childList: true, subtree: true});
+        // Moodle's search replaces the groups of the list; a form's "disabled if" turns it off and on.
+        const observer = new MutationObserver(draw);
+        observer.observe(select, {childList: true, subtree: true, attributes: true, attributeFilter: ['disabled']});
+        return {picker: picker, observer: observer};
     };
 
     /**
@@ -302,6 +389,74 @@ define([], function() {
         }).observe(region, {attributes: true, attributeFilter: ['class']});
     };
 
+    /**
+     * Every list of several choices in the content's forms (the forms of the pages, the site
+     * administration's settings, the filters): rows with checkboxes. Moodle's fields that search as
+     * one types (autocomplete, tags) are such lists underneath and take them over; those, and the
+     * lists of people and groups above, are left alone.
+     *
+     * @param {Object} strings
+     */
+    const plainLists = function(strings) {
+        const skip = function(select) {
+            const next = select.nextElementSibling;
+            return select.classList.contains('salek-userpicker-source') ||
+                select.closest('.userselector, [data-fieldtype="autocomplete"], [data-fieldtype="tags"]') ||
+                ((select.id === 'groups' || select.id === 'members') && select.closest('#page-group-index')) ||
+                select.style.visibility === 'hidden' || select.style.display === 'none' ||
+                (next && next.matches('.form-autocomplete-selection, .form-autocomplete-input, .salek-userpicker'));
+        };
+        // (A list Moodle turns into a field that searches as one types after this ran, as the
+        // forum search's tags, a hand-made form: given back to it.)
+        const giveBack = function(select, drawn) {
+            const watch = new MutationObserver(function() {
+                if (select.style.visibility === 'hidden' || select.style.display === 'none' ||
+                        select.parentElement.querySelector('.form-autocomplete-selection')) {
+                    watch.disconnect();
+                    drawn.observer.disconnect();
+                    drawn.picker.remove();
+                    select.classList.remove('salek-userpicker-source');
+                    select.removeAttribute('aria-hidden');
+                    select.removeAttribute('tabindex');
+                }
+            });
+            watch.observe(select.parentElement, {childList: true, subtree: true, attributes: true,
+                attributeFilter: ['style']});
+        };
+        // The pages' forms and the site administration's settings: at once (their fields that search
+        // as one types mostly say so on their row), also those in closed sections.
+        document.querySelectorAll('#region-main form.mform select[multiple], #region-main #adminsettings select[multiple]')
+            .forEach(function(select) {
+                if (!skip(select)) {
+                    giveBack(select, enhance(select, null, strings, false, false, true));
+                }
+            });
+        // Other forms (filters…): after the page's other scripts, only lists that are shown (not the
+        // hidden lists a filter builds its fields from, as the participants' filter).
+        const others = function() {
+            document.querySelectorAll('#region-main form:not(.mform):not(#adminsettings) select[multiple]')
+                .forEach(function(select) {
+                    if (!skip(select) && select.getClientRects().length && !select.closest('.hidden, [data-filterregion]')) {
+                        giveBack(select, enhance(select, null, strings, false, false, true));
+                    }
+                });
+        };
+        // (Moodle counts the scripts still starting; this one's own call ends once init returns.)
+        const wait = function(tries) {
+            const pending = window.M && window.M.util && window.M.util.pending_js;
+            if (!pending || !pending.length || tries > 30) {
+                others();
+            } else {
+                setTimeout(function() {
+                    wait(tries + 1);
+                }, 100);
+            }
+        };
+        setTimeout(function() {
+            wait(0);
+        }, 0);
+    };
+
     return {
         /**
          * Draw the user selectors of the page (if any) as cards or rows.
@@ -322,6 +477,7 @@ define([], function() {
                 enhance(groups, null, strings, false, true);
                 enhance(members, null, strings, true, false);
             }
+            plainLists(strings);
         }
     };
 });

@@ -14,6 +14,25 @@
     [class~="btn-subtle-body"] {
         --bs-btn-bg: #{$salek-soft-strong};
     }
+
+    // Moodle's white buttons with a blue outline (the Database's "Actions" menus and the buttons of
+    // its empty pages, the dashboard's empty "Course overview"): the site's soft grey secondary
+    // button, as the other secondary buttons.
+    .whitebutton [class~="btn-secondary"],
+    .presetsactions .dropdown-toggle,
+    .entriesactions .dropdown-toggle {
+        border-color: transparent;
+        background: $salek-button-soft;
+        color: $salek-text-strong;
+
+        &:hover,
+        &:focus-visible,
+        &[aria-expanded="true"] {
+            border-color: transparent;
+            background: $salek-button-soft-hover;
+            color: $salek-ink;
+        }
+    }
 }
 
 /* Latin text in the site font (Josefin Sans) sits high in its line: its capitals are 0.735em
@@ -221,8 +240,15 @@ html[dir="rtl"] body {
         }
     }
 
-    .form-check-input[type="radio"] {
-        accent-color: var(--bs-primary);
+    // Radio buttons: the theme's round button, as its checkbox (the browser's grey circles; not the
+    // answers of quiz questions, or the buttons drawn as pills or cards over a hidden one).
+    input[type="radio"]:not(.que *):not(.btn-check):not([class~="visually-hidden"]):not([class~="sr-only"]) {
+        @include salek-radio;
+    }
+
+    // (Beside its label, 8px apart.)
+    label > input[type="radio"]:not(.que *):first-child {
+        margin-inline-end: 8px !important; /* stylelint-disable-line declaration-no-important */
     }
 
     .form-switch .form-check-input {

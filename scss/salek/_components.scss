@@ -412,7 +412,9 @@ $salek-badge-scope: ':where(#region-main, #page-header, .modal-dialog)';
     // Until the script draws the people, Moodle's list is not shown (it showed first, then turned
     // into cards). If the script fails, the list comes back after 3 seconds.
     @at-root body.jsenabled #region-main .userselector > select:not(.salek-userpicker-source),
-        body.jsenabled#page-group-index #region-main :is(#groups, #members):not(.salek-userpicker-source) {
+        body.jsenabled#page-group-index #region-main :is(#groups, #members):not(.salek-userpicker-source),
+        body.jsenabled #region-main form.mform .felement:not([data-fieldtype="autocomplete"]):not([data-fieldtype="tags"]) select[multiple]:not(.salek-userpicker-source),
+        body.jsenabled #region-main form:not(.mform) select[multiple]:not(.salek-userpicker-source):not(.hidden *) {
         animation: salek-userpicker-wait 3s step-end;
     }
 
@@ -700,6 +702,34 @@ $salek-badge-scope: ':where(#region-main, #page-header, .modal-dialog)';
             background-color: currentColor;
             mask: $salek-icon-users center / contain no-repeat;
         }
+    }
+
+    // A form's list of several choices (resetting a course's "Unenrol users", a role's "Allow role
+    // assignments"): as wide as a short field, as high as its choices up to 320px, then it scrolls.
+    .salek-userpicker-plain {
+        width: min(420px, 100%);
+        height: auto;
+        max-height: 320px; // (A role's lists: all 8 roles.)
+
+        .salek-userpicker-name {
+            font-weight: 500;
+        }
+
+        // "Select all" at the bottom, staying there while the list scrolls, a line over it.
+        .salek-userpicker-all {
+            top: auto;
+            bottom: 0;
+            z-index: 2;
+            border-top: 1px solid $salek-table-row-line;
+            border-bottom: 0;
+            cursor: pointer;
+        }
+    }
+
+    // (Turned off by the form, "disabled if".)
+    .salek-userpicker-disabled {
+        opacity: .55;
+        pointer-events: none;
     }
 
     // The groups page: each list as high as the other, under its label.
@@ -1055,6 +1085,56 @@ table.question-bank-table {
             &:hover {
                 background-color: $salek-button-soft-hover;
             }
+        }
+    }
+}
+
+// The outcomes used in a course (grade/edit/outcome/course.php): the buttons between the two lists
+// in the colours of the add and remove pages of groups and enrolments, in the site's button size,
+// one under the other in the middle (Moodle: two small grey buttons).
+#region-main table.courseoutcomes {
+    > tbody > tr > td:has(#add) {
+        width: 180px;
+        vertical-align: middle;
+        text-align: center;
+
+        > div {
+            margin: 0 0 12px !important; /* stylelint-disable-line declaration-no-important */ // (Over .my-3.)
+
+            &:last-child {
+                margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        input[class~="btn"] {
+            min-width: 120px;
+        }
+
+        @include salek-add-remove-buttons;
+    }
+
+    // Phones and tablets: the lists and the buttons one under the other, as on those pages (side
+    // by side the lists were 50px wide on phones).
+    @include media-breakpoint-down(lg) {
+        &,
+        > tbody,
+        > tbody > tr,
+        > tbody > tr > td {
+            display: block;
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > tbody > tr > td {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .ps-3, .pe-3.)
+
+            select {
+                width: 100%;
+                height: 220px;
+            }
+        }
+
+        > tbody > tr > td:has(#add) {
+            padding-block: 24px !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 }
