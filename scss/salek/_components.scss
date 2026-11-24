@@ -141,6 +141,12 @@ $salek-badge-scope: ':where(#region-main, #page-header, .modal-dialog)';
             font-size: 1.125rem;
             font-weight: 600;
         }
+
+        // (Moodle's own title, left empty when the dialogue has its own (the file picker): it took
+        // half the line and pushed the title to the middle.)
+        > :is(H1, H2, H3, H4, H5):empty {
+            display: none;
+        }
     }
 
     .closebutton {

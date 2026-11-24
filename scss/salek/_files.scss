@@ -55,12 +55,87 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     min-height: 150px;
 }
 
-// The files (when there are some): in a framed box.
+// The files (when there are some): in a framed box, as high as they are, without a scrollbar for
+// nothing. (Moodle floats the files' icons, so the box kept its 150px and scrolled for the names
+// under them; the names: below.)
+.filemanager .fp-content > .fp-iconview {
+    display: flow-root;
+}
+
 .filemanager .fp-content {
     min-height: 150px;
     border: 1px solid $salek-card-border;
-    border-radius: 12px;
+    border-radius: $salek-card-radius;
     background-color: $salek-surface;
+}
+
+// Each file as an icon (the file fields, the file picker): its picture filling a rounded tile with
+// a fine line, its name under it, the whole file tinted under the mouse (Moodle: a picture floating
+// in a grey-edged square, a hard square line round it while chosen).
+:is(.filemanager, .file-picker) .fp-iconview .fp-file {
+    margin: 6px;
+    padding: 6px;
+    border-radius: 16px;
+    transition: background-color .15s ease;
+
+    &:hover,
+    &:focus-within {
+        background-color: #f1f5fe;
+    }
+
+    > a.aabtn {
+        border-radius: 12px;
+        outline: 0;
+        box-shadow: none;
+    }
+
+    &:has(> a.aabtn:focus-visible) {
+        box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .25);
+    }
+
+    .fp-thumbnail {
+        display: flex !important; /* stylelint-disable-line declaration-no-important */
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid $salek-card-border;
+        border-radius: 12px;
+        background-color: $salek-surface;
+        box-shadow: none;
+
+        // (A picture's preview: the whole tile, its middle kept; the icons of other files stay
+        // as they are, in the middle.)
+        img.realpreview {
+            width: 100%;
+            max-width: none !important; /* stylelint-disable-line declaration-no-important */
+            height: 100%;
+            max-height: none !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+            object-fit: cover;
+        }
+    }
+
+    &:hover .fp-thumbnail {
+        border-color: rgba(var(--bs-primary-rgb), .35);
+    }
+
+    // (The name in the file's flow, under its picture, so the box round the files is as high as
+    // they are; Moodle places it over the file's edge, out of the box: the box scrolled.)
+    .fp-filename-field {
+        position: static;
+        height: auto;
+        margin-top: 6px;
+        overflow: hidden;
+    }
+
+    .fp-filename {
+        padding: 0 4px !important; /* stylelint-disable-line declaration-no-important */
+        background: none;
+        color: $salek-ink;
+        font-size: .8125rem;
+        font-weight: 500;
+        text-align: center;
+    }
 }
 
 // The tools: each a white button ("Add…" in the brand colour); the views as one white pill.
@@ -70,7 +145,8 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 
 // (Also with the main area's id: the theme's soft grey buttons there are stronger.)
 .filemanager .fp-navbar [class~="btn"],
-#region-main .filemanager .fp-navbar [class~="btn"] {
+#region-main .filemanager .fp-navbar [class~="btn"],
+.file-picker .fp-viewbar [class~="btn"] {
     --bs-btn-color: #5b6577;
     --bs-btn-bg: #fff;
     --bs-btn-border-color: transparent;
@@ -108,7 +184,8 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     }
 }
 
-.filemanager .fp-viewbar {
+.filemanager .fp-viewbar,
+.file-picker .fp-viewbar {
     gap: 2px;
     padding: 3px;
     border-radius: 12px;
@@ -129,7 +206,8 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 }
 
 // The folder path ("Files"): small, under the tools.
-.filemanager .fp-pathbar {
+.filemanager .fp-pathbar,
+.file-picker .fp-pathbar {
     margin-top: 6px;
     font-size: .8125rem;
 
@@ -155,16 +233,61 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     }
 }
 
-// One file: the place under "Choose a file…".
+// One file (restore's backup file, importing grades or questions, uploading users…): while none
+// is chosen, "Choose a file…" inside the place to drop it, under its upload sign and words, one box
+// (Moodle: the button above a separate empty box). Once a file is chosen, the button above a
+// short framed line with the file's name, to choose another.
+[id^="filepicker-wrapper-"] {
+    position: relative;
+
+    &:has(.filepicker-container) > div:first-child {
+        position: absolute;
+        z-index: 1;
+        inset-inline: 0;
+        bottom: 22px;
+        display: flex;
+        justify-content: center;
+        pointer-events: none; // (Files dropped round the button still reach the box.)
+
+        > [class~="btn"] {
+            pointer-events: auto;
+        }
+    }
+}
+
 .filepicker-filelist {
-    min-height: 140px;
+    min-height: 0;
     margin-top: 10px;
     border: 0;
-    border-radius: 12px;
+    border-radius: $salek-card-radius;
     background-color: transparent;
 
+    &:has(.filepicker-container) {
+        min-height: 196px;
+        margin-top: 0;
+
+        // (The words take two lines on phones.)
+        @include media-breakpoint-down(md) {
+            min-height: 216px;
+        }
+    }
+
     .filepicker-filename {
-        padding: 8px 14px;
+        padding: 0;
+    }
+
+    // The chosen file: its name in a framed line.
+    .filepicker-filename:not(:has(.filepicker-container)) > a {
+        display: flex;
+        align-items: center;
+        min-height: 46px;
+        padding: 0 14px;
+        border: 1px solid $salek-card-border;
+        border-radius: $salek-field-radius;
+        background-color: $salek-surface;
+        font-size: .875rem;
+        font-weight: 500;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -176,7 +299,7 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
     inset: 0;
     padding-top: 76px;
     border: 1.5px dashed $salek-files-drop-line;
-    border-radius: 12px;
+    border-radius: $salek-card-radius; // (Rounder than the button inside it; 12px looked tight round it.)
     background-color: $salek-surface;
     box-shadow: none;
     color: $salek-text-muted;
@@ -212,3 +335,340 @@ $salek-icon-upload: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
         }
     }
 }
+
+/* The file picker: the window "Choose a file…" opens, the same everywhere (every file field, the
+   editors' image, media and link buttons), in the site's look:
+   - the sources ("Upload a file", "Server files", "Private files"…) a quiet list beside the files,
+     a line between them, the chosen one tinted in the brand colour (Moodle: blue links, the chosen
+     one a solid blue pill);
+   - its tools without a grey band, and none at all where there is nothing to use (uploading);
+   - uploading: the file field the dashed place of the file fields with the site's soft button,
+     the fields the site's soft grey fields, the button at the start (Moodle: the browser's bare
+     "Choose File", dark-edged fields, the button in the middle);
+   - "No files available" a quiet line in the middle of the empty place. */
+.file-picker.fp-generallayout {
+    margin: 0;
+
+    .fp-repo-area {
+        gap: 2px;
+        padding: 0;
+        padding-inline-end: 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .pe-2.)
+        border-inline-end: 1px solid $salek-line;
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 40px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            background-color: transparent;
+            color: $salek-ink;
+            font-size: .875rem;
+            font-weight: 500;
+            line-height: 1.4;
+
+            &:hover {
+                background-color: #f1f5fe;
+                color: var(--bs-primary);
+            }
+
+            &.active {
+                background-color: rgba(var(--bs-primary-rgb), .1);
+                color: var(--bs-primary);
+                font-weight: 600;
+            }
+        }
+
+        // (Moodle's coloured pictures, quiet unless chosen.)
+        .fp-repo-icon {
+            flex: none;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            filter: grayscale(1);
+            opacity: .65;
+        }
+
+        .nav-link.active .fp-repo-icon,
+        .nav-link:hover .fp-repo-icon {
+            filter: none;
+            opacity: 1;
+        }
+    }
+
+    > [class~="col-md-9"] {
+        padding-inline-start: 16px !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .fp-repo-items {
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+    }
+
+    .fp-navbar {
+        padding: 0 0 12px !important; /* stylelint-disable-line declaration-no-important */ // (Over .p-2.)
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+        background-color: transparent;
+
+        // The search with its buttons at the start, the views at the end, all 40px high on one
+        // line (Moodle floats them: the views stood higher than the search).
+        > div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fp-viewbar {
+            float: none !important; /* stylelint-disable-line declaration-no-important */
+            height: 40px;
+            margin-inline-start: auto;
+            padding: 4px;
+
+            [class~="btn"] {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        .fp-clear-left {
+            display: none;
+        }
+
+        // (Nothing to use: uploading, a link.)
+        &:has(.fp-toolbar.empty):has(.fp-viewbar.disabled):has(.fp-pathbar.empty) {
+            display: none;
+        }
+    }
+
+    .fp-viewbar.disabled {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .fp-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+
+        > div {
+            margin: 0;
+        }
+
+        [class~="btn"] {
+            @include salek-button-soft;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 10px;
+            border-radius: $salek-field-radius !important; /* stylelint-disable-line declaration-no-important */ // (As the search beside them.)
+        }
+
+        .fp-def-search {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        // (The search gives way first, so the views stay on the line on phones.)
+        flex: 1 1 auto;
+        min-width: 0;
+
+        .fp-tb-search {
+            flex: 0 1 260px;
+            min-width: 120px;
+
+            .fp-def-search,
+            input {
+                width: 100%;
+            }
+        }
+    }
+
+    // The fields (the search, uploading's name, author and licence): the site's soft grey fields.
+    :is(.form-control, select) {
+        min-height: 40px;
+        border-color: transparent;
+        border-radius: $salek-field-radius;
+        background-color: $salek-field-bg;
+        box-shadow: none;
+        color: $salek-ink;
+        font-size: .875rem;
+
+        &:hover {
+            background-color: $salek-field-bg-hover;
+        }
+
+        &:focus {
+            border-color: var(--bs-primary);
+            background-color: $salek-surface;
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+        }
+    }
+
+    // (The licence: a list, with the arrow of the site's lists.)
+    select.form-control {
+        padding-inline-end: 46px;
+        background-image: $salek-select-chip;
+        background-repeat: no-repeat;
+        background-position: right 7px center;
+        background-size: 30px 30px;
+        appearance: none;
+    }
+
+    .fp-content {
+        background-color: transparent;
+    }
+
+    // Phones: the sources a row of tabs to slide over the files (Moodle: a column of seven lines
+    // over them, the files below the window's fold).
+    @include media-breakpoint-down(md) {
+        .fp-repo-area {
+            flex-direction: row !important; /* stylelint-disable-line declaration-no-important */ // (Over .flex-column.)
+            flex-wrap: nowrap;
+            gap: 4px;
+            margin-bottom: 12px;
+            padding: 0 0 8px !important; /* stylelint-disable-line declaration-no-important */
+            border-inline-end: 0;
+            border-bottom: 1px solid $salek-line;
+            background-color: transparent;
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            .fp-repo {
+                flex: none;
+            }
+
+            .nav-link {
+                min-height: 36px;
+                white-space: nowrap;
+            }
+        }
+
+        > [class~="col-md-9"] {
+            padding-inline-start: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .fp-content-error {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 160px;
+        color: $salek-text-muted;
+        font-size: .875rem;
+    }
+
+    // Uploading a file, getting one from an address, a source's search: at the top of the place,
+    // as wide as the tools' line (Moodle: in the middle of its height, 10px in from its sides).
+    .fp-upload-form,
+    .fp-login-form {
+        display: block;
+        height: auto;
+        padding-top: 16px;
+
+        .fp-content-center {
+            display: block;
+            width: auto;
+            max-width: none;
+            height: auto;
+            margin: 0;
+        }
+
+        .fp-formset {
+            padding: 0;
+
+            // Each field the same: its label, 8px, the field, 16px to the next (Moodle: some as
+            // rows with -12px sides, the licence's label in a box of its own; gaps of 11 to 24px).
+            > div {
+                display: block;
+                margin: 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0;
+            }
+
+            label,
+            .fp-setlicense .col-form-label {
+                display: flex;
+                margin: 0 0 8px;
+            }
+
+            .fp-setlicense .col-form-label label {
+                margin: 0;
+            }
+        }
+
+        // (Its buttons: the site's main button.)
+        :is(.fp-upload-btn, .fp-login-submit, [type="submit"])[class~="btn"] {
+            min-height: 40px;
+            padding: 0 20px;
+            border-radius: $salek-field-radius;
+            font-size: .875rem;
+            font-weight: 600;
+        }
+
+        p.mdl-align {
+            margin: 0;
+        }
+
+        label {
+            color: $salek-ink;
+            font-size: .8125rem;
+            font-weight: 600;
+        }
+
+        .fp-setlicense .col-form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+
+            label {
+                margin: 0;
+            }
+        }
+
+        .px-3 {
+            padding-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        @include salek-help-button;
+
+        .mdl-align {
+            text-align: start;
+        }
+    }
+
+    input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        border: 1.5px dashed $salek-files-drop-line;
+        border-radius: $salek-card-radius;
+        background-color: $salek-surface;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--bs-primary);
+        }
+
+        &::file-selector-button {
+            margin-inline-end: 12px;
+            padding: 8px 16px;
+            border: 0;
+            border-radius: $salek-button-radius;
+            background-color: $salek-button-soft;
+            color: $salek-text-strong;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        &:hover::file-selector-button {
+            background-color: $salek-button-soft-hover;
+        }
+    }
+}
+
