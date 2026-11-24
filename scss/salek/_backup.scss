@@ -1,0 +1,178 @@
+// Salek: the course reuse pages (backup, restore, import, copy).
+
+/* The steps line ("1. Course selection ► 2. Initial settings ► …") as the site's breadcrumb: the
+   steps in small grey text with a small arrow between them, the current one bold in the site's
+   blue (Moodle: black "►" characters).
+   Moodle's sections ("Find a course to import data from", restore's "Restore into this course")
+   on the sheet itself, not in a box of their own inside it, their label above the value, not in
+   a narrow column beside it (on phones it squeezed the course list into a 200px box). */
+
+#region-main .backup_progress {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin-block: 0 24px;
+    color: $salek-text-muted;
+    font-size: .8125rem;
+
+    .backup_stage {
+        color: $salek-text-muted;
+
+        &.backup_stage_current {
+            color: var(--bs-primary);
+            font-weight: 700;
+        }
+
+        &.backup_stage_complete {
+            color: $salek-ink;
+        }
+    }
+
+    .arrow.sep {
+        display: inline-flex;
+        font-size: 0;
+
+        &::before {
+            @include salek-mask-icon($salek-icon-chevron, 12px);
+            color: #94a3b8;
+        }
+
+        [dir="rtl"] &::before {
+            transform: scaleX(-1);
+        }
+    }
+}
+
+.path-backup #region-main .backup-section {
+    margin: 0 0 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+
+    // (Moodle floats the titles and also catches the list's header cells, which then stood
+    // shorter than the others.)
+    .header {
+        float: none;
+        width: auto;
+    }
+
+    .detail-pair {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        + .detail-pair {
+            margin-top: 16px;
+        }
+    }
+
+    .detail-pair-label,
+    .detail-pair-value {
+        float: none;
+        width: auto;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    .detail-pair-label {
+        color: $salek-ink;
+        font-weight: 600;
+
+        &:empty {
+            display: none;
+        }
+    }
+}
+
+// Import: "Select a course" under the title "Find a course to import data from" said it twice.
+.path-backup #region-main .ics-existing-course > .detail-pair:first-of-type > .detail-pair-label {
+    @include visually-hidden;
+}
+
+// The course lists' count ("More than 10 courses found") a small grey note above the list, and
+// the search below it with the site's 8px between field and button.
+.path-backup #region-main :is(.ics-totalresults, .rcs-totalresults) {
+    margin-bottom: 8px;
+    color: $salek-text-muted;
+    font-size: .8125rem;
+}
+
+.path-backup #region-main :is(.ics-search, .rcs-search) {
+    gap: 8px;
+    margin-top: 0; // (The list above keeps 16px under it.)
+
+    > input[type="text"] {
+        flex: 1 1 160px;
+        max-width: 320px;
+        min-width: 0;
+    }
+
+    > [class~="btn"] {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// The steps' buttons: "Next" first, then "Jump to final step" and "Cancel" as the site's soft
+// buttons (Moodle: "Next" last, a second blue button beside it, so the main one was unclear).
+.path-backup #region-main .mform .fitem.proceedbutton {
+    order: -1;
+    margin-inline: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Moodle pushes it away with an auto margin.)
+}
+
+.path-backup #region-main .mform .fitem.oneclickbackup [class~="btn"] {
+    @include salek-button-soft;
+}
+
+// Restore (choosing a backup file): its four section titles ("Upload a backup file", the two
+// backup areas, "Restores in progress") the size of a form's section titles, 32px apart, each
+// note under them small and grey (Moodle: 18px titles 48px apart, as the page's own title). Its
+// required field and the note under the form with the forms' red dot (Moodle: red "!" icons).
+body#page-backup-restorefile #region-main div[role="main"] {
+    > :is(H2, H3):not(.tertiary-navigation *) {
+        margin: 32px 0 8px !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's .mt-6.)
+        color: $salek-text-strong;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    > .pb-3 + :is(H2, H3) {
+        margin-top: 8px !important; /* stylelint-disable-line declaration-no-important */ // (The intro's 16px under it.)
+    }
+
+    // Each section after the first set apart by a line across the sheet, as the title area's.
+    > :is(H2, H3):not(.pb-3 + *):not(.tertiary-navigation *) {
+        flex-basis: calc(100% + 2 * #{$salek-space-inset}); // (A flex item here: as wide as the sheet.)
+        margin-inline: calc(-1 * #{$salek-space-inset}) !important; /* stylelint-disable-line declaration-no-important */
+        padding: 24px $salek-space-inset 0;
+        border-top: 1px solid $salek-line;
+
+        @include media-breakpoint-down(md) {
+            flex-basis: calc(100% + 2 * #{$salek-space-inset-sm});
+            margin-inline: calc(-1 * #{$salek-space-inset-sm}) !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline: $salek-space-inset-sm;
+        }
+    }
+
+    // (The page's parts are flex items here, so the lists' 16px under them added to the next
+    // title's 32px.)
+    > .table-responsive {
+        margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    > :is(H2, H3) + .mb-3 {
+        margin-bottom: 12px !important; /* stylelint-disable-line declaration-no-important */
+        color: $salek-text-muted;
+        font-size: .8125rem;
+    }
+
+    form.mform {
+        @include salek-required-label;
+
+        > .fdescription.required {
+            @include salek-required-note;
+        }
+    }
+}

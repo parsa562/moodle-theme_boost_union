@@ -437,6 +437,12 @@ $salek-sheet-page: "body:not(.pagelayout-login):not(.pagelayout-frontpage)" +
         width: auto !important; /* stylelint-disable-line declaration-no-important */ // Moodle's .full-width-bottom-border sets one.
         border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
 
+        // The course reuse pages (import, backup, restore, reset) put the menu in a row with
+        // Moodle's .pb-3: their title area was 16px higher than the others.
+        > [class~="row"][class~="pb-3"] {
+            padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
         // Report title rows carry Moodle's .ms-0 (!important), which kept the line from the
         // sheet's start edge: it runs edge to edge.
         &[class~="ms-0"] {
