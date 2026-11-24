@@ -254,6 +254,9 @@ $PAGE->requires->js_call_amd('theme_boost_union/emptytables', 'init');
 // Every page: a page's tab menu without the page among its items, the page's name in it.
 $PAGE->requires->js_call_amd('theme_boost_union/menutitle', 'init');
 
+// Every page: Moodle's charts in the site's font (it loads Chart.js only with a chart).
+$PAGE->requires->js_call_amd('theme_boost_union/charts', 'init');
+
 // Every page: the letter filters above lists (first name, last name) behind a button.
 $PAGE->requires->js_call_amd('theme_boost_union/initialsfilter', 'init', [[
     'filter' => get_string('salekinitialsfilter', 'theme_boost_union'),
