@@ -1,0 +1,10 @@
+// Salek: an external tool's page (mod/lti/view.php).
+
+/* The tool's frame: a framed box with the site's 16px corners and hairline, as an IMS content
+   package's page (Moodle: the browser's square grey frame). */
+body#page-mod-lti-view #region-main div[role="main"] > iframe#contentframe {
+    display: block;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+    background-color: #fff;
+}

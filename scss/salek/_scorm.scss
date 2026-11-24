@@ -1,0 +1,101 @@
+// Salek: a SCORM package's reports (mod/scorm/report.php: Basic report, Interactions, Objectives).
+
+/* The title row, as a workshop's allocation and the wiki: the menu of the reports is the page's
+   title (the title's size, the arrow in a round button), "Download" at the row's end, the line
+   across the sheet under it. The users' count under the line at the start, small and muted.
+   On the graphs report the package's name under the line as a section title.
+   (Moodle: the menu a small field, the count centred above the table.) */
+body.path-mod-scorm #region-main div[role="main"]:has(> .tertiary-navigation select.urlselect[name="jump"]) {
+    > .tertiary-navigation {
+        @include salek-title-line;
+        // (Over the toolbars' 0: to the sheet's edges, the menu at the content's edge.)
+        margin: 0 calc(-1 * #{$salek-space-inset}) $salek-page-header-gap !important; /* stylelint-disable-line declaration-no-important */
+        padding: 0 $salek-space-inset 20px !important; /* stylelint-disable-line declaration-no-important */
+        border-bottom: 1px solid $salek-line !important; /* stylelint-disable-line declaration-no-important */
+
+        @include media-breakpoint-down(md) {
+            margin-inline: calc(-1 * #{$salek-space-inset-sm}) !important; /* stylelint-disable-line declaration-no-important */
+            padding-inline: $salek-space-inset-sm !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > [class~="d-flex"] {
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navitem {
+            margin-block: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        @include salek-urlselect-title;
+    }
+
+    > .tertiary-navigation + h3.main {
+        margin: 0 0 16px;
+        color: $salek-text-strong;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    > .scormattemptcounts {
+        margin: 0 0 12px;
+        color: $salek-text-muted;
+        font-size: .875rem;
+        text-align: start;
+    }
+}
+
+/* The package's main page: the description in the light note box of the activity pages (as the
+   wiki's, 16px inside), "Preview" and "Enter" under it, the attempts' details in a framed box with
+   "Delete all attempts" at its end. (Moodle: the text loose on the page, the details as lines of
+   text under the buttons.) */
+body#page-mod-scorm-view #region-main div[role="main"] {
+    > #intro.box {
+        margin: 0 0 16px;
+        padding: 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+        border: 1px solid $salek-note-border;
+        border-radius: 12px;
+        background-color: $salek-note-bg;
+
+        .no-overflow > :last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    > .scorm-center {
+        margin: 0 0 16px;
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        [class~="btn"] {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        br {
+            display: none;
+        }
+    }
+
+    > .box.generalbox:not(#intro) {
+        padding: 16px !important; /* stylelint-disable-line declaration-no-important */ // (Over .py-3.)
+        border: 1px solid #dfe5ee;
+        border-radius: 12px;
+        background-color: $salek-surface;
+
+        > p {
+            margin: 0;
+            color: $salek-text;
+            font-size: .875rem;
+            line-height: 1.9;
+        }
+
+        > .singlebutton {
+            margin-top: 12px;
+        }
+    }
+}

@@ -30,6 +30,20 @@
             vertical-align: middle;
         }
 
+        // A "Select all" box in a header (SCORM reports): in the line like a title, its hide
+        // button beside it (Moodle's block box put the button under it and the box at the top).
+        > thead > tr > th:has(> .form-check > input[type="checkbox"]) {
+            white-space: nowrap; // (In a narrow column the button wrapped under the box.)
+        }
+
+        > thead > tr > th > .form-check:has(> input[type="checkbox"]) {
+            display: inline-flex;
+            align-items: center;
+            min-height: 0;
+            margin: 0;
+            vertical-align: middle;
+        }
+
         // Rounded corners: the corner cells follow the frame. (Physical sides, flipped by the RTL
         // build: Moodle sets number columns to direction ltr, which put a logical corner on the
         // wrong side, as on the user grade report.)

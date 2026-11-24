@@ -1,0 +1,173 @@
+// Salek: an IMS content package's page (mod/imscp/view.php).
+
+/* stylelint-disable declaration-no-important */
+/* The contents panel and the page beside it, inside the sheet: a grid of two columns (the panel
+   260px, the page the rest, 16px apart; on phones one under the other), instead of Moodle's old
+   script layout, which places both with fixed pixel sizes and positions written on the elements
+   (wider than the sheet, in Farsi out of it on the other side, a sideways scroll on phones): those
+   sizes are overridden here (!important over the script's inline styles), its drag handle and
+   "Hide" button out. The panel a framed card with the tinted header band of the site's tables,
+   the page in a framed box 16px-cornered, 75% of the window high (on phones 70%). */
+body#page-mod-imscp-view #region-main #imscp_layout {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    background: none !important; // (The script layout's light blue behind both.)
+
+    > .yui-layout-doc {
+        position: static !important;
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        align-items: start;
+        gap: 16px;
+        width: auto !important;
+        height: auto !important;
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    .yui-layout-unit,
+    .yui-layout-wrap,
+    .yui-layout-bd,
+    .yui-layout-hd {
+        position: static !important;
+        inset: auto !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+    }
+
+    .yui-resize-handle,
+    .yui-layout-hd .collapse,
+    .yui-layout-clip {
+        display: none !important;
+    }
+
+    // The contents panel.
+    .yui-layout-unit-left > .yui-layout-wrap {
+        overflow: hidden;
+        border: 1px solid #dfe5ee !important;
+        border-radius: 16px;
+        background-color: $salek-surface !important;
+    }
+
+    .yui-layout-unit-left .yui-layout-hd {
+        padding: 12px 14px !important;
+        border-bottom: 1px solid $salek-table-head-line !important;
+        background-color: $salek-table-head-bg !important;
+
+        h2 {
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+            font-size: .9375rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+    }
+
+    .yui-layout-unit-left .yui-layout-bd {
+        overflow: visible !important;
+        padding: 10px 8px 12px !important;
+    }
+
+    #imscp_tree {
+        .ygtvtable {
+            width: 100%;
+        }
+
+        // (The tree's lines and the chosen row's colour on its cells: only on the name, below.)
+        .ygtvcell {
+            background: none !important;
+        }
+
+        .ygtvln,
+        .ygtvtn,
+        .ygtvspacer {
+            width: 6px;
+        }
+
+        .ygtvlabel {
+            display: block;
+            padding: 6px 8px;
+            border-radius: 8px;
+            color: $salek-text-strong;
+            font-size: .875rem;
+            text-decoration: none;
+
+            &:hover {
+                background-color: $salek-soft;
+            }
+        }
+
+        .ygtv-highlight1 .ygtvlabel {
+            background-color: rgba(var(--bs-primary-rgb), .08);
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+    }
+
+    // The buttons under the contents: small soft buttons in a row.
+    #imscp_nav {
+        display: flex !important;
+        justify-content: center;
+        gap: 6px;
+        margin: 12px 0 0;
+
+        .yui-button,
+        .first-child {
+            display: contents;
+        }
+
+        button {
+            min-width: 36px;
+            height: 32px;
+            padding: 0 8px;
+            border: 0;
+            border-radius: 8px;
+            background-color: $salek-button-soft;
+            color: $salek-text-strong;
+            font-size: .8125rem;
+            font-weight: 600;
+
+            &:hover:not(:disabled) {
+                background-color: $salek-button-soft-hover;
+            }
+
+            &:disabled {
+                color: $salek-text-muted;
+                opacity: .55;
+            }
+        }
+    }
+
+    // The page.
+    .yui-layout-unit-center > .yui-layout-wrap {
+        overflow: hidden;
+        border: 1px solid #dfe5ee !important;
+        border-radius: 16px;
+        background-color: #fff !important;
+    }
+
+    .yui-layout-unit-center .yui-layout-bd {
+        overflow: hidden !important;
+    }
+
+    #imscp_object,
+    #imscp_content iframe {
+        display: block;
+        width: 100% !important;
+        height: 75vh !important;
+        border: 0;
+
+        @include media-breakpoint-down(md) {
+            height: 70vh !important;
+        }
+    }
+}
+/* stylelint-enable declaration-no-important */
