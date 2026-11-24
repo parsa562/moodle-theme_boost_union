@@ -1,6 +1,7 @@
 // Salek: All other list tables.
 
-/* 23. All other list tables (Moodle's .generaltable and .flexible tables: reports, logs,
+/* 23. All other list tables (Moodle's .generaltable and .flexible tables, and the permissions
+       tables (.rolecap: a context's permissions, overriding and defining a role): reports, logs,
        quiz results, assignment grading, enrolment methods, "Report builder" lists, …) in the
        design of the participants table (section 18): a light frame with rounded corners, a
        tinted header, row lines, a faint hover, coloured initials, the theme's checkboxes and
@@ -8,7 +9,7 @@
        rules light, so the page-specific rules win). */
 
 @include salek-content-scope {
-    table:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded})) {
+    table:where(.generaltable, .flexible, .rolecap):where(:not(#{$salek-table-excluded})) {
         @include salek-table-base;
         border-collapse: separate;
         border-spacing: 0;
@@ -42,11 +43,13 @@
 
         // (And the last row's, so a row lit up under the mouse keeps the corners; the last row
         // shown, before Moodle's hidden empty filler rows.)
-        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :first-child {
+        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :first-child,
+        > tbody:last-child > tr:has(+ tr.lastrow > td.emptyrow:only-child) > :first-child {
             border-bottom-left-radius: 15px;
         }
 
-        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :last-child {
+        > tbody:last-child > tr:not(:has(~ tr:not(.emptyrow))) > :last-child,
+        > tbody:last-child > tr:has(+ tr.lastrow > td.emptyrow:only-child) > :last-child {
             border-bottom-right-radius: 15px;
         }
 
@@ -160,6 +163,34 @@
     }
 }
 
+// Single view: the same, the table's frame on the sheet (Moodle's grey box with 10px around it made
+// two frames); a grade beside its menu (⋯) on the menu's line, as the row's other texts (it sat at
+// the cell's top, 6px over them).
+.path-grade-report-singleview #region-main div.reporttable {
+    margin: 0 0 16px;
+    padding: 0;
+    background-color: transparent;
+}
+
+.path-grade-report-singleview #region-main .reporttable td:has(> .action-menu) {
+    line-height: 32px;
+}
+
+// The grade reports' grade item picker beside the title (single view by grade item): the toolbar's
+// filter menu, "Select a grade item: Assignment 1" on one line (Moodle: a bare menu of two lines,
+// the question small over the item).
+#region-main .tertiary-navigation .grade-search > .gradesearchwidget {
+    @include salek-filter-menu;
+    max-width: 100%;
+
+    > div,
+    > div > div {
+        min-width: 0;
+        max-width: 420px; // (Moodle: 200px, the item's name was cut after a word.)
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */ // (Over .pe-3.)
+    }
+}
+
 // Gradebook setup: the table on the sheet like the other tables (no grey box around it, as wide
 // as the content), right under the title's line.
 body:not(.pagelayout-login) #region-main .gradetreebox {
@@ -172,14 +203,130 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
     }
 }
 
+// A list's row actions in its last column, each an icon link alone (the scales' and outcomes' edit
+// and delete): the site's row action buttons, as on the enrolment methods and groupings (Moodle:
+// filled blue icons).
+#region-main table.generaltable td.lastcol > a:has(> .icon:only-child) {
+    @include salek-row-action;
+}
+
+// (On one line: on phones the narrow column put them one on the other, touching.)
+#region-main table.generaltable td.lastcol:has(> a > .icon:only-child) {
+    white-space: nowrap;
+}
+
+// The permissions tables (.rolecap: a context's permissions, overriding and defining a role): a
+// role that has the permission (or is prohibited it) the site's neutral label, as a person's roles
+// on the participants page, its remove button a small bin in it, red under the mouse; "Allow" and
+// "Prohibit" (+) the site's row action buttons (Moodle: plain names with filled blue bins and
+// pluses). On phones the capability's column narrower and the roles' wider, so a row stays a few
+// lines high (the roles stood one under the other, a row was 226px high).
+#region-main table.rolecap {
+    // As wide as the page, as the other lists (Moodle's .w-auto: as wide as its texts, half the page
+    // when defining a role or checking a user's permissions).
+    width: 100% !important; /* stylelint-disable-line declaration-no-important */
+
+    .allowed,
+    .forbidden {
+        display: inline-flex !important; /* stylelint-disable-line declaration-no-important */ // (Over Moodle's inline style.)
+        align-items: center;
+        gap: 2px;
+        margin-block: 2px;
+        margin-inline: 0 4px;
+        padding-block: 2px;
+        padding-inline: 10px 3px;
+        border: 1px solid #dfe5ee;
+        border-radius: 999px; // (The shape of the site's labels.)
+        background-color: #f1f4f8;
+        color: #475569;
+        font-size: .75rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%; // (Round in its round label.)
+            color: #94a3b8;
+
+            .icon {
+                display: none;
+            }
+
+            &::before {
+                @include salek-mask-icon($salek-icon-close, 12px);
+            }
+
+            &:hover {
+                background-color: #fef2f2;
+                color: #dc2626;
+            }
+        }
+    }
+
+    // The capability's code name under its name: small and grey (Moodle: the same size and colour
+    // as the name, harder to tell apart).
+    .cap-name {
+        display: block;
+        margin-top: 2px;
+        color: $salek-text-muted;
+        font-size: .75rem;
+    }
+
+    // A component's title row ("Course assistance placement"): the site's group title band, as on
+    // the course admin page (Moodle: a bold line like the rows).
+    tr.rolecapheading > td {
+        @include salek-link-group-title;
+        padding-inline: 14px; // (In line with the rows' text.)
+    }
+
+    .allowmore > a,
+    .prohibitmore > a {
+        @include salek-row-action;
+        width: 28px;
+        height: 28px;
+
+        &::before {
+            mask-image: $salek-icon-plus-line;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        // (The capability's code name, one long word, may break anywhere.)
+        td.name,
+        th.name {
+            width: 200px;
+            min-width: 200px !important; /* stylelint-disable-line declaration-no-important */ // (Over the long texts' 26em.)
+            overflow-wrap: anywhere;
+
+            .cap-name {
+                white-space: normal; // (Moodle: one line, 334px at the least.)
+            }
+        }
+
+        td.allowedroles {
+            min-width: 300px;
+        }
+    }
+}
+
+// Moodle's light labels in a list's cells (the gradebook setup's "Natural", "Exclude empty grades"):
+// the site's labels (section 4 of the components), on one line.
+#region-main table td [class~="badge"][class~="bg-light"] {
+    white-space: nowrap;
+}
+
 // A list table in a box that scrolls sideways (Moodle's .table-responsive, with a full-width table;
 // the theme's box around a table wider than the page): the frame on the box, so it stays whole
 // while the table scrolls inside it (on the table, its end was cut off at the box's edge and the
 // table looked broken there).
 @include salek-content-scope {
     // (Only a box with nothing but the table: Moodle puts the overview report's titles in its box.)
-    .table-responsive:has(> table[class~="table"]:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded}))):not(:has(> :not(table))),
-    .salek-table-scroll:has(> table:where(.generaltable, .flexible):where(:not(#{$salek-table-excluded}))) {
+    .table-responsive:has(> table[class~="table"]:where(.generaltable, .flexible, .rolecap):where(:not(#{$salek-table-excluded}))):not(:has(> :not(table))),
+    .salek-table-scroll:has(> table:where(.generaltable, .flexible, .rolecap):where(:not(#{$salek-table-excluded}))) {
         border: 1px solid #dfe5ee;
         border-radius: 16px;
 
@@ -197,6 +344,7 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
     @include salek-content-scope {
         :has(> table.generaltable),
         :has(> table.flexible) {
+            position: relative; // (See the box below.)
             min-width: 0;
             max-width: 100%;
             overflow-x: auto;
@@ -209,7 +357,11 @@ body:not(.pagelayout-login) #region-main .gradetreebox {
 // bank's scrollbar under it, at the bottom of the window while the table is in view. Moodle keeps
 // some header rows under the navbar while the page scrolls (assignment submissions): inside the
 // box that put them over the first rows.
+// (The box is the place of the table's hidden texts for screen readers, Moodle's .visually-hidden,
+// which are positioned: placed by a box outside it, they were not cut at its edge, and on phones
+// in Persian they widened the whole page to the left: Database presets, 200px.)
 #region-main .salek-table-scroll {
+    position: relative;
     max-width: 100%;
     overflow-x: auto;
     padding-block: 0 !important; /* stylelint-disable-line declaration-no-important */ // (A box of Moodle's made this box: its .py-3 inside the frame.)
@@ -576,6 +728,14 @@ body.jsenabled:not(.salek-ib-ready) #region-main {
 }
 
 
+// A table alone in a half-width column of Moodle's (the competency breakdown's list, .col-md-6
+// with nothing beside it): the content's width, as the other list tables (Moodle: half the
+// sheet, the other half empty).
+#region-main div[role="main"] [class~="row"] > [class~="col-md-6"]:only-child:has(> table) {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
 // Competency breakdown (course reports): the user switcher and the activity filter as a
 // soft card, the note as a tinted note, the list as the other list tables.
 #page-report-competency-index #region-main div[role="main"] {
@@ -756,11 +916,18 @@ body.jsenabled:not(.salek-ib-ready) #region-main {
     }
 }
 
+// (A table that scrolls sideways anyway, on phones too, and gets much lower so: its longer texts
+// as wide as on a computer. At half the window a log's description took 4 lines, and every row was
+// as high. Measured per table: templates/salek_table_sizer.mustache, amd/src/questionbankscroll.js.)
+#region-main .salek-table-scroll table.salek-long-wide td.salek-cell-long {
+    min-width: 26em;
+}
+
 // Moodle's fixed first column (.sticky-column: the names in quiz results) while a table scrolls
 // sideways: on the colour of its row (it was see-through, the other columns ran under the names
 // and showed through them), and its title in the header fixed with it (it scrolled away).
 @include salek-content-scope {
-    table:where(.generaltable, .flexible) {
+    table:where(.generaltable, .flexible, .rolecap) {
         > tbody > tr > .sticky-column {
             z-index: 1;
             background-color: $salek-surface;

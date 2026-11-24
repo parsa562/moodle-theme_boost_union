@@ -56,13 +56,25 @@ body#page-report-outline-user #region-main div[role="main"] {
             font-weight: 700;
         }
 
+        // (Its rows set in by 16px: the icon and the name only; the other columns stay in line with
+        // the sections' rows.)
         tr {
-            padding-inline-start: 36px;
+            grid-template-columns: 52px minmax(0, 1fr) 23% 37%;
+
+            > td:first-child {
+                justify-self: end;
+            }
+
+            @include media-breakpoint-down(md) {
+                grid-template-columns: 52px minmax(0, 1fr);
+            }
         }
     }
 
     // (The first lesson right under the section's title: one line between them.)
-    .section > .content > :is(table:not(:has(tr)), :first-child) + .subsection,
+    // (Moodle puts an empty table before each lesson: only the one at the section's start counts;
+    // a lesson after another lesson keeps its line.)
+    .section > .content > table:not(:has(tr)):first-child + .subsection,
     .section > .content > .subsection:first-child {
         border-top: 0;
     }
@@ -80,7 +92,9 @@ body#page-report-outline-user #region-main div[role="main"] {
 
         tr {
             display: grid;
-            grid-template-columns: 36px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr);
+            // (The views or grade and the last access a fixed share of the row, so they are in line
+            // in every section, also under a lesson's rows, set in.)
+            grid-template-columns: 36px minmax(0, 1fr) 23% 37%;
             align-items: center;
             column-gap: 14px;
             padding: 10px 20px;

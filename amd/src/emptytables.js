@@ -26,9 +26,19 @@ define(['core/str'], function(Str) {
      * Add the message row to each empty table of the page content.
      */
     const init = function() {
-        // Empty: no rows, or only Moodle's blank filler row (hidden by the theme CSS).
-        const tables = Array.from(document.querySelectorAll('#region-main table.generaltable')).filter(function(table) {
-            return table.tHead && table.tBodies.length === 1 && Array.from(table.tBodies[0].rows).every(function(row) {
+        // Empty: no rows, or only Moodle's blank filler row (hidden by the theme CSS). (Also a table
+        // whose titles are the first row of its body, all title cells: the competency breakdown.)
+        const tables = Array.from(document.querySelectorAll('#region-main table.generaltable, #region-main table.table')).filter(function(table) {
+            if (table.tBodies.length !== 1) {
+                return false;
+            }
+            const rows = Array.from(table.tBodies[0].rows);
+            if (!table.tHead && !(rows.length && Array.from(rows[0].cells).every(function(cell) {
+                return cell.tagName === 'TH';
+            }))) {
+                return false;
+            }
+            return rows.slice(table.tHead ? 0 : 1).every(function(row) {
                 return !row.textContent.trim() && !row.querySelector('input, select, img, a');
             });
         });
@@ -40,7 +50,7 @@ define(['core/str'], function(Str) {
             tables.forEach(function(table) {
                 const cell = table.tBodies[0].insertRow().insertCell();
                 cell.className = 'salek-empty-cell';
-                cell.colSpan = table.tHead.rows[0].cells.length;
+                cell.colSpan = (table.tHead || table.tBodies[0]).rows[0].cells.length;
                 const box = table.closest('.table-responsive, .salek-table-scroll') || table;
                 const message = box.nextElementSibling;
                 if (message && message.matches('.alert-info') && !message.querySelector('a, button, form')

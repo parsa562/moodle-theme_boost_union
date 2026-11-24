@@ -790,8 +790,10 @@
     }
 
     // The last row without its line (the frame closes the table); also when Moodle's hidden
-    // empty filler rows (.emptyrow) come after it.
-    &:not(:has(~ tr:not(.emptyrow))) > * {
+    // empty filler rows (.emptyrow) come after it, or its hidden last row holding only a filler
+    // cell (the gradebook setup: the course total's line ran across the frame's rounded corner).
+    &:not(:has(~ tr:not(.emptyrow))) > *,
+    &:has(+ tr.lastrow > td.emptyrow:only-child) > * {
         border-bottom: 0;
     }
 

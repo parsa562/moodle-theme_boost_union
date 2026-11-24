@@ -32,10 +32,14 @@
     // A table right after the controls above it (a filter form with its button, a single button,
     // a list, the permissions filter): 16px between them, as after a table (they touched: the
     // logs, live logs and permissions pages).
+    // (Also with Moodle's hidden spinner between them: the live logs' "Pause live updates".)
     @each $before in form, button, ".singlebutton", ".singleselect", ".urlselect", ".capabilitysearchui", "[class~=\"btn\"]" {
         #{$before} + .table-responsive,
         #{$before} + .salek-table-scroll,
-        #{$before} + table {
+        #{$before} + table,
+        #{$before} + .spinner + .table-responsive,
+        #{$before} + .spinner + .salek-table-scroll,
+        #{$before} + .spinner + table {
             margin-top: 16px;
         }
     }
@@ -52,6 +56,39 @@
         width: auto !important; /* stylelint-disable-line declaration-no-important */
         max-width: 100%;
         margin-inline: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    // A context's permissions: the filter and "Advanced role override" on one line above the table,
+    // the filter at the start and the list at the end (Moodle: two lines, the list first).
+    .capbox:has(> .advancedoverride + .capabilitysearchui) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+
+        > * {
+            flex: 0 0 100%;
+            min-width: 0; // (The table's box still scrolls on phones, not wider than the page.)
+        }
+
+        > .capabilitysearchui {
+            flex: 1 1 auto;
+            order: -2;
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        > .advancedoverride {
+            flex: 0 0 auto;
+            order: -1;
+
+            .singleselect {
+                margin: 0;
+            }
+        }
+
+        > .capabilitysearchui + * {
+            margin-top: 0;
+        }
     }
 
     // Label + list (+ button) rows.
@@ -368,7 +405,11 @@ body.path-mod-assign #region-main .gradingtable {
    with a tick (done), amber with a triangle (warnings), red with an "!" (errors). The text in the
    site's size, links in the message's colour and underlined, paragraphs close together. */
 @mixin salek-alerts {
-    [class~="alert"] {
+    // (And Moodle's plain error boxes, .errorbox without .alert: "Completion is not enabled for any
+    // activity", the activity completion of a course without it, a bare line of text. In the
+    // warning's colours, below; red where they are .alert-danger too.)
+    [class~="alert"],
+    .errorbox {
         --bs-alert-bg: #eef4fd;
         --bs-alert-border-color: #d5e3f8;
         --bs-alert-color: #1e3a5f;
@@ -418,6 +459,26 @@ body.path-mod-assign #region-main .gradingtable {
             transform: translateY(-50%);
             margin-inline-end: 6px;
         }
+
+        // A button in the message ("Check for available updates"): small, on the text's line, its
+        // middle on the text's middle, the line no taller than the text's: the icon stays beside the
+        // text and every message keeps one height (Moodle: the page's 44px button made the line
+        // taller, the text slid down from the icon).
+        .singlebutton {
+            display: inline-block;
+            margin: -6px 0 -6px 6px;
+            vertical-align: middle;
+
+            form {
+                margin: 0;
+            }
+
+            [class~="btn"] {
+                min-height: 32px !important; /* stylelint-disable-line declaration-no-important */
+                padding: 0 14px !important; /* stylelint-disable-line declaration-no-important */
+                font-size: .8125rem;
+            }
+        }
     }
 
     [class~="alert-success"] {
@@ -429,7 +490,8 @@ body.path-mod-assign #region-main .gradingtable {
         --salek-alert-icon-color: #16a34a;
     }
 
-    [class~="alert-warning"] {
+    [class~="alert-warning"],
+    .errorbox {
         --bs-alert-bg: #fff8e6;
         --bs-alert-border-color: #f7de9c;
         --bs-alert-color: #5c3d00;
@@ -459,6 +521,11 @@ body.path-mod-assign #region-main .gradingtable {
 
 @include salek-content-scope {
     @include salek-alerts;
+
+    // (Moodle's plain error box has no space around it: as the messages, 16px from the lists over it.)
+    .errorbox:not([class~="alert"]) {
+        margin: 16px 0;
+    }
 }
 
 // (The groups overview's lists after "Filter groups by:", see section 24.)

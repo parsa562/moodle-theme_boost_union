@@ -129,7 +129,8 @@ define([], function() {
         const head = table.tHead.rows[table.tHead.rows.length - 1];
         const count = head.cells.length;
         const rows = Array.from(table.tBodies[0].rows).filter(function(row) {
-            return row.cells.length === count && !Array.from(row.cells).some(function(cell) {
+            // (Not Moodle's hidden empty rows that fill a page of the list.)
+            return row.cells.length === count && !row.classList.contains('emptyrow') && !Array.from(row.cells).some(function(cell) {
                 return cell.colSpan > 1;
             });
         }).slice(0, 60);
@@ -176,6 +177,7 @@ define([], function() {
         table.classList.remove('salek-table-ready');
         table.classList.add('salek-columns-sized');
         const candidates = [];
+        const people = [];
         for (let i = 0; i < count; i++) {
             // A column of icon buttons only: left as it is (its buttons may stack; on one line they
             // pushed a table that fitted out of the page on phones).
@@ -188,6 +190,14 @@ define([], function() {
                 return shown(row.cells[i]).length <= 40;
             })) {
                 candidates.push(i);
+                // A column of people (their picture or initials beside the name): always on one
+                // line, as on the participants page (a name in two lines beside its circle looked
+                // broken).
+                if (rows.every(function(row) {
+                    return row.cells[i].querySelector('.userinitials, .userpicture');
+                })) {
+                    people.push(i);
+                }
             } else {
                 cellsOf(i).forEach(function(cell) {
                     cell.classList.add('salek-cell-long');
@@ -209,7 +219,7 @@ define([], function() {
         // lines): a name in 3 lines is better than a table that no longer fits.
         const least = table.offsetWidth <= table.parentElement.clientWidth + 1 ? 3 : 2;
         candidates.filter(function(i, k) {
-            return rows.some(function(row, r) {
+            return people.includes(i) || rows.some(function(row, r) {
                 return lines(row.cells[i]) - before[k][r] >= least;
             });
         }).forEach(function(i) {
@@ -217,6 +227,30 @@ define([], function() {
                 cell.classList.add('salek-cell-short');
             });
         });
+    };
+
+    /**
+     * A table much wider than its box that scrolls sideways: its longer texts as wide as on a computer
+     * (.salek-long-wide, theme CSS), where that makes the table much lower (a log's description in
+     * 2 lines, not 4, on phones); otherwise as they were (a wider table to scroll for nothing).
+     * Once per table. (As templates/salek_table_sizer.mustache does before the page is drawn.)
+     *
+     * @param {HTMLTableElement} table
+     */
+    const widenLong = function(table) {
+        if (table.dataset.salekLong || !table.querySelector('td.salek-cell-long')) {
+            return;
+        }
+        table.dataset.salekLong = '1';
+        // (Not one that nearly fitted: the groups' overview scrolled 15px, then 180px.)
+        if (table.offsetWidth < table.parentElement.clientWidth * 1.25) {
+            return;
+        }
+        const before = table.offsetHeight;
+        table.classList.add('salek-long-wide');
+        if (table.offsetHeight > before * 0.85) {
+            table.classList.remove('salek-long-wide');
+        }
     };
 
     /**
@@ -229,7 +263,14 @@ define([], function() {
         if (!main) {
             return;
         }
-        main.querySelectorAll('table.generaltable, table.flexible').forEach(function(table) {
+        // (What Moodle's scripts put before a table after it was boxed, as the permissions' filter:
+        // before the box, not scrolling with the table.)
+        main.querySelectorAll('.salek-table-scroll > table').forEach(function(table) {
+            while (table.previousElementSibling) {
+                table.parentElement.before(table.previousElementSibling);
+            }
+        });
+        main.querySelectorAll('table.generaltable, table.flexible, table.rolecap').forEach(function(table) {
             if (table.closest('.gradeparent, #question_table, .dropdown-menu, .modal, td, th')) {
                 return;
             }
@@ -248,6 +289,7 @@ define([], function() {
         keepShortColumns(table);
         const made = table.closest('.salek-table-scroll');
         if (made) {
+            widenLong(table);
             // A box made before the page was drawn (templates/salek_table_sizer.mustache): its
             // scrollbar and menus now.
             if (!made.classList.contains('boost-union-wide-table-scroll')) {
@@ -268,10 +310,13 @@ define([], function() {
         // ("Reset table preferences"), it stops scrolling (.salek-table-holder) and the table
         // alone gets the theme's box.
         let holder = false;
-        if (getComputedStyle(parent).overflowX !== 'visible' && parent !== main) {
+        // (A box that scrolls: one that only cuts its content at its rounded corners, as the quiz's
+        // attempt cards, is left as it is.)
+        if (/auto|scroll/.test(getComputedStyle(parent).overflowX) && parent !== main) {
             if (parent.children.length === 1) {
                 if (Math.max(table.offsetWidth, parent.scrollWidth) > parent.clientWidth + 1) { // (Or what sticks out of it: the turned column titles of the completion report.)
                     parent.classList.add('salek-table-scroll');
+                    widenLong(table);
                     fixMenus(parent);
                     document.body.classList.add('salek-has-wide-table');
                     attach(parent, true);
@@ -293,6 +338,7 @@ define([], function() {
         box.className = 'salek-table-scroll';
         table.before(box);
         box.appendChild(table);
+        widenLong(table);
         fixMenus(box);
         document.body.classList.add('salek-has-wide-table');
         attach(box, true);
@@ -346,7 +392,7 @@ define([], function() {
         // shown from something hidden (its box and scrollbar were missing then).
         if (main && 'ResizeObserver' in window) {
             const sizes = new ResizeObserver(later);
-            main.querySelectorAll('table.generaltable, table.flexible').forEach(function(table) {
+            main.querySelectorAll('table.generaltable, table.flexible, table.rolecap').forEach(function(table) {
                 sizes.observe(table);
             });
         }
@@ -354,7 +400,8 @@ define([], function() {
             new MutationObserver(function(records) {
                 if (records.some(function(record) {
                     return Array.from(record.addedNodes).some(function(node) {
-                        return node.nodeType === 1 && (node.matches('table') || node.querySelector('table'));
+                        return node.nodeType === 1 && (node.matches('table') || node.querySelector('table')
+                            || record.target.matches('.salek-table-scroll'));
                     });
                 })) {
                     later();

@@ -83,3 +83,96 @@
         }
     }
 }
+
+// The choice's responses (mod/choice/report.php): the table in the site's list tables' design (a
+// light frame with rounded corners, the tinted header row, the row lines; light column lines too,
+// the options being its columns, as the grader report), not Moodle's bordered table (a black
+// line on top, dark lines round every cell, square corners).
+body#page-mod-choice-report #region-main table.results {
+    @include salek-table-base;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+    border: 1px solid #dfe5ee;
+    border-radius: 16px;
+    overflow: hidden;
+
+    > :is(thead, tbody) > tr > :is(th, td) {
+        padding: 12px 14px;
+        border-width: 0 0 1px;
+        border-style: solid;
+        border-color: $salek-table-row-line;
+        vertical-align: middle;
+
+        + :is(th, td) {
+            border-inline-start-width: 1px;
+        }
+    }
+
+    > thead > tr > th {
+        @include salek-table-head-cell;
+    }
+
+    // The rows' names ("Number of users", ...): quiet and bold, as the header.
+    > tbody > tr > th {
+        color: $salek-text-muted;
+        font-size: .8125rem;
+        font-weight: 600;
+    }
+
+    > tbody > tr:last-child > :is(th, td) {
+        border-bottom: 0;
+    }
+
+    // The option's box under its name.
+    .form-check {
+        display: flex;
+        justify-content: center;
+        min-height: 0;
+        margin: 6px 0 0;
+    }
+}
+
+// Under the table: "Select all" and "With selected" on one line, the downloads on the next, each
+// 12px / 8px apart (Moodle: scattered, on phones one under the other at their own ends).
+body#page-mod-choice-report #region-main {
+    .responseaction {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+
+        > *,
+        .singleselect {
+            margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    .downloadreport {
+        margin-top: 16px !important; /* stylelint-disable-line declaration-no-important */
+
+        > ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+
+            > li {
+                margin: 0;
+            }
+        }
+
+        // (Phones: one under the other, each across the line, not each its own width.)
+        @include media-breakpoint-down(sm) {
+            > ul > li {
+                flex: 1 1 100%;
+
+                .singlebutton,
+                [class~="btn"] {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

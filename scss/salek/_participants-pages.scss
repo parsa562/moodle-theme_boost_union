@@ -208,16 +208,6 @@ body.salek-participants-page #region-main div[role="main"] {
         margin-top: $salek-page-header-gap;
     }
 
-    // Permissions tables: wider than a phone, so they scroll sideways in their own box (the page
-    // scrolled sideways); the filter above them no wider than the page.
-    table.rolecap {
-        @include media-breakpoint-down(md) {
-            display: block;
-            max-width: 100%;
-            overflow-x: auto;
-        }
-    }
-
     // Groups overview: an empty description box under a grouping name took 32px.
     > [class~="box"][class~="generalbox"]:empty {
         display: none;
