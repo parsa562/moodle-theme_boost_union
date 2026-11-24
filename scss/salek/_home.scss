@@ -349,23 +349,8 @@ body #page .theme_boost_union-courselisting.theme_boost_union-courselisting-card
     padding-top: 32px;
 
     > h2 {
-        position: relative;
+        @include salek-accent-title;
         margin: 0 0 24px;
-        padding-bottom: 14px;
-        color: $salek-text-strong;
-        font-size: 1.75rem;
-        font-weight: 700;
-
-        &::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            inset-inline-start: 0;
-            width: 44px;
-            height: 3px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--bs-primary), $salek-home-gold);
-        }
     }
 
     // Until the bar is in place, its room is kept (the cards do not move down when it comes).

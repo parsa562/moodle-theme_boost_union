@@ -1,19 +1,26 @@
 // Salek: the course competencies page (admin/tool/lp/coursecompetencies.php).
 
-/* Like the other pages: the title with the line across the sheet under it, the filter by
+/* Like the other pages: the title with the line across the sheet under it (the title's size and
+   weight too: the filter before it keeps it out of the shared title rules), the filter by
    activity at the end of the title row (one line: the chosen filter and the field, no frame of
    its own), "Add competencies to course" under the line, the note about ratings as a quiet line,
    no empty table. */
 body#page-admin-tool-lp-coursecompetencies #region-main div[role="main"] {
     > H2 {
         @include salek-title-line;
+        @include salek-page-title-text;
         margin-top: 0;
+        // As high as the title rows with a button or a field at their end (44px and the 20px under
+        // it), the title in the middle of the 44px. (It stays a block: beside the float a flex
+        // row ends where the filter starts, and the line under it with it.)
+        padding-top: calc((#{$salek-control-height} - 1.4em) / 2);
+        padding-bottom: calc(19px + (#{$salek-control-height} - 1.4em) / 2); // (19px: and its 1px line.)
     }
 
     > [class~="float-end"]:has(> .user-competency-course-navigation) {
         position: relative;
         z-index: 1;
-        margin: -4px 0 0 16px !important; /* stylelint-disable-line declaration-no-important */
+        margin: -1px 0 0 16px !important; /* stylelint-disable-line declaration-no-important */ // (Its middle on the title's.)
         padding: 0 !important; /* stylelint-disable-line declaration-no-important */
         border: 0 !important; /* stylelint-disable-line declaration-no-important */
 

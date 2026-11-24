@@ -865,16 +865,14 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
+    margin-block: -6px; // (Its hover shape around the title, without making the title area 12px higher than a plain title's.)
     margin-inline-start: -10px;
     padding: 6px 10px;
     border: 0;
     border-radius: 14px;
     background: transparent;
     box-shadow: none;
-    color: $salek-text-strong;
-    font-size: 1.75rem;
-    font-weight: 600;
-    line-height: 1.2;
+    @include salek-page-title-text;
 
     &::after {
         content: "";
@@ -1071,6 +1069,15 @@
 // A section's title inside a page (a second title under the page's own: "Grading summary",
 // "Courses I am teaching", "My badges from other web sites"): the size and weight of the course
 // page's section names, 16px above what it names. One place for every such title.
+// The page's title, in every title row (a heading, the menu of a report's pages, a hero card's
+// heading): 22px bold, as the forum's summary report (was 28px semibold).
+@mixin salek-page-title-text {
+    color: $salek-text-strong;
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
 @mixin salek-section-title {
     margin: 0 0 16px;
     color: $salek-ink;

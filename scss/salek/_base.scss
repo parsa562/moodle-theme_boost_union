@@ -94,3 +94,15 @@ body.modal-open {
         display: block !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-none.)
     }
 }
+
+// Headings in the page's content without a design of their own (Moodle's 30px and 26px: bigger
+// than the page's title, as "Other activities with questions" on the course's question banks):
+// the size of the site's section titles. Only the type, at the type selector's weight, so every
+// heading the theme designs (the page's title, cards, lists) keeps its own.
+:where(#region-main div[role="main"]) h2,
+:where(#region-main div[role="main"]) h3 {
+    color: $salek-text-strong;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.4;
+}

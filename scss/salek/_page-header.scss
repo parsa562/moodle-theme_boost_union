@@ -16,10 +16,7 @@
         align-items: center;
         min-height: 44px;
         margin: 0 0 $salek-page-header-gap;
-        color: $salek-text-strong;
-        font-size: 1.75rem;
-        font-weight: 600;
-        line-height: 1.2;
+        @include salek-page-title-text;
     }
 
     // Actions embedded in a heading or grouped beside it share the same title row.
@@ -35,10 +32,7 @@
             flex: 1 1 auto;
             min-width: 0;
             margin: 0;
-            color: $salek-text-strong;
-            font-size: 1.75rem;
-            font-weight: 600;
-            line-height: 1.2;
+            @include salek-page-title-text;
 
             @include media-breakpoint-down(md) {
                 flex-basis: 100%;
@@ -302,7 +296,11 @@
             margin: 0;
         }
 
+        // (Its row as high as the button, as the title rows with a button: the title centred on
+        // the button, the line under them where it is on those pages. The heading's 44px held its
+        // 20px padding too, so the title stood 6px above the button's centre.)
         div[role="main"] > #{$salek-back-nav} + h2 {
+            min-height: calc(#{$salek-control-height} + 20px);
             padding-inline-end: calc(#{$salek-space-inset} + 160px);
         }
     }
@@ -644,10 +642,7 @@ body:not(.pagelayout-login) #region-main > .tertiary-navigation:has(> .navitem:o
         background: escape-svg($form-select-indicator) right 19px center / 14px no-repeat,
             radial-gradient(circle closest-side, #fff calc(100% - 1.5px), #c3ccd9 calc(100% - 1px), #c3ccd9 100%, transparent 100%) right 10px center / 32px 32px no-repeat;
         box-shadow: none;
-        color: $salek-text-strong;
-        font-size: 1.75rem;
-        font-weight: 600;
-        line-height: 1.2;
+        @include salek-page-title-text;
         cursor: pointer;
 
         &:hover,
@@ -914,10 +909,7 @@ $salek-toolbar: '.tertiary-navigation:has(> [class~="d-flex"] > .navitem > H2)';
 
     h3 {
         margin: 0;
-        color: $salek-text-strong;
-        font-size: 1.75rem;
-        font-weight: 600;
-        line-height: 1.2;
+        @include salek-page-title-text;
     }
 }
 

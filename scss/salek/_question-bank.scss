@@ -353,10 +353,8 @@ body#page-question-edit #page.drawers #region-main:has(.qbank-hero) {
         @include salek-hero-bottom;
 
         h2 {
+            @include salek-page-title-text; // (The site's page title, as the other hero cards.)
             margin: 0 0 10px;
-            font-size: 2.125rem;
-            font-weight: 600;
-            line-height: 1.2;
         }
 
         .qbank-hero-meta {

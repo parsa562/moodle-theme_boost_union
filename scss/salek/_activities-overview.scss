@@ -20,9 +20,7 @@ body#page-course-overview #page.drawers #region-main {
         padding: 26px $salek-card-pad 8px;
         padding-inline: 32px;
         @include salek-hero-top;
-        color: $salek-text-strong;
-        font-size: 1.75rem;
-        font-weight: 600;
+        @include salek-page-title-text;
     }
 
     div[role="main"] > h2 + p {

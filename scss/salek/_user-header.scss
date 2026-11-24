@@ -219,10 +219,7 @@ body:is(#page-report-outline-user, #page-report-log-user, #page-notes-index, #pa
         margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
         margin-bottom: 24px !important; /* stylelint-disable-line declaration-no-important */
         padding-bottom: 18px;
-        color: $salek-text-strong;
-        font-size: 1.375rem;
-        font-weight: 700;
-        line-height: 1.4;
+        @include salek-page-title-text;
     }
 
     > .mb-3:has(> form > [class~="btn"]) {

@@ -348,3 +348,46 @@ body.page-mycourses #page #block-region-content > section.block_myoverview {
         }
     }
 }
+
+// The Dashboard's Timeline: its title in a row as high as My courses' title row (44px, the title
+// in its middle; there the buttons beside it make the row that high), and its filter bar as far
+// under the card's top: the title and the bar at the same places on both pages (Moodle: a 31px
+// row, the bar 18px higher than on My courses).
+#page #block-region-content > section.block_timeline {
+    .block-header [class~="card-title"] {
+        display: flex !important; /* stylelint-disable-line declaration-no-important */ // (Over .d-inline.)
+        align-items: center;
+        min-height: $salek-control-height;
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+}
+
+// My courses: its card as high as the Dashboard's first card (Moodle pulls the Dashboard's content
+// up 1px over the 1px mark of "Skip to main content" before it; My courses' card was 1px lower).
+body.page-mycourses #region-main {
+    margin-top: -1px;
+}
+
+// The Dashboard's Timeline and My courses' "Course overview": their titles at the size of the
+// pages' titles (22px, bold), in the middle of a row as high as My courses' buttons beside it, the
+// content 24px under the row. (Moodle: a small title, the content 16-20px under it.)
+// (The pages' classes: over My courses' own 44px row, above.)
+body:is(.pagelayout-mydashboard, .page-mycourses) #page #block-region-content > section:is(.block_timeline, .block_myoverview) {
+    .block-header {
+        margin-bottom: 24px;
+    }
+
+    .block-header [class~="card-title"] {
+        @include salek-page-title-text; // (The size of the other pages' titles, 22px.)
+        min-height: $salek-control-height;
+    }
+
+    [class~="card-text"] {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+body.page-mycourses #page #block-region-content > section.block_myoverview .block-myoverview:has(> [class~="flex-wrap"][class~="gap-2"] > form) {
+    padding-top: 0; // (The room it made under the buttons: the line is under them now.)
+}
