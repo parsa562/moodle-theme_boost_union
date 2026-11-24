@@ -36,8 +36,37 @@
     line-gap-override: 0%;
 }
 
+/* English and Persian words side by side (a breadcrumb, a course name in an English sentence):
+   the letters of the two fonts sit at different heights on their shared baseline, the middle of
+   English text 0.26em above it, of Persian text 0.12em, so English stood 2px higher (13px text).
+   On each page the language of the page stays where it is and the other one moves 0.14em, in
+   copies of the font files with every letter moved (made with fontTools; line heights and the
+   marks on the letters as before): on Persian pages the English letters lower (which also
+   centres English capitals in buttons there), on English pages the Persian letters higher. */
+@font-face {
+    font-family: "Salek Josefin Sans FA";
+    src: url("/pluginfile.php/1/theme_boost_union/customfonts/0/josefin-sans-latin-fa.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 200 700;
+    font-display: swap;
+    unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Salek Markazi Text LTR";
+    src: url("/pluginfile.php/1/theme_boost_union/customfonts/0/markazi-text-arabic-ltr.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    unicode-range: U+600-6FF, U+750-77F, U+870-88E, U+890-891, U+897-8E1, U+8E3-8FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
 html[dir="ltr"] body {
-    font-family: "Salek Josefin Sans LTR", "Josefin Sans", "SQ-066B-066C", "Markazi Text", sans-serif !important; /* stylelint-disable-line declaration-no-important */
+    font-family: "Salek Josefin Sans LTR", "Josefin Sans", "SQ-066B-066C", "Salek Markazi Text LTR", "Markazi Text", sans-serif !important; /* stylelint-disable-line declaration-no-important */
+}
+
+html[dir="rtl"] body {
+    font-family: "Salek Josefin Sans FA", "Josefin Sans", "SQ-066B-066C", "Markazi Text", sans-serif !important; /* stylelint-disable-line declaration-no-important */
 }
 
 /* 5. Fields, selects, search boxes and filter dropdowns: filled soft grey shapes without a
